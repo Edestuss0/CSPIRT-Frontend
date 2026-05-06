@@ -4,7 +4,7 @@ import { format, isValid, parse } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import { useEventStore } from "../../store/event_store.ts";
-import { ClassCard } from "../../../../shared/ui/class_card.tsx";
+import { ClassCard } from "../../../../shared/ui/cards/class_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 
 function getStatusLabel(status: string): string {

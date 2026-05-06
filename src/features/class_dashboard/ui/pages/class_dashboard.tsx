@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
-import {UserCard} from "../../../../shared/ui/user_card.tsx";
-import {NoteCard} from "../../../../shared/ui/note_card.tsx";
+import {UserCard} from "../../../../shared/ui/cards/user_card.tsx";
+import {NoteCard} from "../../../../shared/ui/cards/note_card.tsx";
 import {useClassDashboardStore} from "../../store/class_dashboard_store.ts";
-import {ComplaintCard} from "../../../../shared/ui/complaint_card.tsx";
+import {ComplaintCard} from "../../../../shared/ui/cards/complaint_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import {ChangeTeacherModal} from "../components/change_teacher_modal.tsx";
 

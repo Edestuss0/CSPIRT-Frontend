@@ -1,11 +1,9 @@
 import { type FormEvent, useEffect, useState } from "react";
 import {type UserType} from "../../../../shared/entities/user/types/user_types";
-import {changeClassTeacherDto, type changeClassTeacherType} from "../../../../shared/entities/class/api/class_api.ts";
-
 interface ChangeTeacherProps {
     isOpen: boolean;
     onClose: () => void;
-    onChangeTeacher: (dto: changeClassTeacherType) => Promise<void>;
+    onChangeTeacher: (teacher: string) => Promise<void>;
     staff: UserType[];
     className: string;
 }
@@ -44,30 +42,15 @@ export function ChangeTeacherModal({isOpen, onClose, onChangeTeacher, staff, cla
 
         const formData = new FormData(event.currentTarget);
 
-        const teacher = formData.get("teacher");
+        const teacher = String(formData.get("teacher") ?? "");
         
-        if (!teacher) {
-            return;
-        }
-
-        const dto = {
-            TeacherLogin: teacher
-        };
-
-        const parsed = changeClassTeacherDto.safeParse(dto);
-
-        if (!parsed.success) {
-            console.log(parsed.error.format());
-            setFormError("Проверьте правильность заполнения полей");
-            return;
-        }
-
         try {
             setIsSubmitting(true);
-            await onChangeTeacher(parsed.data);
+            await onChangeTeacher(teacher);
         } finally {
             setIsSubmitting(false);
         }
+        
     }
 
     return (
@@ -120,6 +103,7 @@ export function ChangeTeacherModal({isOpen, onClose, onChangeTeacher, staff, cla
                                     name="teacher"
                                     className="select"
                                     defaultValue=""
+                                    required
                                 >
                                     
                                     <option value="" disabled>

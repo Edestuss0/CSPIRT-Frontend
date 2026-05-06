@@ -11,12 +11,6 @@ const classUsersResponseSchema = z.object({
     Users: z.array(userSchema),
 });
 
-export const changeClassTeacherDto = z.object({
-    TeacherLogin: z.string()
-});
-
-export type changeClassTeacherType = z.infer<typeof changeClassTeacherDto>
-
 export const classTeacherResponseSchema = z.object({
     Teacher: userSchema
 });
@@ -72,8 +66,10 @@ export const classApi = {
         return parsed.data.Users;
     },
     
-    async changeClassTeacher(id: number, dto: changeClassTeacherType): Promise<boolean> {
-        const response = await client.patch(`/api/classes/${id}/teacher`, dto, true);
+    async changeClassTeacher(id: number, teacher: string): Promise<boolean> {
+        const response = await client.patch(`/api/classes/${id}/teacher`, {
+            TeacherLogin: teacher
+        }, true);
         
         if (!response.checkStatus()) {
             throw new Error("Ошибка при изменении классного руководителя");

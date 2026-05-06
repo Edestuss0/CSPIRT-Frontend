@@ -1,4 +1,4 @@
-import type { ClassType } from "../entities/class/types/class_types.ts";
+import type { ClassType } from "../../entities/class/types/class_types.ts";
 
 interface Props {
     item: ClassType;

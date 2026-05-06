@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import type { NoteType } from "../entities/notes/types/notes_types.ts";
-import type {UserRole} from "../entities/user/types/user_types.ts";
+import type { NoteType } from "../../entities/notes/types/notes_types.ts";
+import type {UserRole} from "../../entities/user/types/user_types.ts";
 
 interface Props {
     item: NoteType;

@@ -1,7 +1,7 @@
 import {create} from "zustand"
 import type {UserType} from "../../../shared/entities/user/types/user_types.ts";
 import type {NoteType} from "../../../shared/entities/notes/types/notes_types.ts";
-import {type changeClassTeacherType, classApi} from "../../../shared/entities/class/api/class_api.ts";
+import {classApi} from "../../../shared/entities/class/api/class_api.ts";
 import {NotesApi} from "../../../shared/entities/notes/api/notes_api.ts";
 import type {ComplaintType} from "../../../shared/entities/complaints/types/complaints_types.ts";
 import {ComplaintsApi} from "../../../shared/entities/complaints/api/complaints_api.ts";
@@ -24,7 +24,7 @@ interface State {
     deleteNote: (id: number) => Promise<void>
     getComplaints: (id: number) => Promise<void>
     deleteComplaint: (id: number) => Promise<void>
-    changeTeacher: (id: number, dto: changeClassTeacherType) => Promise<void>
+    changeTeacher: (id: number, teacher: string) => Promise<void>
     getStaff: () => Promise<void>
     getClassTeacher: (id: number) => Promise<void>
     deleteClass: (id: number) => Promise<void>
@@ -112,11 +112,11 @@ export const useClassDashboardStore = create<State>()((set) => ({
         }
     },
     
-    changeTeacher: async (id: number, dto: changeClassTeacherType) => {
+    changeTeacher: async (id: number, teacher: string) => {
         set({status: "loading"});
         
         try {
-            await classApi.changeClassTeacher(id, dto);
+            await classApi.changeClassTeacher(id, teacher);
             set({status: "idle", message: "Классный руководитель успешно изменён", error: null});
         } catch (e) {
             set({

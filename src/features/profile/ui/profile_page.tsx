@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "../../auth/store/auth_store";
 import { UserRoles } from "../../../shared/entities/user/types/user_types";
-import { NoteCard } from "../../../shared/ui/note_card";
-import { ComplaintCard } from "../../../shared/ui/complaint_card";
+import { NoteCard } from "../../../shared/ui/cards/note_card.tsx";
+import { ComplaintCard } from "../../../shared/ui/cards/complaint_card.tsx";
 
 export function ProfilePage() {
     const navigate = useNavigate();

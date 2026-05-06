@@ -2,8 +2,8 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { UserRoles } from "../../../../shared/entities/user/types/user_types";
-import { NoteCard } from "../../../../shared/ui/note_card";
-import { ComplaintCard } from "../../../../shared/ui/complaint_card";
+import { NoteCard } from "../../../../shared/ui/cards/note_card.tsx";
+import { ComplaintCard } from "../../../../shared/ui/cards/complaint_card.tsx";
 
 import { useAuthStore } from "../../../auth/store/auth_store";
 import { useUserStore } from "../../store/user_store";
@@ -11,6 +11,7 @@ import { useUserStore } from "../../store/user_store";
 import { noteAddDto } from "../../../../shared/entities/notes/api/notes_api";
 import { complaintAddDto } from "../../../../shared/entities/complaints/api/complaints_api";
 import { ratingChangeDTO } from "../../../../shared/entities/rating/api/rating_api";
+import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 
 export function UserPage() {
     const navigate = useNavigate();
@@ -491,63 +492,20 @@ export function UserPage() {
                 )}
 
                 {isDeleteUserModalOpen && (
-                    <div className="modal-backdrop" onMouseDown={() => setIsDeleteUserModalOpen(false)}>
-                        <section
-                            className="modal modal--confirm"
-                            role="dialog"
-                            aria-modal="true"
-                            aria-labelledby="delete-event-title"
-                            onMouseDown={(event) => event.stopPropagation()}
-                        >
-                            <div className="modal__header">
-                                <div>
-                                    <h2 className="modal__title" id="delete-event-title">
-                                        Удалить пользователя?
-                                    </h2>
-
-                                    <p className="modal__description">
-                                        Это действие удалит пользователя '{user.User.Name} {user.User.LastName}'. Отменить удаление будет нельзя.
-                                    </p>
-                                </div>
-
-                                <button
-                                    className="modal__close"
-                                    type="button"
-                                    onClick={() => setIsDeleteUserModalOpen(false)}
-                                    aria-label="Закрыть окно подтверждения"
-                                    disabled={isLoading}
-                                >
-                                    ×
-                                </button>
-                            </div>
-
-                            <div className="modal__footer">
-                                <button
-                                    className="btn btn--secondary"
-                                    type="button"
-                                    onClick={() => setIsDeleteUserModalOpen(false)}
-                                    disabled={isLoading}
-                                >
-                                    Отмена
-                                </button>
-
-                                <button
-                                    className="btn btn--danger"
-                                    type="button"
-                                    disabled={isLoading}
-                                    onClick={async () => {
-                                        if (id !== null) {
-                                            await deleteUser(userId);
-                                            setIsDeleteUserModalOpen(false);
-                                            navigate(-1);
-                                        }
-                                    }}
-                                >
-                                    {isLoading ? "Удаление..." : "Удалить"}
-                                </button>
-                            </div>
-                        </section>
-                    </div>
+                    <ConfirmModal
+                        content={`Это действие удалит пользователя "${user.User.Name} ${user.User.LastName}". Отменить удаление будет нельзя.`}
+                        onClose={() => setIsDeleteUserModalOpen(false)}
+                        onConfirm={async () => {
+                            if (id !== null) {
+                                await deleteUser(userId);
+                                setIsDeleteUserModalOpen(false);
+                                navigate(-1);
+                            }
+                        }}
+                        isOpen={isDeleteUserModalOpen}
+                        buttonContent={"Удалить"}
+                        isDanger={true}
+                    />
                 )}
                 
             </section>

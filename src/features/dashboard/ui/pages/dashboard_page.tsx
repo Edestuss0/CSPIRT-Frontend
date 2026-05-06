@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "../../../auth/store/auth_store";
 import { useDashboardStore } from "../../store/dashboard_store";
-import { ClassCard } from "../../../../shared/ui/class_card";
+import { ClassCard } from "../../../../shared/ui/cards/class_card.tsx";
 import { AddUserModal } from "../../../add_user/ui/components/add_user_modal.tsx";
-import {StaffCard} from "../../../../shared/ui/staff_card.tsx";
+import {StaffCard} from "../../../../shared/ui/cards/staff_card.tsx";
 import {AddClassModal} from "../../../add_class/ui/components/add_class_modal.tsx";
-import {EventCard} from "../../../../shared/ui/event_card.tsx";
+import {EventCard} from "../../../../shared/ui/cards/event_card.tsx";
 import {AddEventModal} from "../../../add_event/ui/components/add_event_modal.tsx";
 
 type Lists = "classes" | "events" | "staff";
