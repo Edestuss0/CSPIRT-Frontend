@@ -6,7 +6,7 @@ import type {UserRole} from "../entities/user/types/user_types.ts";
 interface Props {
     item: ComplaintType;
     onDelete?: () => void;
-    role: UserRole;
+    role?: UserRole;
 }
 
 export function ComplaintCard({ item, onDelete, role }: Props) {

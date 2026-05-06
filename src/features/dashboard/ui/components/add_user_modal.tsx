@@ -1,13 +1,12 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { ClassType } from "../../../../shared/entities/class/types/class_types";
-import {type UserRole, UserRoles} from "../../../../shared/entities/user/types/user_types";
-import { addUserDto, type addUserType } from "../../../../shared/entities/user/api/user_api";
+import {type addUserFormType, type UserRole, UserRoles} from "../../../../shared/entities/user/types/user_types";
 
 interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
     classes: ClassType[];
-    onAddUser: (dto: addUserType) => Promise<void>;
+    onAddUser: (dto: addUserFormType) => Promise<void>;
 }
 
 export function AddUserModal({
@@ -50,40 +49,25 @@ export function AddUserModal({
         setFormError(null);
 
         const formData = new FormData(event.currentTarget);
-
-        const name = String(formData.get("name") ?? "").trim();
-        const lastName = String(formData.get("lastName") ?? "").trim();
-        const login = String(formData.get("login") ?? "").trim();
-        const password = String(formData.get("password") ?? "").trim();
-        const classIdRaw = String(formData.get("classId") ?? "");
-        const role = String(formData.get("role") ?? "User").trim() as UserRole;
         
-        const dto = {
-            Name: name,
-            LastName: lastName,
+        const form = {
+            Name: String(formData.get("name") ?? "").trim(),
+            LastName: String(formData.get("lastName") ?? "").trim(),
             FullName: [
                 {
-                    Name: name,
-                    LastName: lastName,
+                    Name: String(formData.get("name") ?? "").trim(),
+                    LastName: String(formData.get("lastName") ?? "").trim(),
                 },
             ],
-            Password: password,
-            ClassID: shouldShowClass ? Number(classIdRaw) : 0,
-            Login: login,
-            Role: role,
+            Password: String(formData.get("password") ?? "").trim(),
+            ClassID: shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0,
+            Login: String(formData.get("login") ?? "").trim(),
+            Role: String(formData.get("role") ?? "User").trim() as UserRole,
         };
-
-        const parsed = addUserDto.safeParse(dto);
-
-        if (!parsed.success) {
-            console.log(parsed.error.format());
-            setFormError("Проверьте правильность заполнения полей");
-            return;
-        }
-
+        
         try {
             setIsSubmitting(true);
-            await onAddUser(parsed.data);
+            await onAddUser(form);
         } finally {
             setIsSubmitting(false);
         }

@@ -63,7 +63,9 @@ export function EventClassPlayersPage() {
     }, [numericEventId, getEventById]);
 
     useEffect(() => {
-        void getClassById(numericClassId);
+        if (numericClassId) {
+            void getClassById(numericClassId);
+        } 
     }, [getClassById]);
 
     const classItem = useEventStore((state) => state.class);
@@ -89,11 +91,7 @@ export function EventClassPlayersPage() {
 
         return new Set(ids);
     }, [event]);
-
-    /**
-     * ВАЖНО:
-     * Берём только тех участников ивента, которые есть среди учеников текущего класса.
-     */
+    
     const initialSelectedUserIds = useMemo(() => {
         return students
             .filter((student) => eventPlayerIdSet.has(student.Id))
@@ -203,23 +201,20 @@ export function EventClassPlayersPage() {
     }
 
     async function handleSaveChanges() {
+        
+        if (!numericEventId) {
+            return;
+        } 
+        
         setFormError(null);
 
         const initialSet = new Set(initialSelectedUserIds);
         const selectedSet = new Set(selectedUserIds);
-
-        /**
-         * Добавляем только учеников текущего класса,
-         * которых раньше не было среди участников.
-         */
+        
         const addedIds = selectedUserIds.filter((id) => {
             return studentIdSet.has(id) && !initialSet.has(id);
         });
-
-        /**
-         * Удаляем только учеников текущего класса,
-         * которые были участниками, но теперь сняты.
-         */
+        
         const removedIds = initialSelectedUserIds.filter((id) => {
             return studentIdSet.has(id) && !selectedSet.has(id);
         });
@@ -229,7 +224,7 @@ export function EventClassPlayersPage() {
             return;
         }
 
-        if (addedIds.length > 0) {
+        if (addedIds.length > 0 && numericEventId) {
             const parsedAdd = addEventPlayersSchema.safeParse({
                 playerIds: addedIds,
             });
@@ -243,7 +238,7 @@ export function EventClassPlayersPage() {
             await addPlayersToEvent(numericEventId, parsedAdd.data);
         }
 
-        if (removedIds.length > 0) {
+        if (removedIds.length > 0 && numericEventId) {
             const parsedRemove = addEventPlayersSchema.safeParse({
                 playerIds: removedIds,
             });
