@@ -6,6 +6,7 @@ import {useClassDashboardStore} from "../../store/class_dashboard_store.ts";
 import {ComplaintCard} from "../../../../shared/ui/cards/complaint_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import {ChangeTeacherModal} from "../components/change_teacher_modal.tsx";
+import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 
 type SelectedList = | "users" | "notes" | "complaints";
 
@@ -202,64 +203,23 @@ export function ClassDashboard() {
                 setChangeTeacherModalOpen(false);
             }} staff={staff} className={name ?? ""}/>
 
+
             {isDeleteClassModalOpen && (
-                <div className="modal-backdrop" onMouseDown={() => setDeleteClassModalOpen(false)}>
-                    <section
-                        className="modal modal--confirm"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="delete-event-title"
-                        onMouseDown={(event) => event.stopPropagation()}
-                    >
-                        <div className="modal__header">
-                            <div>
-                                <h2 className="modal__title" id="delete-event-title">
-                                    Удалить класс?
-                                </h2>
-
-                                <p className="modal__description">
-                                    Это действие удалит мероприятие {name} класс. Отменить удаление будет нельзя.
-                                </p>
-                            </div>
-
-                            <button
-                                className="modal__close"
-                                type="button"
-                                onClick={() => setDeleteClassModalOpen(false)}
-                                aria-label="Закрыть окно подтверждения"
-                                disabled={isLoading}
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <div className="modal__footer">
-                            <button
-                                className="btn btn--secondary"
-                                type="button"
-                                onClick={() => setDeleteClassModalOpen(false)}
-                                disabled={isLoading}
-                            >
-                                Отмена
-                            </button>
-
-                            <button
-                                className="btn btn--danger"
-                                type="button"
-                                disabled={isLoading}
-                                onClick={async () => {
-                                    if (classId !== null) {
-                                        await deleteClass(classId);
-                                        setDeleteClassModalOpen(false);
-                                        navigate(-1);
-                                    }
-                                }}
-                            >
-                                {isLoading ? "Удаление..." : "Удалить"}
-                            </button>
-                        </div>
-                    </section>
-                </div>
+                <ConfirmModal
+                    title={"Удалить класс?"}
+                    content={`Это действие удалит мероприятие ${name} класс. Отменить удаление будет нельзя.`}
+                    onConfirm={async () => {
+                        if (classId !== null) {
+                            await deleteClass(classId);
+                            setDeleteClassModalOpen(false);
+                            navigate(-1);
+                        }
+                    }}
+                    isOpen={isDeleteClassModalOpen}
+                    onClose={() => setDeleteClassModalOpen(false)}
+                    buttonContent={"Удалить"}
+                    isDanger={true}
+                />
             )}
             
         </main>
