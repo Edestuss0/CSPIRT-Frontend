@@ -49,4 +49,5 @@ export type addUserFormType = {
     ClassID: number;
     Login: string;
     Role: UserRole;
+    Rating: number;
 }

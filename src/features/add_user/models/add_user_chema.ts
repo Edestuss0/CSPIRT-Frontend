@@ -1,4 +1,4 @@
-import {fullNameSchema} from "../../../../shared/entities/user/types/user_types.ts";
+import {fullNameSchema} from "../../../shared/entities/user/types/user_types.ts";
 import {z} from "zod";
 
 export const addUserFormSchema = z.object({
@@ -9,6 +9,7 @@ export const addUserFormSchema = z.object({
     ClassID: z.number().int().nonnegative(),
     Login: z.string().min(2).max(20),
     Role: z.enum(["User", "Helper", "Admin", "Owner"]),
+    Rating: z.number().int().min(0).max(5000)
 }).superRefine((data, ctx) => {
     const roleRequiresClass = data.Role === "User" || data.Role === "Helper";
 

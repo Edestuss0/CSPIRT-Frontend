@@ -1,25 +1,14 @@
 import {ApiClient} from "../../../../core/api/api_client.ts";
-import {EventSchema, type EventType} from "../types/events_types.ts";
+import {type AddEventFormType, EventSchema, type EventType} from "../types/events_types.ts";
 import {z} from "zod";
 
 const client = new ApiClient();
-
-export const addEventSchema = z.object({
-    Title: z.string(),
-    Description: z.string(),
-    StartedAt: z.string(),
-    Classes: z.array(z.number().int().positive()),
-    RatingReward: z.number().int().positive(),
-});
 
 export const addEventPlayersSchema = z.object({
    playerIds: z.array(z.number().int().positive()).min(1), 
 });
 
 export type AddEventPlayersType = z.infer<typeof addEventPlayersSchema>;
-
-
-export type addEventType = z.infer<typeof addEventSchema>;
 
 export const EventsApi = {
     async getEvents(): Promise<EventType[]> {
@@ -54,7 +43,7 @@ export const EventsApi = {
         return parsed.data;
     },
     
-    async addEvent(dto: addEventType): Promise<boolean> {
+    async addEvent(dto: AddEventFormType): Promise<boolean> {
         const response = await client.patch('/api/event/add', dto,true);
         
         if (!response.checkStatus()) {

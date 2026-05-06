@@ -1,24 +1,18 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { ClassType } from "../../../../shared/entities/class/types/class_types.ts";
-import {
-    addEventSchema,
-    type addEventType,
-} from "../../../../shared/entities/events/api/events_api.ts";
+import {useAddEventStore} from "../../store/add_event_store.ts";
+import type {addEventFormValues} from "../../model/add_event_usecase.ts";
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
-    onEventAdd: (dto: addEventType) => Promise<void>;
+    onEventAdd: () => Promise<void>;
     classes: ClassType[];
 }
 
-export function AddEventModal({
-                                  isOpen,
-                                  onClose,
-                                  onEventAdd,
-                                  classes,
-                              }: Props) {
-    const [formError, setFormError] = useState<string | null>(null);
+export function AddEventModal({isOpen, onClose, onEventAdd, classes,}: Props) {
+    const error = useAddEventStore((state) => state.error);
+    const addEvent = useAddEventStore((state) => state.addEvent);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedClassIds, setSelectedClassIds] = useState<number[]>([]);
     const [isClassesDropdownOpen, setIsClassesDropdownOpen] = useState(false);
@@ -63,44 +57,34 @@ export function AddEventModal({
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        setFormError(null);
-
-        const formData = new FormData(event.currentTarget);
-
-        const title = String(formData.get("title") ?? "").trim();
-        const description = String(formData.get("description") ?? "").trim();
-        const startedAtRaw = String(formData.get("startedAt") ?? "").trim();
-        const rating = Number(formData.get("rating") ?? "");
-
-        const dto = {
-            Title: title,
-            Description: description,
-            StartedAt: startedAtRaw.replace("T", " "),
-            Classes: selectedClassIds,
-            RatingReward: rating,
-        };
-
-        const parsed = addEventSchema.safeParse(dto);
-
-        if (!parsed.success) {
-            console.log(parsed.error.issues);
-            setFormError("Проверьте правильность заполнения полей");
+        
+        if (selectedClassIds.length === 0) {
+            useAddEventStore.setState({error: "Выберите классы, участвующие в мероприятии"});
             return;
         }
+        
+
+        const formData = new FormData(event.currentTarget);
+        const startedAtRaw = String(formData.get("startedAt") ?? "").trim();
+        
+        const dto: addEventFormValues = {
+            title: String(formData.get("title") ?? "").trim(),
+            description: String(formData.get("description") ?? "").trim(),
+            started_at: startedAtRaw.replace("T", " "),
+            classes: selectedClassIds,
+            rating_reward: Number(formData.get("rating") ?? ""),
+        };
 
         try {
             setIsSubmitting(true);
-            await onEventAdd(parsed.data);
+            const response = await addEvent(dto);
+            if (response) {
+                await onEventAdd();
+            }
 
             setSelectedClassIds([]);
             setIsClassesDropdownOpen(false);
             onClose();
-        } catch (error) {
-            setFormError(
-                error instanceof Error
-                    ? error.message
-                    : "Ошибка при добавлении мероприятия"
-            );
         } finally {
             setIsSubmitting(false);
         }
@@ -138,9 +122,9 @@ export function AddEventModal({
 
                 <form className="form" onSubmit={handleSubmit}>
                     <div className="modal__body">
-                        {formError && (
+                        {error && (
                             <div className="alert alert--danger">
-                                {formError}
+                                {error}
                             </div>
                         )}
 
@@ -155,6 +139,8 @@ export function AddEventModal({
                                     name="title"
                                     type="text"
                                     className="input"
+                                    min={4}
+                                    max={64}
                                     placeholder="Например: Школьная олимпиада"
                                     required
                                 />
@@ -184,6 +170,7 @@ export function AddEventModal({
                                 id="eventDescription"
                                 name="description"
                                 className="input"
+                                minLength={10}
                                 placeholder="Кратко опишите мероприятие"
                                 rows={4}
                                 required

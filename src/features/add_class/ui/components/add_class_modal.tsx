@@ -1,16 +1,18 @@
 import { type FormEvent, useEffect, useState } from "react";
-import {type UserType} from "../../../../shared/entities/user/types/user_types";
-import {addClassDto, type addClassType} from "../../../../shared/entities/class/api/class_api.ts";
+import {type UserType} from "../../../../shared/entities/user/types/user_types.ts";
+import {useAddClassStore} from "../../store/add_class_store.ts";
+import type {addClassFormValues} from "../../models/add_class_usecase.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAddClass: (dto: addClassType) => Promise<void>;
+    onAddClass: () => Promise<void>;
     staff: UserType[];
 }
 
 export function AddClassModal({isOpen, onClose, onAddClass, staff}: AddUserModalProps) {
-    const [formError, setFormError] = useState<string | null>(null);
+    const error = useAddClassStore((state) => state.error);
+    const addClass = useAddClassStore((state) => state.addClass);
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     useEffect(() => {
@@ -41,29 +43,20 @@ export function AddClassModal({isOpen, onClose, onAddClass, staff}: AddUserModal
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        setFormError(null);
 
         const formData = new FormData(event.currentTarget);
 
-        const name = String(formData.get("name") ?? "").trim();
-        const teacher = String(formData.get("teacher") ?? "").trim();
-
-        const dto = {
-            Name: name,
-            TeacherLogin: teacher,
+        const dto: addClassFormValues = {
+            name: String(formData.get("name") ?? "").trim(),
+            teacher_login: String(formData.get("teacher") ?? "").trim(),
         };
-
-        const parsed = addClassDto.safeParse(dto);
-
-        if (!parsed.success) {
-            console.log(parsed.error.format());
-            setFormError("Проверьте правильность заполнения полей");
-            return;
-        }
 
         try {
             setIsSubmitting(true);
-            await onAddClass(parsed.data);
+            const response = await addClass(dto);
+            if (response) {
+                await onAddClass();
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -101,9 +94,9 @@ export function AddClassModal({isOpen, onClose, onAddClass, staff}: AddUserModal
 
                 <form className="form" onSubmit={handleSubmit}>
                     <div className="modal__body">
-                        {formError && (
+                        {error && (
                             <div className="alert alert--danger">
-                                {formError}
+                                {error}
                             </div>
                         )}
 

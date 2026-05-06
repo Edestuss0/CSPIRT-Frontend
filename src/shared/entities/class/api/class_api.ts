@@ -1,6 +1,6 @@
 import {z} from 'zod'
 import {ApiClient} from "../../../../core/api/api_client.ts";
-import {classSchema, type ClassType} from "../types/class_types.ts";
+import {type addClassFormType, classSchema, type ClassType} from "../types/class_types.ts";
 import {userSchema, type UserType} from "../../user/types/user_types.ts";
 
 const classesResponseSchema = z.object({
@@ -20,13 +20,6 @@ export type changeClassTeacherType = z.infer<typeof changeClassTeacherDto>
 export const classTeacherResponseSchema = z.object({
     Teacher: userSchema
 });
-
-export const addClassDto = z.object({
-    Name: z.string(),
-    TeacherLogin: z.string(),
-});
-
-export type addClassType = z.infer<typeof addClassDto>
 
 const client = new ApiClient();
 
@@ -104,7 +97,7 @@ export const classApi = {
         return parsed.data.Teacher;
     },
     
-    async addClass(dto: addClassType): Promise<boolean> {
+    async addClass(dto: addClassFormType): Promise<boolean> {
         const response = await client.patch(`/api/classes/add`, dto, true);
         
         if (!response.checkStatus()) {

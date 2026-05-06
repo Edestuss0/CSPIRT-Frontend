@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../auth/store/auth_store";
 import { useDashboardStore } from "../../store/dashboard_store";
 import { ClassCard } from "../../../../shared/ui/class_card";
-import { AddUserModal } from "../components/add_user_modal.tsx";
+import { AddUserModal } from "../../../add_user/ui/components/add_user_modal.tsx";
 import {StaffCard} from "../../../../shared/ui/staff_card.tsx";
-import {AddClassModal} from "../components/add_class_modal.tsx";
+import {AddClassModal} from "../../../add_class/ui/components/add_class_modal.tsx";
 import {EventCard} from "../../../../shared/ui/event_card.tsx";
-import {AddEventModal} from "../components/add_event_modal.tsx";
+import {AddEventModal} from "../../../add_event/ui/components/add_event_modal.tsx";
 
 type Lists = "classes" | "events" | "staff";
 
@@ -23,10 +23,7 @@ export function DashboardPage() {
     const events = useDashboardStore((state) => state.events);
     const getStaff = useDashboardStore((state) => state.getStaff);
     const getClasses = useDashboardStore((state) => state.getClasses);
-    const addUser = useDashboardStore((state) => state.addUser);
-    const addClass = useDashboardStore((state) => state.addClass);
     const getEvents = useDashboardStore((state) => state.getEvents);
-    const addEvent = useDashboardStore((state) => state.addEvent);
 
     const isLoading = status === "loading";
 
@@ -205,22 +202,19 @@ export function DashboardPage() {
                     isOpen={isAddUserModalOpen}
                     onClose={() => setIsAddUserModalOpen(false)}
                     classes={classes}
-                    onAddUser={async (dto) => {
-                        await addUser(dto);
+                    onAddUser={async () => {
                         await getClasses();
                         setIsAddUserModalOpen(false);
                     }}
                 />
                 
-                <AddClassModal isOpen={isAddClassModalOpen} onClose={() => setIsAddClassModalOpen(false)} onAddClass={async (dto) => {
-                    await addClass(dto);
+                <AddClassModal isOpen={isAddClassModalOpen} onClose={() => setIsAddClassModalOpen(false)} onAddClass={async () => {
                     await getClasses();
                     setIsAddClassModalOpen(false);
                 }} staff={staff}/>
                 
-                <AddEventModal isOpen={isAddEventModalOpen} onClose={() => setIsAddEventModalOpen(false)} onEventAdd={async (dto) => {
-                 await addEvent(dto);
-                 await getEvents();
+                <AddEventModal isOpen={isAddEventModalOpen} onClose={() => setIsAddEventModalOpen(false)} onEventAdd={async () => {
+                 await getEvents(); 
                  setIsAddEventModalOpen(false);
                 }} classes={classes}/>
             </section>

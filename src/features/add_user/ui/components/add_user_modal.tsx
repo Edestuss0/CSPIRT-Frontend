@@ -1,21 +1,19 @@
 import { type FormEvent, useEffect, useState } from "react";
-import type { ClassType } from "../../../../shared/entities/class/types/class_types";
-import {type addUserFormType, type UserRole, UserRoles} from "../../../../shared/entities/user/types/user_types";
+import type { ClassType } from "../../../../shared/entities/class/types/class_types.ts";
+import {type UserRole, UserRoles} from "../../../../shared/entities/user/types/user_types.ts";
+import type {addUserValues} from "../../models/add_user_usecase.ts";
+import {useAddUserStore} from "../../store/add_user_store.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
     classes: ClassType[];
-    onAddUser: (dto: addUserFormType) => Promise<void>;
+    onAddUser: () => void;
 }
 
-export function AddUserModal({
-                                 isOpen,
-                                 onClose,
-                                 classes,
-                                 onAddUser,
-                             }: AddUserModalProps) {
-    const [formError, setFormError] = useState<string | null>(null);
+export function AddUserModal({isOpen, onClose, classes, onAddUser}: AddUserModalProps) {
+    const error = useAddUserStore((state) => state.error);
+    const addUser = useAddUserStore((state) => state.addUser);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole>("User");
     const shouldShowClass = selectedRole === "User" || selectedRole === "Helper";
@@ -46,28 +44,24 @@ export function AddUserModal({
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        setFormError(null);
 
         const formData = new FormData(event.currentTarget);
         
-        const form = {
-            Name: String(formData.get("name") ?? "").trim(),
-            LastName: String(formData.get("lastName") ?? "").trim(),
-            FullName: [
-                {
-                    Name: String(formData.get("name") ?? "").trim(),
-                    LastName: String(formData.get("lastName") ?? "").trim(),
-                },
-            ],
-            Password: String(formData.get("password") ?? "").trim(),
-            ClassID: shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0,
-            Login: String(formData.get("login") ?? "").trim(),
-            Role: String(formData.get("role") ?? "User").trim() as UserRole,
+        const form: addUserValues = {
+            name: String(formData.get("name") ?? "").trim(),
+            lastname: String(formData.get("lastName") ?? "").trim(),
+            password: String(formData.get("password") ?? "").trim(),
+            classId: shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0,
+            login: String(formData.get("login") ?? "").trim(),
+            role: String(formData.get("role") ?? "User").trim() as UserRole,
         };
         
         try {
             setIsSubmitting(true);
-            await onAddUser(form);
+            const response = await addUser(form);
+            if (response) {
+                onAddUser();
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -105,9 +99,9 @@ export function AddUserModal({
 
                 <form className="form" onSubmit={handleSubmit}>
                     <div className="modal__body">
-                        {formError && (
+                        {error && (
                             <div className="alert alert--danger">
-                                {formError}
+                                {error}
                             </div>
                         )}
 
