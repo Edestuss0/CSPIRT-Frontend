@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import {createPortal} from "react-dom";
 
 interface ConfirmModalProps {
     title?: string;
@@ -11,15 +12,7 @@ interface ConfirmModalProps {
     onConfirm: () => Promise<void>;
 }
 
-export function ConfirmModal({
-                                 title = "Подтвердите действие",
-                                 isOpen,
-                                 onClose,
-                                 content,
-                                 buttonContent,
-                                 onConfirm,
-                                 isDanger = false,
-                             }: ConfirmModalProps) {
+export function ConfirmModal({title = "Подтвердите действие", isOpen, onClose, content, buttonContent, onConfirm, isDanger = false,}: ConfirmModalProps) {
     useEffect(() => {
         if (!isOpen) {
             return;
@@ -44,7 +37,7 @@ export function ConfirmModal({
         return null;
     }
 
-    return (
+    return createPortal(
         <div className="modal-backdrop" onMouseDown={onClose}>
             <section
                 className="modal modal--confirm"
@@ -92,6 +85,7 @@ export function ConfirmModal({
                     </button>
                 </div>
             </section>
-        </div>
+        </div>,
+        document.body
     );
 }

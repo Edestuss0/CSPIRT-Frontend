@@ -5,7 +5,10 @@ import {classApi} from "../../../shared/entities/class/api/class_api.ts";
 import {NotesApi} from "../../../shared/entities/notes/api/notes_api.ts";
 import type {ComplaintType} from "../../../shared/entities/complaints/types/complaints_types.ts";
 import {ComplaintsApi} from "../../../shared/entities/complaints/api/complaints_api.ts";
-import {UserApi} from "../../../shared/entities/user/api/user_api.ts"; 
+import {UserApi} from "../../../shared/entities/user/api/user_api.ts";
+import {ScheduleApi} from "../../../shared/entities/schedule/api/schedule_api.ts";
+import {ScheduleService} from "../../../shared/entities/schedule/service/schedule_service.ts";
+import type {ScheduleModelType} from "../../../shared/entities/schedule/types/schedule_types.ts"; 
 
 export type ClassDashboardStatus = "loading" | "error" | "idle";
 
@@ -18,6 +21,7 @@ interface State {
     complaints: ComplaintType[];
     staff: UserType[];
     teacher: UserType | null;
+    schedule: ScheduleModelType | null;
     
     getUsersByClass: (id: number) => Promise<void>
     getNotesByClass: (id: number) => Promise<void>
@@ -28,6 +32,9 @@ interface State {
     getStaff: () => Promise<void>
     getClassTeacher: (id: number) => Promise<void>
     deleteClass: (id: number) => Promise<void>
+    getClassSchedule: (id: number, type: "base" | "current") => Promise<void>
+    deleteSchedule: (id: number, type: "base" | "current") => Promise<void>
+    rolloverSchedule: (id: number) => Promise<void>
 }
 
 export const useClassDashboardStore = create<State>()((set) => ({
@@ -39,6 +46,7 @@ export const useClassDashboardStore = create<State>()((set) => ({
     complaints: [],
     staff: [],
     teacher: null,
+    schedule: null,
 
     getUsersByClass: async (id: number) => {
         set({status: "loading"});
@@ -159,6 +167,49 @@ export const useClassDashboardStore = create<State>()((set) => ({
         
         try {
             await classApi.deleteClass(id);
+            set({status: "idle", error: null});
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+        }
+    },
+    
+    getClassSchedule: async (id: number, type: "base" | "current") => {
+        set({status: "loading"});
+
+        try {
+            const response = await ScheduleApi.getCurrentScheduleByClass(id, type);
+            
+            const schedule = ScheduleService.sortSchedule(response);
+            
+            set({status: "idle", error: null, schedule: schedule});
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+        }
+    },
+    
+    deleteSchedule: async (id: number, type: "base" | "current") => {
+        set({status: "loading"});
+        try {
+            await ScheduleApi.deleteSchedule(id, type);
+            set({status: "idle", error: null});
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+        }
+    },
+    
+    rolloverSchedule: async (id: number) => {
+        set({status: "loading"});
+        try {
+            await ScheduleApi.rolloverSchedule(id);
             set({status: "idle", error: null});
         } catch (e) {
             set({

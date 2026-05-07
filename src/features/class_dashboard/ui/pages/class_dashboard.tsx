@@ -7,8 +7,9 @@ import {ComplaintCard} from "../../../../shared/ui/cards/complaint_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import {ChangeTeacherModal} from "../components/change_teacher_modal.tsx";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
+import {ScheduleDayCard} from "../../../../shared/ui/cards/schedule_day_card.tsx";
 
-type SelectedList = | "users" | "notes" | "complaints";
+type SelectedList = | "users" | "notes" | "complaints" | "schedule" | "baseschedule";
 
 export function ClassDashboard() {
     const navigate = useNavigate();
@@ -29,18 +30,22 @@ export function ClassDashboard() {
     const getNotes = useClassDashboardStore((state) => state.getNotesByClass);
     const deleteNote = useClassDashboardStore((state) => state.deleteNote);
     const complaints = useClassDashboardStore((state) => state.complaints);
+    const schedule = useClassDashboardStore((state) => state.schedule);
     const getComplaints = useClassDashboardStore((state) => state.getComplaints);
     const deleteComplaint = useClassDashboardStore((state) => state.deleteComplaint);
     const changeTeacher = useClassDashboardStore((state) => state.changeTeacher);
     const getStaff = useClassDashboardStore((state) => state.getStaff);
     const getClassTeacher = useClassDashboardStore((state) => state.getClassTeacher);
     const deleteClass = useClassDashboardStore((state) => state.deleteClass);
+    const getSchedule = useClassDashboardStore((state) => state.getClassSchedule);
+    const rolloverSchedule = useClassDashboardStore((state) => state.rolloverSchedule);
     
     const isLoading = status === "loading";
     
     const [selectedList, setSelectedList] = useState<SelectedList>("users"); 
     const [isChangeTeacherModalOpen, setChangeTeacherModalOpen] = useState(false);
     const [isDeleteClassModalOpen, setDeleteClassModalOpen] = useState(false);
+    const [isRolloverModalOpen, setRolloverModalOpen] = useState(false);
         
     useEffect(() => {
         if (classId !== null) {
@@ -63,11 +68,11 @@ export function ClassDashboard() {
                                     setChangeTeacherModalOpen(!isChangeTeacherModalOpen);
                                 }}>Изменить классного руководителя
                                 </button>
-                                {/*<button className={"btn btn--danger"} onClick={async () => {*/}
-                                {/*    await getStaff();*/}
-                                {/*    setDeleteClassModalOpen(!isDeleteClassModalOpen)*/}
-                                {/*}}>Удалить класс*/}
-                                {/*</button>*/}
+                                <button className={"btn btn--danger"} onClick={async () => {
+                                    await getStaff();
+                                    setDeleteClassModalOpen(!isDeleteClassModalOpen)
+                                }}>Удалить класс
+                                </button>
                             </div>
                         )}
                     </div>
@@ -81,20 +86,50 @@ export function ClassDashboard() {
                             Список учеников
                         </button>
 
-                        {(role === "Admin" || role === "Owner" || role === "Helper") && (
+                        <button
+                            className={"btn btn--secondary"}
+                            type={"button"}
+                            onClick={async () => {
+                                if (classId) {
+                                    await getSchedule(classId, "current");
+                                    setSelectedList('schedule');
+                                }
+                            }}
+                            disabled={(selectedList === "schedule")}
+                        >
+                            Расписание класса
+                        </button>
+
+                        {role === "Owner" && (
                             <button
                                 className={"btn btn--secondary"}
                                 type={"button"}
                                 onClick={() => {
                                     if (classId !== null) {
-                                        void getNotes(classId);
-                                        setSelectedList('notes');
+                                        void getSchedule(classId, "base");
+                                        setSelectedList('baseschedule');
                                     }
                                 }}
-                                disabled={(selectedList === "notes")}
+                                disabled={(selectedList === "baseschedule")}
                             >
-                                Список заметок класса
+                                Стандартное расписание
                             </button>
+                        )}
+
+                        {(role === "Admin" || role === "Owner" || role === "Helper") && (
+                                <button
+                                    className={"btn btn--secondary"}
+                                    type={"button"}
+                                    onClick={() => {
+                                        if (classId !== null) {
+                                            void getNotes(classId);
+                                            setSelectedList('notes');
+                                        }
+                                    }}
+                                    disabled={(selectedList === "notes")}
+                                >
+                                    Список заметок класса
+                                </button>
                         )}
 
                         <button
@@ -110,6 +145,16 @@ export function ClassDashboard() {
                         >
                             Список жалоб класса
                         </button>
+
+                        {role === "Owner" && (
+                            <button
+                                className={"btn btn--primary"}
+                                type="button"
+                                onClick={() => setRolloverModalOpen(true)}
+                            >
+                                Сбросить расписание
+                            </button>
+                        )}
                         
                         <button
                             className={"btn btn--primary"}
@@ -193,6 +238,45 @@ export function ClassDashboard() {
                         </p>
                     </div>
                 )}
+
+                {selectedList === "schedule" && schedule && (
+                    <div className="schedule-days-list">
+                        <ScheduleDayCard title="Понедельник" lessons={schedule.monday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "current") }} classId={classId ?? 0} day={"monday"}  type={"current"} />
+                        <ScheduleDayCard title="Вторник" lessons={schedule.tuesday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "current") }}  classId={classId ?? 0} day={"tuesday"} type={"current"} />
+                        <ScheduleDayCard title="Среда" lessons={schedule.wednesday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "current") }} classId={classId ?? 0} day={"wednesday"} type={"current"} />
+                        <ScheduleDayCard title="Четверг" lessons={schedule.thursday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "current") }} classId={classId ?? 0} day={"thursday"} type={"current"} />
+                        <ScheduleDayCard title="Пятница" lessons={schedule.friday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "current") }} classId={classId ?? 0} day={"friday"} type={"current"} />
+                    </div>
+                )}
+
+                {selectedList === "schedule" && !isLoading && !schedule && (
+                    <div className="empty-state">
+                        <h2 className="empty-state__title">Расписание не найдено</h2>
+                        <p className="empty-state__text">
+                            Не удалось найти расписание для {name} класса
+                        </p>
+                    </div>
+                )}
+
+                {selectedList === "baseschedule" && schedule && (
+                    <div className="schedule-days-list">
+                        <ScheduleDayCard title="Понедельник" lessons={schedule.monday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "base") }} classId={classId ?? 0} day={"monday"}  type={"base"} />
+                        <ScheduleDayCard title="Вторник" lessons={schedule.tuesday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "base") }}  classId={classId ?? 0} day={"tuesday"} type={"base"} />
+                        <ScheduleDayCard title="Среда" lessons={schedule.wednesday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "base") }} classId={classId ?? 0} day={"wednesday"} type={"base"} />
+                        <ScheduleDayCard title="Четверг" lessons={schedule.thursday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "base") }} classId={classId ?? 0} day={"thursday"} type={"base"} />
+                        <ScheduleDayCard title="Пятница" lessons={schedule.friday ?? []} onChangeScheduleLesson={async () => {if (classId) await getSchedule(classId, "base") }} classId={classId ?? 0} day={"friday"} type={"base"} />
+                    </div>
+                )}
+
+                {selectedList === "baseschedule" && !isLoading && !schedule && (
+                    <div className="empty-state">
+                        <h2 className="empty-state__title">Расписание не найдено</h2>
+                        <p className="empty-state__text">
+                            Не удалось найти стандартное расписание для {name} класса
+                        </p>
+                    </div>
+                )}
+                
             </section>
             <ChangeTeacherModal isOpen={isChangeTeacherModalOpen} onClose={() => setChangeTeacherModalOpen(false)} onChangeTeacher={async (dto) => {
                 if (classId !== null) {
@@ -221,6 +305,20 @@ export function ClassDashboard() {
                     isDanger={true}
                 />
             )}
+
+            <ConfirmModal
+                title={"Сброс расписания"}
+                content={"Вы уверены что хотите сбросить текущее расписание на стандартное?"}
+                buttonContent={"Сбросить"}
+                onConfirm={async () => {
+                    if (classId) {
+                        await rolloverSchedule(classId);
+                        await getSchedule(classId, "current");
+                    }
+                }}
+                isOpen={isRolloverModalOpen}
+                onClose={() => setRolloverModalOpen(false)}
+            />
             
         </main>
     );
