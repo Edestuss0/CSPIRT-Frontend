@@ -16,7 +16,7 @@ export function EventCard({ item, onClick }: Props) {
         const statusMap: Record<string, string> = {
             active: "Активно",
             completed: "Завершено",
-            planned: "Запланировано",
+            scheduled: "Запланировано",
         };
 
         return statusMap[status] ?? status;
