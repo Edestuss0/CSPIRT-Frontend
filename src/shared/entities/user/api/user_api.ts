@@ -19,7 +19,7 @@ const client = new ApiClient();
 
 export const UserApi = {
     async getUser(id: number): Promise<GettedUser> {
-        const response = await client.get(`/api/users/?id=${id}`, true);
+        const response = await client.get(`/api/users?id=${id}`, true);
         
         if (!response.checkStatus()) {
             throw new Error("Ошибка при получении данных о пользователе");
