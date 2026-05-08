@@ -2,7 +2,7 @@ import type { ScheduleLessonType } from "../../entities/schedule/types/schedule_
 import {useState} from "react";
 import {
     ChangeScheduleLessonModal
-} from "../../../features/schedule_actions/change/ui/components/change_schedule_modal.tsx";
+} from "../../../features/schedule/ui/change_schedule_modal.tsx";
 import {useAuthStore} from "../../../features/auth/store/auth_store.ts";
 
 interface Props {

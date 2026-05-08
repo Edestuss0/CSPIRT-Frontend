@@ -2,6 +2,8 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import type { NoteType } from "../../entities/notes/types/notes_types.ts";
 import type {UserRole} from "../../entities/user/types/user_types.ts";
+import {useState} from "react";
+import {ConfirmModal} from "../modals/confirm_modal.tsx";
 
 interface Props {
     item: NoteType;
@@ -13,6 +15,7 @@ export function NoteCard({ item, onDelete, role }: Props) {
     const date = format(new Date(item.CreatedAt), "d MMMM yyyy, HH:mm", {
         locale: ru,
     });
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const canDelete =
         Boolean(onDelete) && (role === "Owner" || role === "Admin");
@@ -54,12 +57,23 @@ export function NoteCard({ item, onDelete, role }: Props) {
                 {canDelete && (
                     <button
                         className="btn btn--danger"
-                        onClick={onDelete}
+                        onClick={() => setIsDeleteModalOpen(true)}
                     >
                         Удалить
                     </button>
                 )}
             </div>
+
+            <ConfirmModal
+                title={"Удаление заметки"}
+                content={"Вы уверены что хотите удалить заметку? Это действие нельзя отменить."}
+                onConfirm={async () => {if (onDelete) onDelete()}}
+                onClose={() => setIsDeleteModalOpen(false)}
+                isOpen={isDeleteModalOpen}
+                buttonContent={"Удалить"}
+                isDanger={true}
+            />
+            
         </div>
     );
 }

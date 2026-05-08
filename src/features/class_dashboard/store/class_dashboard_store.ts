@@ -1,39 +1,21 @@
 import {create} from "zustand"
 import type {UserType} from "../../../shared/entities/user/types/user_types.ts";
-import type {NoteType} from "../../../shared/entities/notes/types/notes_types.ts";
 import {classApi} from "../../../shared/entities/class/api/class_api.ts";
-import {NotesApi} from "../../../shared/entities/notes/api/notes_api.ts";
-import type {ComplaintType} from "../../../shared/entities/complaints/types/complaints_types.ts";
-import {ComplaintsApi} from "../../../shared/entities/complaints/api/complaints_api.ts";
 import {UserApi} from "../../../shared/entities/user/api/user_api.ts";
 import {ScheduleApi} from "../../../shared/entities/schedule/api/schedule_api.ts";
-import {ScheduleService} from "../../../shared/entities/schedule/service/schedule_service.ts";
-import type {ScheduleModelType} from "../../../shared/entities/schedule/types/schedule_types.ts"; 
-
 export type ClassDashboardStatus = "loading" | "error" | "idle";
 
 interface State {
     status: ClassDashboardStatus;
     error: string | null;
     message: string | null;
-    users: UserType[];
-    notes: NoteType[];
-    complaints: ComplaintType[];
     staff: UserType[];
     teacher: UserType | null;
-    schedule: ScheduleModelType | null;
-    
-    getUsersByClass: (id: number) => Promise<void>
-    getNotesByClass: (id: number) => Promise<void>
-    deleteNote: (id: number) => Promise<void>
-    getComplaints: (id: number) => Promise<void>
-    deleteComplaint: (id: number) => Promise<void>
+
     changeTeacher: (id: number, teacher: string) => Promise<void>
     getStaff: () => Promise<void>
     getClassTeacher: (id: number) => Promise<void>
     deleteClass: (id: number) => Promise<void>
-    getClassSchedule: (id: number, type: "base" | "current") => Promise<void>
-    deleteSchedule: (id: number, type: "base" | "current") => Promise<void>
     rolloverSchedule: (id: number) => Promise<void>
 }
 
@@ -47,78 +29,6 @@ export const useClassDashboardStore = create<State>()((set) => ({
     staff: [],
     teacher: null,
     schedule: null,
-
-    getUsersByClass: async (id: number) => {
-        set({status: "loading"});
-
-        try {
-            const response = await classApi.getUsersByClass(id);
-
-            set({status: "idle", users: response, error: null});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
-        }
-    },
-
-    getNotesByClass: async (id: number) => {
-        set({status: "loading"});
-
-        try {
-            const response = await NotesApi.getNotes(id);
-
-            set({status: "idle", notes: response});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
-        }
-    },
-
-    deleteNote: async (id: number) => {
-        set({status: "loading"});
-
-        try {
-            await NotesApi.deleteNote(id);
-            set({status: "idle", message: "Заметка успешно удалена", error: null});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
-        }
-    },
-
-    getComplaints: async (id: number) => {
-        set({status: "loading"});
-        
-        try {
-            const response = await ComplaintsApi.getComplaints(id);
-            set({status: "idle", error: null, complaints: response});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
-        }
-    },
-    
-    deleteComplaint: async (id: number) => {
-        set({status: "loading"});
-
-        try {
-            await ComplaintsApi.deleteComplaint(id);
-            set({status: "idle", message: "Жалоба успешно удалена", error: null});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
-        }
-    },
     
     changeTeacher: async (id: number, teacher: string) => {
         set({status: "loading"});
@@ -176,35 +86,6 @@ export const useClassDashboardStore = create<State>()((set) => ({
         }
     },
     
-    getClassSchedule: async (id: number, type: "base" | "current") => {
-        set({status: "loading"});
-
-        try {
-            const response = await ScheduleApi.getCurrentScheduleByClass(id, type);
-            
-            const schedule = ScheduleService.sortSchedule(response);
-            
-            set({status: "idle", error: null, schedule: schedule});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
-        }
-    },
-    
-    deleteSchedule: async (id: number, type: "base" | "current") => {
-        set({status: "loading"});
-        try {
-            await ScheduleApi.deleteSchedule(id, type);
-            set({status: "idle", error: null});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
-        }
-    },
     
     rolloverSchedule: async (id: number) => {
         set({status: "loading"});
