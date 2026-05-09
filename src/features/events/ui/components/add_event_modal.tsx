@@ -221,8 +221,8 @@ export function AddEventModal({isOpen, onClose, onEventAdd,}: Props) {
                                 type="number"
                                 className="input"
                                 placeholder="Например: 50"
-                                minLength={1}
-                                maxLength={5000}
+                                min={1}
+                                max={5000}
                                 step={1}
                                 required
                             />

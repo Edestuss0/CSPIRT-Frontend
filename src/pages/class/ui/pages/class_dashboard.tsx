@@ -107,14 +107,14 @@ export function ClassDashboard() {
                                 </button>
                         )}
 
-                        <button
+                        {(role === "Admin" || role === "Owner") && (<button
                             className={"btn btn--secondary"}
                             type={"button"}
                             onClick={() => setSelectedList('complaints')}
                             disabled={(selectedList === "complaints")}
                         >
                             Список жалоб класса
-                        </button>
+                        </button>)}
 
                         {role === "Owner" && (
                             <button
@@ -190,6 +190,7 @@ export function ClassDashboard() {
                     if (classId !== null) {
                         await deleteClass(classId);
                         setKey(key + 1);
+                        setDeleteClassModalOpen(false);
                     }
                 }}
                 isOpen={isDeleteClassModalOpen}

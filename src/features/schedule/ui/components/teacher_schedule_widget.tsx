@@ -17,7 +17,7 @@ export function TeacherScheduleWidget({name, id}: props) {
 
     useEffect(() => {
         void getSchedule(id);
-    }, [getSchedule]);
+    }, [getSchedule, id]);
 
     return (
         <>

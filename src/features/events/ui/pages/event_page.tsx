@@ -7,6 +7,7 @@ import { useEventStore } from "../../store/event_store.ts";
 import { ClassCard } from "../../../../shared/ui/cards/class_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
+import {useClassStore} from "../../../class/store/class_store.ts";
 
 function getStatusLabel(status: string): string {
     if (!status.trim()) {
@@ -43,9 +44,9 @@ export function EventPage() {
 
     const { id } = useParams<{id: string}>();
 
-    const classes = useEventStore((state) => state.classes);
+    const classes = useClassStore((state) => state.classes);
     const event = useEventStore((state) => state.event);
-    const getClasses = useEventStore((state) => state.getClasses);
+    const getClasses = useClassStore((state) => state.getClasses);
     const getEvent = useEventStore((state) => state.getEventById);
     const completeEvent = useEventStore((state) => state.completeEvent);
     const deleteEvent = useEventStore((state) => state.deleteEvent);
@@ -154,7 +155,7 @@ export function EventPage() {
     }
 
     const eventClassIds = new Set(event.Classes ?? []);
-    const eventClasses = classes.filter((item) => eventClassIds.has(item.Id));
+    const eventClasses = classes?.filter((item) => eventClassIds.has(item.Id));
 
 
     const statusLabel = getStatusLabel(event.Status);
@@ -264,9 +265,9 @@ export function EventPage() {
                         </div>
                     )}
 
-                    {!isLoading && !error && eventClasses.length > 0 && role === "Owner" && (
+                    {!isLoading && !error && eventClasses?.length > 0 && role === "Owner" && (
                         <div className="class-list">
-                            {eventClasses.map((item) => (
+                            {eventClasses?.map((item) => (
                                 <ClassCard
                                     key={item.Id}
                                     item={item}
@@ -286,7 +287,7 @@ export function EventPage() {
                         </div>
                     )}
 
-                    {!isLoading && !error && eventClasses.length === 0 && (
+                    {!isLoading && !error && eventClasses?.length === 0 && (
                         <div className="empty-state">
                             <h2 className="empty-state__title">
                                 Классы не найдены
