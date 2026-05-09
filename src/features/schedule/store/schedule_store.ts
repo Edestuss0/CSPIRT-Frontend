@@ -2,12 +2,12 @@ import {create} from "zustand";
 import {
     type ScheduleAddFormValues,
     ScheduleAddLessonUsecase
-} from "../models/add_schedule/add_schedule_usecase.ts";
+} from "../models/add_schedule_usecase.ts";
 import type {UserType} from "../../../shared/entities/user/types/user_types.ts";
 import {
     type ScheduleChangeFormValues,
     ScheduleChangeLessonUsecase
-} from "../models/change_schedule/schedule_change_usecase.ts";
+} from "../models/schedule_change_usecase.ts";
 import {UserApi} from "../../../shared/entities/user/api/user_api.ts";
 import {ScheduleApi} from "../../../shared/entities/schedule/api/schedule_api.ts";
 import type {ScheduleModelType} from "../../../shared/entities/schedule/types/schedule_types.ts";
@@ -20,7 +20,7 @@ interface State {
     schedule: ScheduleModelType | null
     
     getClassSchedule: (id: number, type: "base" | "current") => Promise<void>
-    getTeacherSchedule: () => Promise<void>
+    getTeacherSchedule: (id: number) => Promise<void>
     addSchedule: (form: ScheduleAddFormValues, type: "base" | "current") => Promise<boolean>
     changeSchedule: (id: number, form: ScheduleChangeFormValues, type: "base" | "current") => Promise<boolean>
     deleteSchedule: (id: number, type: "base" | "current") => Promise<void>
@@ -48,11 +48,11 @@ export const useScheduleStore = create<State>()((set) => ({
         }
     },
     
-    getTeacherSchedule: async () => {
+    getTeacherSchedule: async (id: number) => {
         set({status: "loading", schedule: null, error: null});
 
         try {
-            const response = await ScheduleApi.getTeacherSchedule();
+            const response = await ScheduleApi.getTeacherSchedule(id);
             const schedule = ScheduleService.sortSchedule(response);
             set({status: "idle", error: null, schedule: schedule});
         } catch (e) {

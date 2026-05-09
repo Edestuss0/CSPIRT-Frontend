@@ -1,4 +1,4 @@
-import {ScheduleApi} from "../../../../shared/entities/schedule/api/schedule_api.ts";
+import {ScheduleApi} from "../../../shared/entities/schedule/api/schedule_api.ts";
 import {ScheduleAddFormSchema} from "./add_schedule_schema.ts";
 
 export type ScheduleAddFormValues = {

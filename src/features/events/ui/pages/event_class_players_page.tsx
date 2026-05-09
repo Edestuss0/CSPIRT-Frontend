@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {useEffect, useMemo, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 
-import type { UserType } from "../../../../shared/entities/user/types/user_types.ts";
-import { addEventPlayersSchema } from "../../../../shared/entities/events/api/events_api.ts";
-import { useEventStore } from "../../store/event_store.ts";
+import type {UserType} from "../../../../shared/entities/user/types/user_types.ts";
+import {addEventPlayersSchema} from "../../../../shared/entities/events/api/events_api.ts";
+import {useEventStore} from "../../store/event_store.ts";
+import {useClassStore} from "../../../class/store/class_store.ts";
+import type {ClassType} from "../../../../shared/entities/class/types/class_types.ts";
 
 export function EventClassPlayersPage() {
     const navigate = useNavigate();
 
-    const { eventId, classId } = useParams<{ eventId: string, classId: string }>();
+    const {eventId, classId} = useParams<{ eventId: string, classId: string }>();
 
     const numericEventId = eventId ? Number(eventId) : null;
     const numericClassId = classId ? Number(classId) : null;
@@ -16,12 +18,13 @@ export function EventClassPlayersPage() {
     const event = useEventStore((state) => state.event);
     const status = useEventStore((state) => state.status);
     const error = useEventStore((state) => state.error);
+    const [classItem, setClassItem] = useState<ClassType | null>(null)
 
     const getEventById = useEventStore((state) => state.getEventById);
     const addPlayersToEvent = useEventStore((state) => state.addPlayersToEvent);
     const removePlayersFromEvent = useEventStore((state) => state.removePlayersFromEvent);
-    const getClassById = useEventStore((state) => state.getClassById)
-    
+    const getClassById = useClassStore((state) => state.getClassById)
+
     const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
     const [formError, setFormError] = useState<string | null>(null);
 
@@ -35,12 +38,29 @@ export function EventClassPlayersPage() {
     }, [numericEventId, getEventById]);
 
     useEffect(() => {
-        if (numericClassId) {
-            void getClassById(numericClassId);
+        if (!numericClassId || Number.isNaN(numericClassId)) {
+            return;
         }
+
+        let isMounted = true;
+
+        async function loadClass() {
+            setClassItem(null);
+
+            const item = await getClassById(numericClassId);
+
+            if (isMounted) {
+                setClassItem(item);
+            }
+        }
+
+        void loadClass();
+
+        return () => {
+            isMounted = false;
+        };
     }, [getClassById, numericClassId]);
 
-    const classItem = useEventStore((state) => state.class);
 
     const students = useMemo<UserType[]>(() => {
         if (!classItem) {
@@ -61,7 +81,7 @@ export function EventClassPlayersPage() {
 
         return new Set(ids);
     }, [event]);
-    
+
     const initialSelectedUserIds = useMemo(() => {
         return students
             .filter((student) => eventPlayerIdSet.has(student.Id))
@@ -119,9 +139,9 @@ export function EventClassPlayersPage() {
             <main className="main">
                 <section className="page">
                     <div className="class-list">
-                        <div className="skeleton" style={{ height: 120 }} />
-                        <div className="skeleton" style={{ height: 88 }} />
-                        <div className="skeleton" style={{ height: 88 }} />
+                        <div className="skeleton" style={{height: 120}}/>
+                        <div className="skeleton" style={{height: 88}}/>
+                        <div className="skeleton" style={{height: 88}}/>
                     </div>
                 </section>
             </main>
@@ -171,20 +191,20 @@ export function EventClassPlayersPage() {
     }
 
     async function handleSaveChanges() {
-        
+
         if (!numericEventId) {
             return;
-        } 
-        
+        }
+
         setFormError(null);
 
         const initialSet = new Set(initialSelectedUserIds);
         const selectedSet = new Set(selectedUserIds);
-        
+
         const addedIds = selectedUserIds.filter((id) => {
             return studentIdSet.has(id) && !initialSet.has(id);
         });
-        
+
         const removedIds = initialSelectedUserIds.filter((id) => {
             return studentIdSet.has(id) && !selectedSet.has(id);
         });

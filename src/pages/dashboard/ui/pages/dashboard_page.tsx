@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../../auth/store/auth_store";
-import { AddUserModal } from "../../../users/ui/components/add_user_modal.tsx";
-import {AddClassModal} from "../../../class/ui/components/add_class_modal.tsx";
-import {AddEventModal} from "../../../events/ui/components/add_event_modal.tsx";
-import {ClassesWidget} from "../../../class/ui/components/classes_widget.tsx";
-import {EventsWidget} from "../../../events/ui/components/events_widget.tsx";
-import {StaffWidget} from "../../../users/ui/components/staff_widget.tsx";
+import { useAuthStore } from "../../../../features/auth/store/auth_store.ts";
+import { AddUserModal } from "../../../../features/users/ui/components/add_user_modal.tsx";
+import {AddClassModal} from "../../../../features/class/ui/components/add_class_modal.tsx";
+import {AddEventModal} from "../../../../features/events/ui/components/add_event_modal.tsx";
+import {ClassesWidget} from "../../../../features/class/ui/components/classes_widget.tsx";
+import {EventsWidget} from "../../../../features/events/ui/components/events_widget.tsx";
+import {StaffWidget} from "../../../../features/users/ui/components/staff_widget.tsx";
 
 type Lists = "classes" | "events" | "staff";
 

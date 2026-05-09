@@ -11,6 +11,7 @@ interface State {
     error: string | null;
     message: string | null;
     users: UserType[] | null;
+    staff: UserType[] | null;
 
     getUsersByClass: (id: number) => Promise<void>;    
     getStaff: () => Promise<void>;
@@ -22,6 +23,7 @@ export const useUsersStore = create<State>()((set) => ({
     error: null,
     message: null,
     users: null,
+    staff: null,   
     
     getUsersByClass: async (id: number)=> {
         set({status: "loading", users: null, error: null});
@@ -39,11 +41,11 @@ export const useUsersStore = create<State>()((set) => ({
     },
 
     getStaff: async () => {
-        set({status: "loading", users: null, error: null});
+        set({status: "loading", staff: null, error: null});
 
         try {
             const response = await UserApi.getStaff();
-            set({users: response, error: null, status: "idle"});
+            set({staff: response, error: null, status: "idle"});
         } catch (e) {
             set({
                 error: e instanceof Error ? e.message : "Неизвестная ошибка",

@@ -6,7 +6,7 @@ export const ScheduleAddFormSchema = z.object({
     StartTime: z.string().min(3).max(5),
     EndTime: z.string().min(3).max(5),
     TeacherID: z.number().int().positive(),
-    LessonNumber: z.number().nonnegative(),
+    LessonNumber: z.number().positive(),
     DayOfWeek: z.enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]),
     ClassID: z.number().int().positive(),
 });

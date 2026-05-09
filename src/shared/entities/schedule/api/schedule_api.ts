@@ -23,8 +23,8 @@ export const ScheduleApi = {
         return parsed.data.Schedules;
     },
     
-    async getTeacherSchedule(): Promise<ScheduleLessonType[]> {
-        const response = await apiClient.get(`/api/schedules/teacher/current`, true);
+    async getTeacherSchedule(id: number): Promise<ScheduleLessonType[]> {
+        const response = await apiClient.get(`/api/schedules/teacher/current?teacher_id=${id}`, true);
         
         if (!response.checkStatus()) {
             throw new Error("Ошибка при получении расписания");

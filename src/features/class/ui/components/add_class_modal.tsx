@@ -14,7 +14,7 @@ export function AddClassModal({isOpen, onClose, onAddClass}: AddUserModalProps) 
     const error = useClassStore((state) => state.error);
     const addClass = useClassStore((state) => state.addClass);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const staff = useUsersStore((state) => state.users);
+    const staff = useUsersStore((state) => state.staff);
     const getStaff = useUsersStore((state) => state.getStaff);
 
     useEffect(() => {

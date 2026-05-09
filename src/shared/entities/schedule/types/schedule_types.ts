@@ -21,7 +21,7 @@ export const ScheduleLessonSchema = z.object({
     StartTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Формат времени HH:mm"),
     EndTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Формат времени HH:mm"),
     Description: z.string(),
-    CreatedAt: z.string().datetime().optional(), // или просто z.string() для обычных дат
+    CreatedAt: z.string().optional(),
 });
 
 export type ScheduleLessonType = z.infer<typeof ScheduleLessonSchema>;

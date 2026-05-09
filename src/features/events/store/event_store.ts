@@ -1,6 +1,4 @@
-import type { ClassType } from "../../../shared/entities/class/types/class_types.ts";
 import { create } from "zustand";
-import { classApi } from "../../../shared/entities/class/api/class_api.ts";
 import {
     type AddEventPlayersType,
     EventsApi,
@@ -14,31 +12,22 @@ interface State {
     status: Status;
     error: string | null;
     message: string | null;
-    classes: ClassType[];
     event: EventType | null;
-    class: ClassType | null;
     events: EventType[] | null;
 
     getEvents: () => Promise<void>
-    getClasses: () => Promise<void>;
     addEvent: (form: addEventFormValues) => Promise<boolean>
     removePlayersFromEvent : (id: number, dto: AddEventPlayersType) => Promise<void>; 
-    addPlayersToEvent: (
-        eventId: number,
-        dto: AddEventPlayersType
-    ) => Promise<void>;
+    addPlayersToEvent: (eventId: number, dto: AddEventPlayersType) => Promise<void>;
     getEventById: (id: number) => Promise<void>;
     completeEvent: (item: EventType) => Promise<void>;
     deleteEvent: (id: number) => Promise<void>;
-    getClassById: (id: number) => Promise<void>;
 }
 
 export const useEventStore = create<State>()((set) => ({
     error: null,
     status: "idle",
     message: null,
-    class: null,
-    classes: [],
     event: null,
     events: null,
 
@@ -72,20 +61,6 @@ export const useEventStore = create<State>()((set) => ({
                 status: "error",
             });
             return false
-        }
-    },
-    
-    getClasses: async () => {
-        set({status: "loading", error: null,});
-
-        try {
-            const response = await classApi.getClasses();
-            set({status: "idle", classes: response, error: null,});
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-            });
         }
     },
 
@@ -166,19 +141,4 @@ export const useEventStore = create<State>()((set) => ({
             });
         }
     },
-    
-    getClassById: async (id: number) => {
-        set({status: "loading", error: null,});
-
-        try {
-            const response = await classApi.getClassById(id);
-            set({status: "idle", error: null, class: response });
-        } catch (e) {
-            set({
-                error: e instanceof Error ? e.message : "Неизвестная ошибка",
-                status: "error",
-                event: null,
-            });
-        }
-    }
 }));

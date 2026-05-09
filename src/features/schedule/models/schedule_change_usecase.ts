@@ -1,5 +1,5 @@
 import {ScheduleChangeFormSchema} from "./schedule_change_schema.ts";
-import {ScheduleApi} from "../../../../shared/entities/schedule/api/schedule_api.ts";
+import {ScheduleApi} from "../../../shared/entities/schedule/api/schedule_api.ts";
 
 export type ScheduleChangeFormValues = {
     subject?: string,

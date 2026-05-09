@@ -279,7 +279,7 @@ export function UserPage() {
                         </div>
                     </section>
 
-                    {user.User.Role === "Admin" || user.User.Role === "Owner" && (
+                    {(user.User.Role === "Admin" || user.User.Role === "Owner") && (
                         <section className="card card--padded">
                             <div className="section-head">
                                 <h2 className="section-title">Расписание учителя</h2>
@@ -288,7 +288,7 @@ export function UserPage() {
                                 </p>
                             </div>
                             
-                            <TeacherScheduleWidget name={`${user.User.Name} ${user.User.LastName}`} />
+                            <TeacherScheduleWidget name={`${user.User.Name} ${user.User.LastName}`} id={user.User.Id} />
                             
                         </section>
                     )}

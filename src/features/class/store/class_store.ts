@@ -11,6 +11,7 @@ interface State {
     message: string | null;
     classes: ClassType[] | null;
 
+    getClassById: (id: number) => Promise<ClassType | null>;
     getClasses: () => Promise<void>;
     addClass: (form: addClassFormValues) => Promise<boolean>
 }
@@ -32,6 +33,19 @@ export const useClassStore = create<State>()((set) => ({
                 error: e instanceof Error ? e.message : "Неизвестная ошибка",
                 status: "error",
             });
+        }
+    },
+
+    getClassById: async (id: number): Promise<ClassType | null> => {
+        set({status: "loading", error: null,});
+
+        try {
+            const response = await classApi.getClassById(id);
+            set({status: "idle", error: null,});
+            return response;
+        } catch (e) {
+            set({error: e instanceof Error ? e.message : "Неизвестная ошибка", status: "error",});
+            return null;
         }
     },
 

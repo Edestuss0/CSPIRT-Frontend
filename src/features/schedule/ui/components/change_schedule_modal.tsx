@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useState } from "react";
-import type { ScheduleChangeFormValues } from "../../models/change_schedule/schedule_change_usecase.ts";
+import type { ScheduleChangeFormValues } from "../../models/schedule_change_usecase.ts";
 import type {ScheduleLessonType} from "../../../../shared/entities/schedule/types/schedule_types.ts";
 import { createPortal } from "react-dom";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";

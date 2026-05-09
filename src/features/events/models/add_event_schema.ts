@@ -5,5 +5,5 @@ export const addEventFormSchema = z.object({
     Description: z.string().min(10).max(1000),
     StartedAt: z.string(),
     Classes: z.array(z.number().int().positive()),
-    RatingReward: z.number().int().positive(),
+    RatingReward: z.number().int().positive().max(5000),
 });

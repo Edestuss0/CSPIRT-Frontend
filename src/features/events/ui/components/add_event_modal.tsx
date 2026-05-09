@@ -18,6 +18,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd,}: Props) {
     const [selectedClassIds, setSelectedClassIds] = useState<number[]>([]);
     const [isClassesDropdownOpen, setIsClassesDropdownOpen] = useState(false);
 
+    
     useEffect(() => {
         void getClasses();
     }, [getClasses]);

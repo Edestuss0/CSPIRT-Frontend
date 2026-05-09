@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import type { ScheduleAddFormValues } from "../../models/add_schedule/add_schedule_usecase.ts";
+import type { ScheduleAddFormValues } from "../../models/add_schedule_usecase.ts";
 import {dayLabels, type ScheduleDay} from "../../../../shared/entities/schedule/types/schedule_types.ts";
 import {useScheduleStore} from "../../store/schedule_store.ts";
 

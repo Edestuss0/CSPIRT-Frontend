@@ -3,7 +3,7 @@ import {useUsersStore} from "../../store/users_store.ts";
 import {StaffCard} from "../../../../shared/ui/cards/staff_card.tsx";
 
 export function StaffWidget() {
-    const users = useUsersStore((state) => state.users);
+    const users = useUsersStore((state) => state.staff);
     const getStaff = useUsersStore((state) => state.getStaff);
     const status = useUsersStore((state) => state.status);
     const error = useUsersStore((state) => state.error);

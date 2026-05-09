@@ -160,7 +160,7 @@ export function ProfilePage() {
                         </div>
                     </section>
 
-                    {user.Role === "Admin" || user.Role === "Owner" && (
+                    {(user.Role === "Admin" || user.Role === "Owner") && (
                         <section className="card card--padded">
                             <div className="section-head">
                                 <h2 className="section-title">Расписание учителя</h2>
@@ -169,7 +169,7 @@ export function ProfilePage() {
                                 </p>
                             </div>
 
-                            <TeacherScheduleWidget name={`${user.Name} ${user.LastName}`} />
+                            <TeacherScheduleWidget name={`${user.Name} ${user.LastName}`} id={user.Id}/>
 
                         </section>
                     )}
