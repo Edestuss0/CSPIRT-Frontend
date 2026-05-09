@@ -19,7 +19,7 @@ export function UsersWidget({id, name}: props) {
     
     useEffect(() => {
         void getUsers(id);
-    }, [getUsers])
+    }, [getUsers, id])
 
     return (
         <>

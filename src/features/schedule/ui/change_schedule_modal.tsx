@@ -36,6 +36,7 @@ export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, t
 
         function handleEscape(event: KeyboardEvent) {
             if (event.key === "Escape") {
+                useScheduleStore.setState({error: null});
                 onClose();
             }
         }
@@ -77,6 +78,7 @@ export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, t
 
             if (success) {
                 await onChanged();
+                useScheduleStore.setState({error: null});
                 onClose();
             }
         } finally {
@@ -85,7 +87,7 @@ export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, t
     }
 
     return createPortal(
-        <div className="modal-backdrop" onMouseDown={onClose}>
+        <div className="modal-backdrop" onMouseDown={() => {onClose(); useScheduleStore.setState({error: null});}}>
             <section
                 className="modal modal--wide"
                 role="dialog"
@@ -107,7 +109,7 @@ export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, t
                     <button
                         className="modal__close"
                         type="button"
-                        onClick={onClose}
+                        onClick={()=> {onClose(); useScheduleStore.setState({error: null});}}
                         disabled={isLoading}
                         aria-label="Закрыть модальное окно"
                     >
@@ -250,7 +252,7 @@ export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, t
                         <button
                             className="btn btn--secondary"
                             type="button"
-                            onClick={onClose}
+                            onClick={() => {onClose(); useScheduleStore.setState({error: null});}}
                             disabled={isLoading}
                         >
                             Отмена

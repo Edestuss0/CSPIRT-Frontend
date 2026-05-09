@@ -1,9 +1,9 @@
 import {z} from "zod";
-import {ApiClient} from "../../../../core/api/api_client.ts";
 import {type addUserFormType, userSchema, type UserType} from "../types/user_types.ts";
 import {noteSchema} from "../../notes/types/notes_types.ts";
 import {complaintSchema} from "../../complaints/types/complaints_types.ts";
 import {EventSchema} from "../../events/types/events_types.ts";
+import {apiClient} from "../../../../core/api/client.ts";
 
 const getUserResponseSchema = z.object({
     User: userSchema,
@@ -15,11 +15,9 @@ const getUserResponseSchema = z.object({
 
 export type GettedUser = z.infer<typeof getUserResponseSchema>;
 
-const client = new ApiClient();
-
 export const UserApi = {
     async getUser(id: number): Promise<GettedUser> {
-        const response = await client.get(`/api/users?id=${id}`, true);
+        const response = await apiClient.get(`/api/users?id=${id}`, true);
         
         if (!response.checkStatus()) {
             throw new Error("Ошибка при получении данных о пользователе");
@@ -35,7 +33,7 @@ export const UserApi = {
     },
     
     async getStaff(): Promise<UserType[]> {
-        const response = await client.get("/api/users/get/staff", true);
+        const response = await apiClient.get("/api/users/get/staff", true);
         
         if (!response.checkStatus()) {
             throw new Error("Ошибка при получении персонала");
@@ -51,7 +49,7 @@ export const UserApi = {
     },
     
     async addUser(form: addUserFormType): Promise<boolean> {
-      const response = await client.patch("/api/user/add", {
+      const response = await apiClient.patch("/api/user/add", {
           Name: form.Name,
           LastName: form.LastName,
           FullName: form.FullName,
@@ -70,7 +68,7 @@ export const UserApi = {
     },
     
     async deleteUser(id: number): Promise<boolean> {
-        const response = await client.delete(`/api/user/delete/${id}`, {}, true);
+        const response = await apiClient.delete(`/api/user/delete/${id}`, {}, true);
         
         if (!response.checkStatus()) {
             throw new Error("Ошибка при попытке удаления пользователя");

@@ -20,6 +20,7 @@ interface State {
     schedule: ScheduleModelType | null
     
     getClassSchedule: (id: number, type: "base" | "current") => Promise<void>
+    getTeacherSchedule: () => Promise<void>
     addSchedule: (form: ScheduleAddFormValues, type: "base" | "current") => Promise<boolean>
     changeSchedule: (id: number, form: ScheduleChangeFormValues, type: "base" | "current") => Promise<boolean>
     deleteSchedule: (id: number, type: "base" | "current") => Promise<void>
@@ -33,10 +34,25 @@ export const useScheduleStore = create<State>()((set) => ({
     schedule: null,
 
     getClassSchedule: async (id: number, type: "base" | "current") => {
-        set({status: "loading"});
+        set({status: "loading", schedule: null, error: null});
 
         try {
             const response = await ScheduleApi.getCurrentScheduleByClass(id, type);
+            const schedule = ScheduleService.sortSchedule(response);
+            set({status: "idle", error: null, schedule: schedule});
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+        }
+    },
+    
+    getTeacherSchedule: async () => {
+        set({status: "loading", schedule: null, error: null});
+
+        try {
+            const response = await ScheduleApi.getTeacherSchedule();
             const schedule = ScheduleService.sortSchedule(response);
             set({status: "idle", error: null, schedule: schedule});
         } catch (e) {

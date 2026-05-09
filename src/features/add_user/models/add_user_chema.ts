@@ -4,7 +4,7 @@ import {z} from "zod";
 export const addUserFormSchema = z.object({
     Name: z.string().min(2).max(20),
     LastName: z.string().min(2).max(20),
-    FullName: z.array(fullNameSchema),
+    FullName: z.array(fullNameSchema).min(1),
     Password: z.string().min(6).max(35),
     ClassID: z.number().int().nonnegative(),
     Login: z.string().min(2).max(20),

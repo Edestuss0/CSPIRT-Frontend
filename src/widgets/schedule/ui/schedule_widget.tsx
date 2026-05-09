@@ -17,7 +17,7 @@ export function ScheduleWidget({id, name}: props) {
 
     useEffect(() => {
         void getSchedule(id, "current");
-    }, [getSchedule]);
+    }, [getSchedule, id]);
     
     return (
         <>

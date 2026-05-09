@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useState } from "react";
-import {type UserType} from "../../../../shared/entities/user/types/user_types";
+import {type UserType} from "../../../../shared/entities/user/types/user_types.ts";
 interface ChangeTeacherProps {
     isOpen: boolean;
     onClose: () => void;

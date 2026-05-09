@@ -1,4 +1,4 @@
-import type { ScheduleLessonType } from "../../entities/schedule/types/schedule_types";
+import type {ScheduleLessonType} from "../../entities/schedule/types/schedule_types";
 import {useState} from "react";
 import {
     ChangeScheduleLessonModal
@@ -9,18 +9,19 @@ interface Props {
     item: ScheduleLessonType;
     lessonNumber: number;
     onChangeScheduleLesson?: () => void;
-    type: "base" | "current"
+    type: "base" | "current";
+    isTeacher?: boolean;
 }
 
-export function ScheduleLessonCard({ item, lessonNumber, onChangeScheduleLesson = () => console.log(1), type }: Props) {
+export function ScheduleLessonCard({item, lessonNumber, onChangeScheduleLesson = () => console.log(1), type, isTeacher = false}: Props) {
     const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
-    const teacherName = item.Teacher
-        ? `${item.Teacher.Name} ${item.Teacher.LastName}`
-        : "Не указан";
+    const teacherName = item.Teacher ? `${item.Teacher.Name} ${item.Teacher.LastName}` : "Не указан";
     const role = useAuthStore((state) => state.user?.User.Role);
 
     return (
-        <article className="schedule-lesson-card" onClick={() => { if (role === "Owner") setIsChangeModalOpen(true)}}>
+        <article className="schedule-lesson-card" onClick={() => {
+            if (role === "Owner") setIsChangeModalOpen(true)
+        }}>
             <div className="schedule-lesson-card__number">
                 {lessonNumber}
             </div>
@@ -38,26 +39,27 @@ export function ScheduleLessonCard({ item, lessonNumber, onChangeScheduleLesson 
 
                 <div className="schedule-lesson-card__meta">
                     <div className="schedule-lesson-card__metric">
-            <span className="schedule-lesson-card__metric-label">
-              Учитель
-            </span>
+                        <span className="schedule-lesson-card__metric-label">
+                            {!isTeacher ? "Учитель" : "Класс"}
+                        </span>
+
                         <span className="schedule-lesson-card__metric-value">
-              {teacherName}
-            </span>
+                            {!isTeacher ? teacherName : item.Class}
+                        </span>
                     </div>
 
                     <div className="schedule-lesson-card__metric">
-            <span className="schedule-lesson-card__metric-label">
-              Кабинет
-            </span>
+                        <span className="schedule-lesson-card__metric-label">
+                            Кабинет
+                        </span>
                         <span className="schedule-lesson-card__metric-value">
-              {item.Room || "Не указан"}
-            </span>
+                            {item.Room || "Не указан"}
+                        </span>
                     </div>
                 </div>
             </div>
-            
-            <ChangeScheduleLessonModal
+
+            {!isTeacher && (<ChangeScheduleLessonModal
                 lesson={item}
                 onChanged={() => {
                     setIsChangeModalOpen(false);
@@ -66,7 +68,7 @@ export function ScheduleLessonCard({ item, lessonNumber, onChangeScheduleLesson 
                 isOpen={isChangeModalOpen}
                 onClose={() => setIsChangeModalOpen(false)}
                 type={type}
-            />
+            />)}
         </article>
     );
 }

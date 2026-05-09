@@ -12,6 +12,7 @@ import { noteAddDto } from "../../../../shared/entities/notes/api/notes_api";
 import { complaintAddDto } from "../../../../shared/entities/complaints/api/complaints_api";
 import { ratingChangeDTO } from "../../../../shared/entities/rating/api/rating_api";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
+import {TeacherScheduleWidget} from "../../../../widgets/schedule/ui/teacher_schedule_widget.tsx";
 
 export function UserPage() {
     const navigate = useNavigate();
@@ -278,6 +279,20 @@ export function UserPage() {
                         </div>
                     </section>
 
+                    {user.User.Role === "Admin" || user.User.Role === "Owner" && (
+                        <section className="card card--padded">
+                            <div className="section-head">
+                                <h2 className="section-title">Расписание учителя</h2>
+                                <p className="section-description">
+                                    Подробные данные о расписании конкретного учителя на текущую неделю.
+                                </p>
+                            </div>
+                            
+                            <TeacherScheduleWidget name={`${user.User.Name} ${user.User.LastName}`} />
+                            
+                        </section>
+                    )}
+
                     {isStudentLikeUser && (
                         <section className="card card--padded user-rating-card">
                             <div className="section-head">
@@ -321,7 +336,7 @@ export function UserPage() {
                                             id="ratingValue"
                                             placeholder="Например: 4200"
                                             type="number"
-                                            min={0}
+                                            min={-5000}
                                             max={5000}
                                             value={ratingValue}
                                             onChange={(event) => setRatingValue(event.target.value)}

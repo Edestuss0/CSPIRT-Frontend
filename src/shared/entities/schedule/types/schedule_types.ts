@@ -31,9 +31,11 @@ export const SchedulesResponseSchema = z.object({
     Base: z.array(ScheduleLessonSchema),
     Current: z.array(ScheduleLessonSchema),
     Planned: z.array(ScheduleLessonSchema),
-})
+});
 
-export type SchedulesResponseType = z.infer<typeof ScheduleLessonSchema>
+export const TeacherScheduleResponseSchema = z.object({
+    Schedules: z.array(ScheduleLessonSchema),
+});
 
 export const dayLabels = {
     monday: "Понедельник",

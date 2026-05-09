@@ -23,12 +23,8 @@ export const useClassDashboardStore = create<State>()((set) => ({
     status: "idle",
     error: null,
     message: null,
-    users: [],
-    notes: [],
-    complaints: [],
     staff: [],
     teacher: null,
-    schedule: null,
     
     changeTeacher: async (id: number, teacher: string) => {
         set({status: "loading"});

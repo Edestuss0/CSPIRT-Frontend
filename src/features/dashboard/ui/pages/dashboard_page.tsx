@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { useAuthStore } from "../../../auth/store/auth_store";
 import { useDashboardStore } from "../../store/dashboard_store";
-import { ClassCard } from "../../../../shared/ui/cards/class_card.tsx";
 import { AddUserModal } from "../../../add_user/ui/components/add_user_modal.tsx";
 import {StaffCard} from "../../../../shared/ui/cards/staff_card.tsx";
 import {AddClassModal} from "../../../add_class/ui/components/add_class_modal.tsx";
 import {EventCard} from "../../../../shared/ui/cards/event_card.tsx";
 import {AddEventModal} from "../../../add_event/ui/components/add_event_modal.tsx";
+import {ClassesWidget} from "../../../../widgets/classes/ui/classes_widget.tsx";
 
 type Lists = "classes" | "events" | "staff";
 
@@ -46,7 +45,7 @@ export function DashboardPage() {
                 <div className="profile-hero">
                     <div className="info-row">
                         <p className="info-row__label">
-                            Панель просмотра
+                            Главная панель системы
                         </p>
                     </div>
 
@@ -131,7 +130,7 @@ export function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="page-spacer" />
+                <div className="page-spacer" /> 
 
                 {isLoading && (
                     <div className="class-list">
@@ -145,23 +144,8 @@ export function DashboardPage() {
                     <div className="alert alert--danger mb-4">{error}</div>
                 )}
 
-                {!isLoading && !error && selectedList === "classes" && classes.length > 0 && (
-                    <div className="class-list">
-                        {classes.map((item) => (
-                            <ClassCard key={item.Id} item={item} onClick={() => {
-                                navigate(`/class/${item.Id}?name=${item.Name}`);
-                            }}/>
-                        ))}
-                    </div>
-                )}
-
-                {!isLoading && !error && selectedList === "classes" && classes.length === 0 && (
-                    <div className="empty-state">
-                        <h2 className="empty-state__title">Классы не найдены</h2>
-                        <p className="empty-state__text">
-                            В системе пока нет доступных классов
-                        </p>
-                    </div>
+                {selectedList === "classes" && (
+                    <ClassesWidget/>
                 )}
 
                 {!isLoading && !error && selectedList === "events" && events.length > 0 && (

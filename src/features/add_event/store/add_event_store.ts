@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {type addEventFormValues, addEventUsecase} from "../model/add_event_usecase.ts";
+import {type addEventFormValues, addEventUsecase} from "../models/add_event_usecase.ts";
 
 interface State {
     status: "idle" | "error" | "loading",

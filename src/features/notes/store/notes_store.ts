@@ -1,6 +1,6 @@
 import {create} from "zustand";
-import type {NoteType} from "../../shared/entities/notes/types/notes_types.ts";
-import {NotesApi} from "../../shared/entities/notes/api/notes_api.ts";
+import type {NoteType} from "../../../shared/entities/notes/types/notes_types.ts";
+import {NotesApi} from "../../../shared/entities/notes/api/notes_api.ts";
 
 type status = "idle" | "loading" | "error";
 

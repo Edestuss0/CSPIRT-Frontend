@@ -22,6 +22,7 @@ export function AddClassModal({isOpen, onClose, onAddClass, staff}: AddUserModal
 
         function handleEscape(event: KeyboardEvent) {
             if (event.key === "Escape") {
+                useAddClassStore.setState({error: null});
                 onClose();
             }
         }
@@ -63,7 +64,7 @@ export function AddClassModal({isOpen, onClose, onAddClass, staff}: AddUserModal
     }
 
     return (
-        <div className="modal-backdrop" onMouseDown={onClose}>
+        <div className="modal-backdrop" onMouseDown={() => {onClose(); useAddClassStore.setState({error: null});}}>
             <section
                 className="modal modal--wide"
                 role="dialog"
@@ -85,7 +86,7 @@ export function AddClassModal({isOpen, onClose, onAddClass, staff}: AddUserModal
                     <button
                         className="modal__close"
                         type="button"
-                        onClick={onClose}
+                        onClick={() => {onClose(); useAddClassStore.setState({error: null});}}
                         aria-label="Закрыть модальное окно"
                     >
                         ×
@@ -147,7 +148,7 @@ export function AddClassModal({isOpen, onClose, onAddClass, staff}: AddUserModal
                         <button
                             className="btn btn--secondary"
                             type="button"
-                            onClick={onClose}
+                            onClick={() => {onClose(); useAddClassStore.setState({error: null});}}
                             disabled={isSubmitting}
                         >
                             Отмена

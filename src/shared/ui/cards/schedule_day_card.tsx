@@ -8,12 +8,13 @@ interface Props {
     title: string;
     lessons: ScheduleLessonType[];
     onChangeScheduleLesson?: () => void;
-    classId: number;
+    classId?: number;
+    isTeacher?: boolean;
     day: ScheduleDay;
     type: "base" | "current"
 }
 
-export function ScheduleDayCard({ title, lessons, onChangeScheduleLesson = () => console.log(1), day, classId, type}: Props) {
+export function ScheduleDayCard({ title, lessons, onChangeScheduleLesson = () => console.log(1), day, classId, type, isTeacher = false}: Props) {
     const role = useAuthStore((state) => state.user?.User.Role);
     const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
     
@@ -41,6 +42,7 @@ export function ScheduleDayCard({ title, lessons, onChangeScheduleLesson = () =>
                             lessonNumber={index + 1}
                             onChangeScheduleLesson={() => onChangeScheduleLesson()}
                             type={type}
+                            isTeacher={isTeacher}
                         />
                     ))}
                 </div>
@@ -49,7 +51,7 @@ export function ScheduleDayCard({ title, lessons, onChangeScheduleLesson = () =>
                     На этот день уроков нет
                 </div>
             )}
-            {role === "Owner" && (
+            {role === "Owner" && !isTeacher && (
                 <div className="btn-group">
                     <button className="btn btn--primary"
                         onClick={() => setIsAddLessonModalOpen(true)}
@@ -58,15 +60,17 @@ export function ScheduleDayCard({ title, lessons, onChangeScheduleLesson = () =>
                     </button>
                 </div>
             )}
-            
-            <AddScheduleLessonModal 
-                isOpen={isAddLessonModalOpen}
-                onClose={() => setIsAddLessonModalOpen(false)}
-                classId={classId}
-                dayOfWeek={day}
-                onAdded={() => onChangeScheduleLesson()}
-                type={type}
-            />
+
+            {!isTeacher && classId && (
+                <AddScheduleLessonModal 
+                    isOpen={isAddLessonModalOpen}
+                    onClose={() => setIsAddLessonModalOpen(false)}
+                    classId={classId}
+                    dayOfWeek={day}
+                    onAdded={() => onChangeScheduleLesson()}
+                    type={type}
+                />
+            )}
             
         </section>
     );

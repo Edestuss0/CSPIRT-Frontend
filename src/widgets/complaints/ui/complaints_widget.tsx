@@ -20,7 +20,7 @@ export function ComplaintsWidget({id, name}: props) {
 
     useEffect(() => {
         void getComplaints(id);
-    }, [getComplaints])
+    }, [getComplaints, id])
 
     return (
         <>

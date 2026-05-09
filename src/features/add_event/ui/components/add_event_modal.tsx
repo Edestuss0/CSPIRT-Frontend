@@ -1,7 +1,8 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { ClassType } from "../../../../shared/entities/class/types/class_types.ts";
 import {useAddEventStore} from "../../store/add_event_store.ts";
-import type {addEventFormValues} from "../../model/add_event_usecase.ts";
+import type {addEventFormValues} from "../../models/add_event_usecase.ts";
+import {useAddUserStore} from "../../../add_user/store/add_user_store.ts";
 
 interface Props {
     isOpen: boolean;
@@ -24,6 +25,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd, classes,}: Props) {
 
         function handleEscape(event: KeyboardEvent) {
             if (event.key === "Escape") {
+                useAddUserStore.setState({error: null});
                 onClose();
             }
         }
@@ -84,6 +86,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd, classes,}: Props) {
 
             setSelectedClassIds([]);
             setIsClassesDropdownOpen(false);
+            useAddEventStore.setState({error: null});
             onClose();
         } finally {
             setIsSubmitting(false);
@@ -91,7 +94,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd, classes,}: Props) {
     }
 
     return (
-        <div className="modal-backdrop" onMouseDown={onClose}>
+        <div className="modal-backdrop" onMouseDown={() => {onClose(); useAddEventStore.setState({error: null});}}>
             <section
                 className="modal modal--wide"
                 role="dialog"
@@ -113,7 +116,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd, classes,}: Props) {
                     <button
                         className="modal__close"
                         type="button"
-                        onClick={onClose}
+                        onClick={() => {onClose(); useAddEventStore.setState({error: null});}}
                         aria-label="Закрыть модальное окно"
                     >
                         ×
@@ -171,6 +174,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd, classes,}: Props) {
                                 name="description"
                                 className="input"
                                 minLength={10}
+                                maxLength={1000}
                                 placeholder="Кратко опишите мероприятие"
                                 rows={4}
                                 required
@@ -245,7 +249,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd, classes,}: Props) {
                         <button
                             className="btn btn--secondary"
                             type="button"
-                            onClick={onClose}
+                            onClick={() => {onClose(); useAddEventStore.setState({error: null});}}
                             disabled={isSubmitting}
                         >
                             Отмена

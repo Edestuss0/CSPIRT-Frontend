@@ -1,16 +1,14 @@
-import {ApiClient} from "../../../../core/api/api_client.ts";
 import {
     type ScheduleAddLessonFormType,
     type ScheduleChangeLessonFormType,
     type ScheduleLessonType,
-    SchedulesResponseSchema
+    SchedulesResponseSchema, TeacherScheduleResponseSchema
 } from "../types/schedule_types.ts";
-
-const client = new ApiClient();
+import {apiClient} from "../../../../core/api/client.ts";
 
 export const ScheduleApi = {
     async getCurrentScheduleByClass(id: number, type: "base" | "current"): Promise<ScheduleLessonType[]> {
-        const response = await client.get(`/api/schedules?class_id=${id}&type=${type}`, true);
+        const response = await apiClient.get(`/api/schedules?class_id=${id}&type=${type}`, true);
         
         if (!response.checkStatus()) {
             throw new Error("Ошибка при получении расписания");
@@ -25,8 +23,24 @@ export const ScheduleApi = {
         return parsed.data.Schedules;
     },
     
+    async getTeacherSchedule(): Promise<ScheduleLessonType[]> {
+        const response = await apiClient.get(`/api/schedules/teacher/current`, true);
+        
+        if (!response.checkStatus()) {
+            throw new Error("Ошибка при получении расписания");
+        }
+
+        const parsed = TeacherScheduleResponseSchema.safeParse(response.data);
+
+        if (!parsed.success) {
+            throw new Error("Некорректный ответ сервера");
+        }
+
+        return parsed.data.Schedules;
+    },
+    
     async changeScheduleLesson(id: number, form: ScheduleChangeLessonFormType, type: "base" | "current"): Promise<true> {
-        const response = await client.patch(`/api/schedules/update`, {
+        const response = await apiClient.patch(`/api/schedules/update`, {
             Type: type,
             Action: "upsert",
             Id: id,
@@ -41,7 +55,7 @@ export const ScheduleApi = {
     },
     
     async addScheduleLesson(form: ScheduleAddLessonFormType, type: "base" | "current"): Promise<true> {
-        const response = await client.patch(`/api/schedules/update`, {
+        const response = await apiClient.patch(`/api/schedules/update`, {
             Type: type,
             Action: "upsert",
             Lesson: form
@@ -55,7 +69,7 @@ export const ScheduleApi = {
     },
     
     async deleteSchedule(id: number, type: "base" | "current"): Promise<true> {
-        const response = await client.patch(`/api/schedules/update`, {
+        const response = await apiClient.patch(`/api/schedules/update`, {
             Type: type,
             Action: "delete",
             Id: id 
@@ -69,7 +83,7 @@ export const ScheduleApi = {
     },
     
     async rolloverSchedule(id: number): Promise<true> {
-        const response = await client.patch(`/api/schedules/rollover?class_id=${id}`, {}, true);
+        const response = await apiClient.patch(`/api/schedules/rollover?class_id=${id}`, {}, true);
 
         if (!response.checkStatus()) {
             throw new Error("Ошибка при попытке сброса текущего расписания");

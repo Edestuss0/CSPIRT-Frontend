@@ -1,14 +1,14 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
-import {useClassDashboardStore} from "../../features/class_dashboard/store/class_dashboard_store.ts";
-import {useAuthStore} from "../../features/auth/store/auth_store.ts";
-import {ChangeTeacherModal} from "../../features/class_dashboard/ui/components/change_teacher_modal.tsx";
-import {ConfirmModal} from "../../shared/ui/modals/confirm_modal.tsx";
-import {UsersWidget} from "../../widgets/users/ui/users_widget.tsx";
-import {NotesWidget} from "../../widgets/notes/ui/notes_widget.tsx";
-import {ComplaintsWidget} from "../../widgets/complaints/ui/complaints_widget.tsx";
-import {ScheduleWidget} from "../../widgets/schedule/ui/schedule_widget.tsx";
-import {BaseScheduleWidget} from "../../widgets/schedule/ui/base_schedule_widget.tsx";
+import {useClassDashboardStore} from "../../store/class_dashboard_store.ts";
+import {useAuthStore} from "../../../../features/auth/store/auth_store.ts";
+import {ChangeTeacherModal} from "../components/change_teacher_modal.tsx";
+import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
+import {UsersWidget} from "../../../../widgets/users/ui/users_widget.tsx";
+import {NotesWidget} from "../../../../widgets/notes/ui/notes_widget.tsx";
+import {ComplaintsWidget} from "../../../../widgets/complaints/ui/complaints_widget.tsx";
+import {ScheduleWidget} from "../../../../widgets/schedule/ui/schedule_widget.tsx";
+import {BaseScheduleWidget} from "../../../../widgets/schedule/ui/base_schedule_widget.tsx";
 
 type SelectedList = | "users" | "notes" | "complaints" | "schedule" | "baseschedule";
 
@@ -37,6 +37,12 @@ export function ClassDashboard() {
     const [isDeleteClassModalOpen, setDeleteClassModalOpen] = useState(false);
     const [isRolloverModalOpen, setRolloverModalOpen] = useState(false);
     const [key, setKey] = useState<number>(0);
+
+    useEffect(() => {
+        if (classId) {
+            void getClassTeacher(classId);
+        }
+    }, [classId, getClassTeacher]);
 
     return (
         <main className={"main"}>

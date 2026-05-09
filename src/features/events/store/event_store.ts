@@ -16,7 +16,9 @@ interface State {
     classes: ClassType[];
     event: EventType | null;
     class: ClassType | null;
+    events: EventType[] | null;
 
+    getEvents: () => Promise<void>
     getClasses: () => Promise<void>;
     removePlayersFromEvent : (id: number, dto: AddEventPlayersType) => Promise<void>; 
     addPlayersToEvent: (
@@ -36,21 +38,28 @@ export const useEventStore = create<State>()((set) => ({
     class: null,
     classes: [],
     event: null,
+    events: null,
 
+    getEvents: async () => {
+        set({status: "loading"});
+
+        try {
+            const response = await EventsApi.getEvents();
+            set({status: "idle", events: response, error: null});
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+        }
+    },
+    
     getClasses: async () => {
-        set({
-            status: "loading",
-            error: null,
-        });
+        set({status: "loading", error: null,});
 
         try {
             const response = await classApi.getClasses();
-
-            set({
-                status: "idle",
-                classes: response,
-                error: null,
-            });
+            set({status: "idle", classes: response, error: null,});
         } catch (e) {
             set({
                 error: e instanceof Error ? e.message : "Неизвестная ошибка",

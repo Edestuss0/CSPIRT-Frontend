@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {useNotesStore} from "../../../notes/store/notes_store.ts";
+import {useNotesStore} from "../../../features/notes/store/notes_store.ts";
 import {NoteCard} from "../../../shared/ui/cards/note_card.tsx";
 import {useAuthStore} from "../../../features/auth/store/auth_store.ts";
 
@@ -20,7 +20,7 @@ export function NotesWidget({id, name}: props) {
 
     useEffect(() => {
         void getNotes(id);
-    }, [getNotes])
+    }, [getNotes, id])
 
     return (
         <>

@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAuthStore } from "../../auth/store/auth_store";
-import { UserRoles } from "../../../shared/entities/user/types/user_types";
+import { useAuthStore } from "../../../features/auth/store/auth_store.ts";
+import { UserRoles } from "../../../shared/entities/user/types/user_types.ts";
 import { NoteCard } from "../../../shared/ui/cards/note_card.tsx";
 import { ComplaintCard } from "../../../shared/ui/cards/complaint_card.tsx";
+import {TeacherScheduleWidget} from "../../../widgets/schedule/ui/teacher_schedule_widget.tsx";
 
 export function ProfilePage() {
     const navigate = useNavigate();
@@ -78,14 +79,14 @@ export function ProfilePage() {
                             </h1>
 
                             <div className="profile-hero__meta">
-                <span className="badge badge--info">
-                  {UserRoles[user.Role] ?? user.Role}
-                </span>
+                                <span className="badge badge--info">
+                                    {UserRoles[user.Role] ?? user.Role}
+                                </span>
 
                                 {isStudentLikeUser && (
                                     <span className="badge badge--neutral">
-                    Класс {user.Class}
-                  </span>
+                                        Класс {user.Class}
+                                    </span>
                                 )}
 
                                 <span className="profile-login">@{user.Login}</span>
@@ -159,6 +160,20 @@ export function ProfilePage() {
                         </div>
                     </section>
 
+                    {user.Role === "Admin" || user.Role === "Owner" && (
+                        <section className="card card--padded">
+                            <div className="section-head">
+                                <h2 className="section-title">Расписание учителя</h2>
+                                <p className="section-description">
+                                    Подробные данные о вашем расписании как учителя на текущую неделю.
+                                </p>
+                            </div>
+
+                            <TeacherScheduleWidget name={`${user.Name} ${user.LastName}`} />
+
+                        </section>
+                    )}
+
                     {isStudentLikeUser && (
                         <section className="card card--padded user-rating-card">
                             <div className="section-head">
@@ -180,8 +195,8 @@ export function ProfilePage() {
                                 </div>
 
                                 <span className={`badge badge--${ratingLevel}`}>
-                  {Math.round(ratingPercent)}%
-                </span>
+                                    {Math.round(ratingPercent)}%
+                                </span>
                             </div>
 
                             <div className="rating">
@@ -214,8 +229,8 @@ export function ProfilePage() {
                                             : "badge badge--neutral"
                                     }
                                 >
-                  {complaints.length}
-                </span>
+                                    {complaints.length}
+                                </span>
                             </div>
 
                             {complaints.length > 0 ? (

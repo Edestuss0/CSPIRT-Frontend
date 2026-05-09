@@ -5,37 +5,10 @@ import type { UserType } from "../../../../shared/entities/user/types/user_types
 import { addEventPlayersSchema } from "../../../../shared/entities/events/api/events_api.ts";
 import { useEventStore } from "../../store/event_store.ts";
 
-function getPlayerId(player: unknown): number | null {
-    if (typeof player === "number") {
-        return player;
-    }
-
-    if (typeof player === "object" && player !== null) {
-        const data = player as {
-            Id?: unknown;
-            ID?: unknown;
-            UserID?: unknown;
-            userId?: unknown;
-            playerId?: unknown;
-        };
-
-        if (typeof data.Id === "number") return data.Id;
-        if (typeof data.ID === "number") return data.ID;
-        if (typeof data.UserID === "number") return data.UserID;
-        if (typeof data.userId === "number") return data.userId;
-        if (typeof data.playerId === "number") return data.playerId;
-    }
-
-    return null;
-}
-
 export function EventClassPlayersPage() {
     const navigate = useNavigate();
 
-    const { eventId, classId } = useParams<{
-        eventId: string;
-        classId: string;
-    }>();
+    const { eventId, classId } = useParams<{ eventId: string, classId: string }>();
 
     const numericEventId = eventId ? Number(eventId) : null;
     const numericClassId = classId ? Number(classId) : null;
@@ -58,15 +31,14 @@ export function EventClassPlayersPage() {
         if (!numericEventId || Number.isNaN(numericEventId)) {
             return;
         }
-
         void getEventById(numericEventId);
     }, [numericEventId, getEventById]);
 
     useEffect(() => {
         if (numericClassId) {
             void getClassById(numericClassId);
-        } 
-    }, [getClassById]);
+        }
+    }, [getClassById, numericClassId]);
 
     const classItem = useEventStore((state) => state.class);
 
@@ -85,9 +57,7 @@ export function EventClassPlayersPage() {
     }, [students]);
 
     const eventPlayerIdSet = useMemo(() => {
-        const ids = event?.Players
-            ?.map(getPlayerId)
-            .filter((id): id is number => typeof id === "number") ?? [];
+        const ids = event?.Players;
 
         return new Set(ids);
     }, [event]);
