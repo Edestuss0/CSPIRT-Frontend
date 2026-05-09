@@ -5,7 +5,7 @@ import { useAuthStore } from "../../../features/auth/store/auth_store.ts";
 import { UserRoles } from "../../../shared/entities/user/types/user_types.ts";
 import { NoteCard } from "../../../shared/ui/cards/note_card.tsx";
 import { ComplaintCard } from "../../../shared/ui/cards/complaint_card.tsx";
-import {TeacherScheduleWidget} from "../../../widgets/schedule/ui/teacher_schedule_widget.tsx";
+import {TeacherScheduleWidget} from "../../../features/schedule/ui/components/teacher_schedule_widget.tsx";
 
 export function ProfilePage() {
     const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {type addClassFormValues, AddClassUsecase} from "../models/add_class_usecase.ts";
+import {type addClassFormValues, AddClassUsecase} from "../../class/models/add_class_usecase.ts";
 
 interface State {
     status: "idle" | "error" | "loading",

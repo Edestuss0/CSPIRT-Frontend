@@ -1,6 +1,8 @@
 import {create} from "zustand";
 import type {UserType} from "../../../shared/entities/user/types/user_types.ts";
 import {classApi} from "../../../shared/entities/class/api/class_api.ts";
+import {UserApi} from "../../../shared/entities/user/api/user_api.ts";
+import {AddUserUseCase, type addUserValues} from "../models/add_user_usecase.ts";
 
 type status = "idle" | "loading" | "error";
 
@@ -9,8 +11,10 @@ interface State {
     error: string | null;
     message: string | null;
     users: UserType[] | null;
-    
+
     getUsersByClass: (id: number) => Promise<void>;    
+    getStaff: () => Promise<void>;
+    addUser: (form: addUserValues) => Promise<boolean>
 }
 
 export const useUsersStore = create<State>()((set) => ({
@@ -20,7 +24,7 @@ export const useUsersStore = create<State>()((set) => ({
     users: null,
     
     getUsersByClass: async (id: number)=> {
-        set({status: "loading"});
+        set({status: "loading", users: null, error: null});
 
         try {
             const response = await classApi.getUsersByClass(id);
@@ -33,4 +37,38 @@ export const useUsersStore = create<State>()((set) => ({
             });
         }
     },
+
+    getStaff: async () => {
+        set({status: "loading", users: null, error: null});
+
+        try {
+            const response = await UserApi.getStaff();
+            set({users: response, error: null, status: "idle"});
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+        }
+    },
+
+    addUser: async (form: addUserValues) => {
+        set({status: "loading", error: null});
+
+        try {
+            const response = await AddUserUseCase(form);
+            if (response) {
+                set({status: "idle", error: null});
+                return true;
+            }
+            return false;
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+            return false
+        }
+    }
+    
 }));

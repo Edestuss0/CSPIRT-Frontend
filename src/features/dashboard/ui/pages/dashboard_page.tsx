@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../auth/store/auth_store";
-import { useDashboardStore } from "../../store/dashboard_store";
-import { AddUserModal } from "../../../add_user/ui/components/add_user_modal.tsx";
-import {StaffCard} from "../../../../shared/ui/cards/staff_card.tsx";
-import {AddClassModal} from "../../../add_class/ui/components/add_class_modal.tsx";
-import {EventCard} from "../../../../shared/ui/cards/event_card.tsx";
-import {AddEventModal} from "../../../add_event/ui/components/add_event_modal.tsx";
-import {ClassesWidget} from "../../../../widgets/classes/ui/classes_widget.tsx";
+import { AddUserModal } from "../../../users/ui/components/add_user_modal.tsx";
+import {AddClassModal} from "../../../class/ui/components/add_class_modal.tsx";
+import {AddEventModal} from "../../../events/ui/components/add_event_modal.tsx";
+import {ClassesWidget} from "../../../class/ui/components/classes_widget.tsx";
+import {EventsWidget} from "../../../events/ui/components/events_widget.tsx";
+import {StaffWidget} from "../../../users/ui/components/staff_widget.tsx";
 
 type Lists = "classes" | "events" | "staff";
 
@@ -15,25 +14,12 @@ export function DashboardPage() {
     const navigate = useNavigate();
 
     const role = useAuthStore((state) => state.user?.User.Role);
-    const status = useDashboardStore((state) => state.status);
-    const error = useDashboardStore((state) => state.error);
-    const classes = useDashboardStore((state) => state.classes);
-    const staff = useDashboardStore((state) => state.staff);
-    const events = useDashboardStore((state) => state.events);
-    const getStaff = useDashboardStore((state) => state.getStaff);
-    const getClasses = useDashboardStore((state) => state.getClasses);
-    const getEvents = useDashboardStore((state) => state.getEvents);
-
-    const isLoading = status === "loading";
-
+    
     const [selectedList, setSelectedList] = useState<Lists>("classes");
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
     const [isAddClassModalOpen, setIsAddClassModalOpen] = useState(false);
     const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
-
-    useEffect(() => {
-        void getClasses();
-    }, [getClasses]);
+    const [key, setKey] = useState(0);
 
     if (!role) {
         return null;
@@ -63,10 +49,7 @@ export function DashboardPage() {
                                 <button
                                     className="btn btn--primary"
                                     type="button"
-                                    onClick={() => {
-                                        void getStaff();
-                                        setIsAddClassModalOpen(!isAddClassModalOpen);
-                                    }}
+                                    onClick={() => setIsAddClassModalOpen(!isAddClassModalOpen)}
                                 >
                                     Добавить класс
                                 </button>
@@ -76,10 +59,7 @@ export function DashboardPage() {
                         {selectedList === "events" && role === "Owner" && (<button
                             className="btn btn--primary"
                             type="button"
-                            onClick={() => {
-                                void getEvents();
-                                setIsAddEventModalOpen(true);
-                            }}
+                            onClick={() => setIsAddEventModalOpen(true)}
                         >
                             Добавить мероприятие
                         </button>)}
@@ -97,10 +77,7 @@ export function DashboardPage() {
                             <button
                                 className="btn btn--secondary"
                                 type="button"
-                                onClick={() => {
-                                    void getStaff();
-                                    setSelectedList("staff");
-                                }}
+                                onClick={() => setSelectedList("staff")}
                                 disabled={selectedList === "staff"}
                             >
                                 Персонал
@@ -110,10 +87,7 @@ export function DashboardPage() {
                         <button
                             className="btn btn--secondary"
                             type="button"
-                            onClick={() => {
-                                void getEvents();
-                                setSelectedList("events");
-                            }}
+                            onClick={() => setSelectedList("events")}
                             disabled={selectedList === "events"}
                         >
                             Мероприятия
@@ -123,84 +97,44 @@ export function DashboardPage() {
                             className="btn btn--primary"
                             type="button"
                             onClick={() => navigate("/profile")}
-                            disabled={isLoading}
                         >
                             Профиль
                         </button>
                     </div>
                 </div>
 
-                <div className="page-spacer" /> 
-
-                {isLoading && (
-                    <div className="class-list">
-                        <div className="skeleton" style={{ height: 88 }} />
-                        <div className="skeleton" style={{ height: 88 }} />
-                        <div className="skeleton" style={{ height: 88 }} />
-                    </div>
-                )}
-
-                {error && !isLoading && (
-                    <div className="alert alert--danger mb-4">{error}</div>
-                )}
+                <div className="page-spacer" />
 
                 {selectedList === "classes" && (
-                    <ClassesWidget/>
+                    <ClassesWidget key={key}/>
                 )}
 
-                {!isLoading && !error && selectedList === "events" && events.length > 0 && (
-                    <div className="class-list">
-                        {events.map((item) => (
-                            <EventCard key={item.ID} item={item} onClick={() => navigate(`/event/${item.ID}`)} />
-                        ))}
-                    </div>
+                {selectedList === "events" && (
+                    <EventsWidget key={key}/>
                 )}
 
-                {!isLoading && !error && selectedList === "events" && events.length === 0 && (
-                    <div className="empty-state">
-                        <h2 className="empty-state__title">Мероприятия не найдены</h2>
-                        <p className="empty-state__text">
-                            Не удалось найти доступные мероприятия
-                        </p>
-                    </div>
-                )}
-
-                {!isLoading && !error && selectedList === "staff" && staff.length > 0 && (
-                    <div className="class-list">
-                        {staff.map((item) => (
-                            <StaffCard key={item.Id} user={item} />
-                        ))}
-                    </div>
-                )}
-
-                {!isLoading && !error && selectedList === "staff" && staff.length === 0 && (
-                    <div className="empty-state">
-                        <h2 className="empty-state__title">Персонал не найден</h2>
-                        <p className="empty-state__text">
-                            Не удалось найти персонал
-                        </p>
-                    </div>
+                {selectedList === "staff" && (
+                    <StaffWidget key={key}/>
                 )}
 
                 <AddUserModal
                     isOpen={isAddUserModalOpen}
                     onClose={() => setIsAddUserModalOpen(false)}
-                    classes={classes}
                     onAddUser={async () => {
-                        await getClasses();
+                        setKey(prevKey => prevKey + 1);
                         setIsAddUserModalOpen(false);
                     }}
                 />
                 
                 <AddClassModal isOpen={isAddClassModalOpen} onClose={() => setIsAddClassModalOpen(false)} onAddClass={async () => {
-                    await getClasses();
+                    setKey(prevKey => prevKey + 1);
                     setIsAddClassModalOpen(false);
-                }} staff={staff}/>
+                }}/>
                 
                 <AddEventModal isOpen={isAddEventModalOpen} onClose={() => setIsAddEventModalOpen(false)} onEventAdd={async () => {
-                 await getEvents(); 
+                 setKey(prevKey => prevKey + 1);
                  setIsAddEventModalOpen(false);
-                }} classes={classes}/>
+                }} />
             </section>
         </main>
     );

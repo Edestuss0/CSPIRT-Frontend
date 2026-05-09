@@ -6,6 +6,7 @@ import {
     EventsApi,
 } from "../../../shared/entities/events/api/events_api.ts";
 import type { EventType } from "../../../shared/entities/events/types/events_types.ts";
+import {type addEventFormValues, addEventUsecase} from "../models/add_event_usecase.ts";
 
 export type Status = "loading" | "error" | "idle";
 
@@ -20,6 +21,7 @@ interface State {
 
     getEvents: () => Promise<void>
     getClasses: () => Promise<void>;
+    addEvent: (form: addEventFormValues) => Promise<boolean>
     removePlayersFromEvent : (id: number, dto: AddEventPlayersType) => Promise<void>; 
     addPlayersToEvent: (
         eventId: number,
@@ -51,6 +53,25 @@ export const useEventStore = create<State>()((set) => ({
                 error: e instanceof Error ? e.message : "Неизвестная ошибка",
                 status: "error",
             });
+        }
+    },
+
+    addEvent: async (form: addEventFormValues) => {
+        set({status: "loading", error: null});
+
+        try {
+            const response = await addEventUsecase(form);
+            if (response) {
+                set({status: "idle", error: null});
+                return true;
+            }
+            return false;
+        } catch (e) {
+            set({
+                error: e instanceof Error ? e.message : "Неизвестная ошибка",
+                status: "error",
+            });
+            return false
         }
     },
     

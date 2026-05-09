@@ -4,11 +4,11 @@ import {useClassDashboardStore} from "../../store/class_dashboard_store.ts";
 import {useAuthStore} from "../../../../features/auth/store/auth_store.ts";
 import {ChangeTeacherModal} from "../components/change_teacher_modal.tsx";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
-import {UsersWidget} from "../../../../widgets/users/ui/users_widget.tsx";
-import {NotesWidget} from "../../../../widgets/notes/ui/notes_widget.tsx";
-import {ComplaintsWidget} from "../../../../widgets/complaints/ui/complaints_widget.tsx";
-import {ScheduleWidget} from "../../../../widgets/schedule/ui/schedule_widget.tsx";
-import {BaseScheduleWidget} from "../../../../widgets/schedule/ui/base_schedule_widget.tsx";
+import {UsersWidget} from "../../../../features/users/ui/components/users_widget.tsx";
+import {NotesWidget} from "../../../../features/notes/ui/components/notes_widget.tsx";
+import {ComplaintsWidget} from "../../../../features/complaints/ui/components/complaints_widget.tsx";
+import {ScheduleWidget} from "../../../../features/schedule/ui/components/schedule_widget.tsx";
+import {BaseScheduleWidget} from "../../../../features/schedule/ui/components/base_schedule_widget.tsx";
 
 type SelectedList = | "users" | "notes" | "complaints" | "schedule" | "baseschedule";
 
