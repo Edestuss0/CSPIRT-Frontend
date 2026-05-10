@@ -10,7 +10,7 @@ interface ChangeScheduleLessonModalProps {
     onClose: () => void;
     lesson: ScheduleLessonType | null;
     onChanged: () => Promise<void> | void;
-    type: "base" | "current"
+    type: "base" | "current" | "planned"
 }
 
 export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, type,}: ChangeScheduleLessonModalProps) {

@@ -6,6 +6,7 @@ import { UserRoles } from "../../../shared/entities/user/types/user_types.ts";
 import { NoteCard } from "../../../shared/ui/cards/note_card.tsx";
 import { ComplaintCard } from "../../../shared/ui/cards/complaint_card.tsx";
 import {TeacherScheduleWidget} from "../../../features/schedule/ui/components/teacher_schedule_widget.tsx";
+import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../shared/ui/other/burger_menu.tsx";
 
 export function ProfilePage() {
     const navigate = useNavigate();
@@ -22,6 +23,18 @@ export function ProfilePage() {
         await logout();
         navigate("/login", { replace: true });
     }
+    
+    const menuItems: BurgerDrawerMenuItem[] = [
+        {
+            label: "Назад",
+            onClick: () => navigate(-1),
+        },
+        {
+            label: "Выйти",
+            onClick: () => logout(),
+            danger: true
+        }
+    ]
 
     if (!profile) {
         return (
@@ -95,31 +108,7 @@ export function ProfilePage() {
                     </div>
 
                     <div className="profile-actions">
-                        <button
-                            className="btn btn--secondary"
-                            type="button"
-                            onClick={() => navigate("/", { replace: true })}
-                        >
-                            Главная
-                        </button>
-
-                        <button
-                            className="btn btn--secondary"
-                            type="button"
-                            onClick={() => void getProfile()}
-                            disabled={isLoading}
-                        >
-                            Обновить
-                        </button>
-
-                        <button
-                            className="btn btn--danger"
-                            type="button"
-                            onClick={() => void handleLogout()}
-                            disabled={isLoading}
-                        >
-                            Выйти
-                        </button>
+                        <BurgerDrawerMenu items={menuItems} title={"Меню"} />
                     </div>
                 </div>
 

@@ -13,6 +13,7 @@ import { complaintAddDto } from "../../../../shared/entities/complaints/api/comp
 import { ratingChangeDTO } from "../../../../shared/entities/rating/api/rating_api.ts";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 import {TeacherScheduleWidget} from "../../../../features/schedule/ui/components/teacher_schedule_widget.tsx";
+import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 
 export function UserPage() {
     const navigate = useNavigate();
@@ -194,6 +195,19 @@ export function UserPage() {
 
     const ratingLevel =
         rating < 1500 ? "low" : rating < 3500 ? "medium" : "high";
+    
+    const menuItems: BurgerDrawerMenuItem[] = [
+        {
+            label: "Удалить пользователя",
+            danger: true,
+            hidden: (currentRole !== "Owner"),
+            onClick: () => setIsDeleteUserModalOpen(true)
+        },
+        {
+            label: "Назад",
+            onClick: () => navigate(-1),
+        }
+    ]
 
     return (
         <main className="main">
@@ -222,28 +236,9 @@ export function UserPage() {
                     </div>
 
                     <div className="profile-actions">
-
-                        {currentRole === "Owner" && (
-                            <button
-                                className="btn btn--danger"
-                                type="button"
-                                onClick={async () => {
-                                    if (id !== null) {
-                                        setIsDeleteUserModalOpen(true);
-                                    }
-                                }}
-                            >
-                                Удалить пользователя
-                            </button>
-                        )}
                         
-                        <button
-                            className="btn btn--secondary"
-                            type="button"
-                            onClick={() => navigate(-1)}
-                        >
-                            Назад
-                        </button>
+                        <BurgerDrawerMenu items={menuItems} title={"Меню"} />
+                        
                     </div>
                 </div>
 
@@ -279,7 +274,7 @@ export function UserPage() {
                         </div>
                     </section>
 
-                    {(user.User.Role === "Admin" || user.User.Role === "Owner") && (
+                    {(user.User.Role === "Admin" || user.User.Role === "Owner") && (currentRole === "Owner") && (
                         <section className="card card--padded">
                             <div className="section-head">
                                 <h2 className="section-title">Расписание учителя</h2>

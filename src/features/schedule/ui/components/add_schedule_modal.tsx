@@ -11,7 +11,7 @@ interface AddScheduleLessonModalProps {
     classId: number;
     dayOfWeek: ScheduleDay;
     onAdded: () => Promise<void> | void;
-    type: "base" | "current"
+    type: "base" | "current" | "planned"
 }
 
 export function AddScheduleLessonModal({isOpen, onClose, classId, dayOfWeek, onAdded, type}: AddScheduleLessonModalProps) {

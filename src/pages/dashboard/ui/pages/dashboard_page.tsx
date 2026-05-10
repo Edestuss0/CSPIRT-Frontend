@@ -7,6 +7,7 @@ import {AddEventModal} from "../../../../features/events/ui/components/add_event
 import {ClassesWidget} from "../../../../features/class/ui/components/classes_widget.tsx";
 import {EventsWidget} from "../../../../features/events/ui/components/events_widget.tsx";
 import {StaffWidget} from "../../../../features/users/ui/components/staff_widget.tsx";
+import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 
 type Lists = "classes" | "events" | "staff";
 
@@ -20,6 +21,48 @@ export function DashboardPage() {
     const [isAddClassModalOpen, setIsAddClassModalOpen] = useState(false);
     const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
     const [key, setKey] = useState(0);
+    
+    const menuItems: BurgerDrawerMenuItem[] = [
+        {
+            label: "Список классов",
+            onClick: () => setSelectedList("classes"),
+            disabled: selectedList === "classes"
+        },
+        {
+            label: "Персонал школы",
+            onClick: () => setSelectedList("staff"),
+            disabled: selectedList === "staff",
+            hidden: (role !== "Owner")
+        },
+        {
+            label: "Мероприятия",
+            onClick: () => setSelectedList("events"),
+            disabled: selectedList === "events",
+        },
+        {
+            label: "Добавить пользователя",
+            primary: true,
+            onClick: () => setIsAddUserModalOpen(true),
+            hidden: (role !== "Owner" || selectedList !== "classes"),
+        },
+        {
+            label: "Добавить класс",
+            primary: true,
+            onClick: () => setIsAddClassModalOpen(true),
+            hidden: (role !== "Owner" || selectedList !== "classes"),
+        },
+        {
+            label: "Добавить мероприятие",
+            primary: true,
+            onClick: () => setIsAddEventModalOpen(true),
+            hidden: (role !== "Owner" || selectedList !== "events"),
+        },
+        {
+            label: "Профиль",
+            primary: true,
+            onClick: () => navigate("/profile")
+        },
+    ]
 
     if (!role) {
         return null;
@@ -28,78 +71,17 @@ export function DashboardPage() {
     return (
         <main className="main">
             <section className="page">
-                <div className="profile-hero">
-                    <div className="info-row">
-                        <p className="info-row__label">
-                            Главная панель системы
-                        </p>
+                <div className="profile-hero class-dashboard-hero">
+                    <div className="class-dashboard-hero__content">
+                        <h1 className="info-row__value">Панель управления</h1>
                     </div>
 
-                    <div className="btn-group">
-                        {selectedList === "classes" && role === "Owner" && (
-                            <div className="btn-group">
-                                <button
-                                    className="btn btn--primary"
-                                    type="button"
-                                    onClick={() => setIsAddUserModalOpen(true)}
-                                >
-                                    Добавить пользователя
-                                </button>
-
-                                <button
-                                    className="btn btn--primary"
-                                    type="button"
-                                    onClick={() => setIsAddClassModalOpen(!isAddClassModalOpen)}
-                                >
-                                    Добавить класс
-                                </button>
-                            </div>
-                        )}
-
-                        {selectedList === "events" && role === "Owner" && (<button
-                            className="btn btn--primary"
-                            type="button"
-                            onClick={() => setIsAddEventModalOpen(true)}
-                        >
-                            Добавить мероприятие
-                        </button>)}
-
-                        <button
-                            className="btn btn--secondary"
-                            type="button"
-                            onClick={() => setSelectedList("classes")}
-                            disabled={selectedList === "classes"}
-                        >
-                            Классы
-                        </button>
-
-                        {role === "Owner" && (
-                            <button
-                                className="btn btn--secondary"
-                                type="button"
-                                onClick={() => setSelectedList("staff")}
-                                disabled={selectedList === "staff"}
-                            >
-                                Персонал
-                            </button>
-                        )}
-
-                        <button
-                            className="btn btn--secondary"
-                            type="button"
-                            onClick={() => setSelectedList("events")}
-                            disabled={selectedList === "events"}
-                        >
-                            Мероприятия
-                        </button>
-
-                        <button
-                            className="btn btn--primary"
-                            type="button"
-                            onClick={() => navigate("/profile")}
-                        >
-                            Профиль
-                        </button>
+                    <div className="class-dashboard-hero__menu">
+                        <BurgerDrawerMenu
+                            title="Меню"
+                            items={menuItems}
+                            side="right"
+                        />
                     </div>
                 </div>
 

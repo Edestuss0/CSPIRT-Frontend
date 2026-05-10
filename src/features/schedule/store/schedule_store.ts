@@ -19,11 +19,11 @@ interface State {
     teachers: UserType[] | null
     schedule: ScheduleModelType | null
     
-    getClassSchedule: (id: number, type: "base" | "current") => Promise<void>
+    getClassSchedule: (id: number, type: "base" | "current" | "planned") => Promise<void>
     getTeacherSchedule: (id: number) => Promise<void>
-    addSchedule: (form: ScheduleAddFormValues, type: "base" | "current") => Promise<boolean>
-    changeSchedule: (id: number, form: ScheduleChangeFormValues, type: "base" | "current") => Promise<boolean>
-    deleteSchedule: (id: number, type: "base" | "current") => Promise<void>
+    addSchedule: (form: ScheduleAddFormValues, type: "base" | "current" | "planned") => Promise<boolean>
+    changeSchedule: (id: number, form: ScheduleChangeFormValues, type: "base" | "current" | "planned") => Promise<boolean>
+    deleteSchedule: (id: number, type: "base" | "current" | "planned") => Promise<void>
     getTeachers: () => Promise<void>
 }
 
@@ -33,7 +33,7 @@ export const useScheduleStore = create<State>()((set) => ({
     teachers: null,
     schedule: null,
 
-    getClassSchedule: async (id: number, type: "base" | "current") => {
+    getClassSchedule: async (id: number, type: "base" | "current" | "planned") => {
         set({status: "loading", schedule: null, error: null});
 
         try {
@@ -63,7 +63,7 @@ export const useScheduleStore = create<State>()((set) => ({
         }
     },
 
-    changeSchedule: async (id: number, form: ScheduleChangeFormValues, type: "base" | "current") => {
+    changeSchedule: async (id: number, form: ScheduleChangeFormValues, type: "base" | "current" | "planned") => {
         set({status: "loading", error: null});
 
         try {
@@ -82,7 +82,7 @@ export const useScheduleStore = create<State>()((set) => ({
         }
     },
 
-    addSchedule: async (form: ScheduleAddFormValues, type: "base" | "current") => {
+    addSchedule: async (form: ScheduleAddFormValues, type: "base" | "current" | "planned") => {
         set({status: "loading", error: null});
 
         try {
@@ -101,7 +101,7 @@ export const useScheduleStore = create<State>()((set) => ({
         }
     },
 
-    deleteSchedule: async (id: number, type: "base" | "current") => {
+    deleteSchedule: async (id: number, type: "base" | "current" | "planned") => {
         set({status: "loading"});
         try {
             await ScheduleApi.deleteSchedule(id, type);

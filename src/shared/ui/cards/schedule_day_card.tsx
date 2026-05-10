@@ -11,7 +11,7 @@ interface Props {
     classId?: number;
     isTeacher?: boolean;
     day: ScheduleDay;
-    type: "base" | "current"
+    type: "base" | "current" | "planned"
 }
 
 export function ScheduleDayCard({ title, lessons, onChangeScheduleLesson = () => console.log(1), day, classId, type, isTeacher = false}: Props) {

@@ -9,8 +9,10 @@ import {NotesWidget} from "../../../../features/notes/ui/components/notes_widget
 import {ComplaintsWidget} from "../../../../features/complaints/ui/components/complaints_widget.tsx";
 import {ScheduleWidget} from "../../../../features/schedule/ui/components/schedule_widget.tsx";
 import {BaseScheduleWidget} from "../../../../features/schedule/ui/components/base_schedule_widget.tsx";
+// import {PlannedScheduleWidget} from "../../../../features/schedule/ui/components/planned_schedule_widget.tsx";
+import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 
-type SelectedList = | "users" | "notes" | "complaints" | "schedule" | "baseschedule";
+type SelectedList = | "users" | "notes" | "complaints" | "schedule" | "baseschedule" | "plannedschedule";
 
 export function ClassDashboard() {
     const navigate = useNavigate();
@@ -44,97 +46,81 @@ export function ClassDashboard() {
         }
     }, [classId, getClassTeacher]);
 
+    const menuItems: BurgerDrawerMenuItem[] = [
+        {
+            label: "Список учеников",
+            onClick: () => setSelectedList("users"),
+            disabled: selectedList === "users",
+        },
+        {
+            label: "Расписание класса",
+            onClick: () => setSelectedList("schedule"),
+            disabled: selectedList === "schedule",
+        },
+        {
+            label: "Стандартное расписание",
+            onClick: () => setSelectedList("baseschedule"),
+            disabled: selectedList === "baseschedule",
+            hidden: role !== "Owner",
+        },
+        {
+            label: "Список заметок класса",
+            onClick: () => setSelectedList("notes"),
+            disabled: selectedList === "notes",
+            hidden: !(role === "Admin" || role === "Owner" || role === "Helper"),
+        },
+        {
+            label: "Список жалоб класса",
+            onClick: () => setSelectedList("complaints"),
+            disabled: selectedList === "complaints",
+            hidden: !(role === "Admin" || role === "Owner"),
+        },
+        {
+            label: "Изменить классного руководителя",
+            onClick: async () => {
+                await getStaff();
+                setChangeTeacherModalOpen(true);
+            },
+            hidden: role !== "Owner",
+            primary: true,
+        },
+        {
+            label: "Удалить класс",
+            onClick: () => setDeleteClassModalOpen(true),
+            hidden: role !== "Owner",
+            danger: true,
+        },
+        {
+            label: "Сбросить расписание",
+            onClick: () => setRolloverModalOpen(true),
+            hidden: role !== "Owner",
+            danger: true,
+        },
+        {
+            label: "На главную",
+            onClick: () => navigate("/"),
+            primary: true,
+        },
+    ];
+
     return (
         <main className={"main"}>
             <section className={"page"}>
-                <div className={"profile-hero"}>
-                    <div className={"info-row"}>
-                        <h1 className={"info-row__value"}>{name} Класс</h1>
-                        <h2 className={"info-row__label"}>Классный руководитель - {teacher?.Name} {teacher?.LastName}</h2>
-                        {role === "Owner" &&  (
-                            <div className="btn-group">
-                                <button className={"btn btn--primary"} onClick={async () => {
-                                    await getStaff();
-                                    setChangeTeacherModalOpen(!isChangeTeacherModalOpen);
-                                }}>Изменить классного руководителя
-                                </button>
-                                <button className={"btn btn--danger"} onClick={async () => {
-                                    await getStaff();
-                                    setDeleteClassModalOpen(!isDeleteClassModalOpen)
-                                }}>Удалить класс
-                                </button>
-                            </div>
-                        )}
+                <div className="profile-hero class-dashboard-hero">
+                    <div className="class-dashboard-hero__content">
+                        <h1 className="info-row__value">{name} Класс</h1>
+
+                        <h2 className="info-row__label">
+                            Классный руководитель - {teacher?.Name} {teacher?.LastName}
+                        </h2>
                     </div>
-                    <div className={"btn-group"}>
-                        <button
-                            className={"btn btn--secondary"}
-                            type={"button"}
-                            onClick={() => setSelectedList('users')}
-                            disabled={(selectedList === "users")}
-                        >
-                            Список учеников
-                        </button>
 
-                        <button
-                            className={"btn btn--secondary"}
-                            type={"button"}
-                            onClick={async () => setSelectedList('schedule')}
-                            disabled={(selectedList === "schedule")}
-                        >
-                            Расписание класса
-                        </button>
-
-                        {role === "Owner" && (
-                            <button
-                                className={"btn btn--secondary"}
-                                type={"button"}
-                                onClick={() => setSelectedList('baseschedule')}
-                                disabled={(selectedList === "baseschedule")}
-                            >
-                                Стандартное расписание
-                            </button>
-                        )}
-
-                        {(role === "Admin" || role === "Owner" || role === "Helper") && (
-                                <button
-                                    className={"btn btn--secondary"}
-                                    type={"button"}
-                                    onClick={() => setSelectedList('notes')}
-                                    disabled={(selectedList === "notes")}
-                                >
-                                    Список заметок класса
-                                </button>
-                        )}
-
-                        {(role === "Admin" || role === "Owner") && (<button
-                            className={"btn btn--secondary"}
-                            type={"button"}
-                            onClick={() => setSelectedList('complaints')}
-                            disabled={(selectedList === "complaints")}
-                        >
-                            Список жалоб класса
-                        </button>)}
-
-                        {role === "Owner" && (
-                            <button
-                                className={"btn btn--primary"}
-                                type="button"
-                                onClick={() => setRolloverModalOpen(true)}
-                            >
-                                Сбросить расписание
-                            </button>
-                        )}
-                        
-                        <button
-                            className={"btn btn--primary"}
-                            type="button"
-                            onClick={() => {
-                                navigate("/");
-                            }}
-                        >
-                            На главную
-                        </button>
+                    <div className="class-dashboard-hero__menu">
+                        <BurgerDrawerMenu
+                            title="Меню класса"
+                            items={menuItems}
+                            side="right"
+                        />
                     </div>
                 </div>
                 
@@ -171,6 +157,10 @@ export function ClassDashboard() {
                 {selectedList === "baseschedule" && (
                     <BaseScheduleWidget id={classId ?? 0} name={name ?? ""} key={key} />
                 )}
+
+                {/*{selectedList === "plannedschedule" && (*/}
+                {/*    <PlannedScheduleWidget id={classId ?? 0} name={name ?? ""} key={key} />*/}
+                {/*)}*/}
                 
             </section>
             
@@ -185,7 +175,7 @@ export function ClassDashboard() {
             
             <ConfirmModal
                 title={"Удалить класс?"}
-                content={`Это действие удалит мероприятие ${name} класс. Отменить удаление будет нельзя.`}
+                content={`Это действие удалит ${name} класс. Отменить удаление будет нельзя.`}
                 onConfirm={async () => {
                     if (classId !== null) {
                         await deleteClass(classId);

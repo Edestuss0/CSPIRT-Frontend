@@ -12,7 +12,7 @@ export type ScheduleAddFormValues = {
     lesson_number: number,
 }
 
-export async function ScheduleAddLessonUsecase(form: ScheduleAddFormValues, type: "base" | "current"): Promise<boolean> {
+export async function ScheduleAddLessonUsecase(form: ScheduleAddFormValues, type: "base" | "current" | "planned"): Promise<boolean> {
     const dto = {
         Subject: form.subject,
         TeacherID: form.teacher_id,

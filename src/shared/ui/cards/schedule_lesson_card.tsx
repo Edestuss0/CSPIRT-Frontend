@@ -9,7 +9,7 @@ interface Props {
     item: ScheduleLessonType;
     lessonNumber: number;
     onChangeScheduleLesson?: () => void;
-    type: "base" | "current";
+    type: "base" | "current" | "planned";
     isTeacher?: boolean;
 }
 

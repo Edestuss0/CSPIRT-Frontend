@@ -8,6 +8,7 @@ import { ClassCard } from "../../../../shared/ui/cards/class_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 import {useClassStore} from "../../../class/store/class_store.ts";
+import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 
 function getStatusLabel(status: string): string {
     if (!status.trim()) {
@@ -58,6 +59,25 @@ export function EventPage() {
     const [isCompleteConfirmOpen, setIsCompleteConfirmOpen] = useState(false);
     
     const isLoading = status === "loading";
+    
+    const menuItems: BurgerDrawerMenuItem[] = [
+        {
+          label: "Завершить мероприятие",
+          primary: true,
+          hidden: (role !== "Owner"),
+          onClick: () => setIsCompleteConfirmOpen(true),  
+        },
+        {
+            label: "Удалить мероприятие",
+            danger: true,
+            hidden: (role !== "Owner"),
+            onClick: () => setIsDeleteConfirmOpen(true),
+        },
+        {
+            label: "Назад",
+            onClick: () => navigate(-1)
+        }
+    ]
 
     useEffect(() => {
         if (!id) {
@@ -182,37 +202,8 @@ export function EventPage() {
                         
                         <div className="btn-group">
 
-                            {role === "Owner" && (
-                                <div className="btn-group">
-                                    <button
-                                        className="btn btn--danger"
-                                        type="button"
-                                        onClick={() => setIsDeleteConfirmOpen(true)}
-                                        disabled={isLoading}
-                                    >
-                                        Удалить мероприятие
-                                    </button>
-
-                                    {event.Status !== "completed" && (
-                                        <button
-                                            className="btn btn--primary"
-                                            type="button"
-                                            onClick={() => setIsCompleteConfirmOpen(true)}
-                                            disabled={isLoading}
-                                        >
-                                            Завершить мероприятие
-                                    </button>
-                                        )}
-                                </div>
-                        )}
-    
-                            <button
-                                className="btn btn--secondary"
-                                type="button"
-                                onClick={() => navigate(-1)}
-                            >
-                                Назад
-                            </button>
+                            <BurgerDrawerMenu items={menuItems} title={"Меню"} />
+                            
                         </div>
 
                     </div>

@@ -7,7 +7,7 @@ import {
 import {apiClient} from "../../../../core/api/client.ts";
 
 export const ScheduleApi = {
-    async getCurrentScheduleByClass(id: number, type: "base" | "current"): Promise<ScheduleLessonType[]> {
+    async getCurrentScheduleByClass(id: number, type: "base" | "current" | "planned"): Promise<ScheduleLessonType[]> {
         const response = await apiClient.get(`/api/schedules?class_id=${id}&type=${type}`, true);
         
         if (!response.checkStatus()) {
@@ -39,7 +39,7 @@ export const ScheduleApi = {
         return parsed.data.Schedules;
     },
     
-    async changeScheduleLesson(id: number, form: ScheduleChangeLessonFormType, type: "base" | "current"): Promise<true> {
+    async changeScheduleLesson(id: number, form: ScheduleChangeLessonFormType, type: "base" | "current" | "planned"): Promise<true> {
         const response = await apiClient.patch(`/api/schedules/update`, {
             Type: type,
             Action: "upsert",
@@ -54,7 +54,7 @@ export const ScheduleApi = {
         return true;
     },
     
-    async addScheduleLesson(form: ScheduleAddLessonFormType, type: "base" | "current"): Promise<true> {
+    async addScheduleLesson(form: ScheduleAddLessonFormType, type: "base" | "current" | "planned"): Promise<true> {
         const response = await apiClient.patch(`/api/schedules/update`, {
             Type: type,
             Action: "upsert",
@@ -68,7 +68,7 @@ export const ScheduleApi = {
         return true;
     },
     
-    async deleteSchedule(id: number, type: "base" | "current"): Promise<true> {
+    async deleteSchedule(id: number, type: "base" | "current" | "planned"): Promise<true> {
         const response = await apiClient.patch(`/api/schedules/update`, {
             Type: type,
             Action: "delete",
