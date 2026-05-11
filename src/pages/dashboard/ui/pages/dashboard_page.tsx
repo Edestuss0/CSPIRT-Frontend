@@ -50,17 +50,14 @@ export function DashboardPage() {
         {
             label: "Классы",
             value: "classes",
-            disabled: selectedList === "classes"
         },
         {
             value: "events",
             label: "Мероприятия",
-            disabled: selectedList === "events"
         },
         {
             label: "Персонал",
             value: "staff",
-            disabled: selectedList === "staff",
             hidden: role !== "Owner"
         }
     ]
@@ -81,7 +78,7 @@ export function DashboardPage() {
                 />
 
                 <div className="page-spacer" />
-                
+
                 <TabsSwitcher
                     items={tabs}
                     value={selectedList}
