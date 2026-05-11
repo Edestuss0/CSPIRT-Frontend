@@ -39,16 +39,17 @@ export function EventClassPlayersPage() {
     }, [numericEventId, getEventById]);
 
     useEffect(() => {
-        if (!numericClassId || Number.isNaN(numericClassId)) {
+        if (numericClassId === null || Number.isNaN(numericClassId)) {
             return;
         }
 
+        const classIdValue = numericClassId;
         let isMounted = true;
 
         async function loadClass() {
             setClassItem(null);
 
-            const item = await getClassById(numericClassId);
+            const item = await getClassById(classIdValue);
 
             if (isMounted) {
                 setClassItem(item);

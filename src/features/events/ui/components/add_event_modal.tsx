@@ -58,8 +58,8 @@ export function AddEventModal({isOpen, onClose, onEventAdd,}: Props) {
         });
     }
 
-    const selectedClassNames = classes?.filter((item) => selectedClassIds.includes(item.Id)).map((item) => item.Name);
-
+    const selectedClassNames = classes ? classes.filter((item) => selectedClassIds.includes(item.Id)).map((item) => item.Name) : [];
+    
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         

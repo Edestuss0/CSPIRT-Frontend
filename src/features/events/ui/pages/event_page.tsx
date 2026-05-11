@@ -170,9 +170,11 @@ export function EventPage() {
     }
 
     const eventClassIds = new Set(event.Classes ?? []);
-    const eventClasses = classes?.filter((item) => eventClassIds.has(item.Id));
 
-
+    const eventClasses = (classes ?? []).filter((item) => {
+        return eventClassIds.has(item.Id);
+    });
+    
     const statusLabel = getStatusLabel(event.Status);
     const date = formatStartedAt(event.StartedAt);
 
