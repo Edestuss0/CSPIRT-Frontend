@@ -1,7 +1,6 @@
 import {ScheduleDayCard} from "../../../../shared/ui/cards/schedule_day_card.tsx";
 import {useScheduleStore} from "../../store/schedule_store.ts";
 import {useEffect} from "react";
-import {useAuthStore} from "../../../auth/store/auth_store.ts";
 
 type props = {
     id: number,
@@ -13,14 +12,11 @@ export function ScheduleWidget({id, name}: props) {
     const getSchedule = useScheduleStore((state) => state.getClassSchedule);
     const status = useScheduleStore((state) => state.status);
     const error = useScheduleStore((state) => state.error)
-    const role = useAuthStore((state) => state.user?.User.Role);
     
     const isLoading = status === "loading";
 
     useEffect(() => {
-        if (role === "Owner") {
-            void getSchedule(id, "current");
-        }
+        void getSchedule(id, "current");
     }, [getSchedule, id]);
     
     return (
