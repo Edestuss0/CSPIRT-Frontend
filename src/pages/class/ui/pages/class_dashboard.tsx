@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {useNavigate, useParams, useSearchParams} from "react-router-dom";
+import {useParams, useSearchParams} from "react-router-dom";
 import {useClassDashboardStore} from "../../store/class_dashboard_store.ts";
 import {useAuthStore} from "../../../../features/auth/store/auth_store.ts";
 import {ChangeTeacherModal} from "../components/change_teacher_modal.tsx";
@@ -10,12 +10,13 @@ import {ComplaintsWidget} from "../../../../features/complaints/ui/components/co
 import {ScheduleWidget} from "../../../../features/schedule/ui/components/schedule_widget.tsx";
 import {BaseScheduleWidget} from "../../../../features/schedule/ui/components/base_schedule_widget.tsx";
 // import {PlannedScheduleWidget} from "../../../../features/schedule/ui/components/planned_schedule_widget.tsx";
-import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
+import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/tabs_switcher.tsx";
 
 type SelectedList = | "users" | "notes" | "complaints" | "schedule" | "baseschedule" | "plannedschedule";
 
 export function ClassDashboard() {
-    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     
     const teacher = useClassDashboardStore((state) => state.teacher);
@@ -48,84 +49,72 @@ export function ClassDashboard() {
 
     const menuItems: BurgerDrawerMenuItem[] = [
         {
-            label: "Список учеников",
-            onClick: () => setSelectedList("users"),
-            disabled: selectedList === "users",
-        },
-        {
-            label: "Расписание класса",
-            onClick: () => setSelectedList("schedule"),
-            disabled: selectedList === "schedule",
-        },
-        {
-            label: "Стандартное расписание",
-            onClick: () => setSelectedList("baseschedule"),
-            disabled: selectedList === "baseschedule",
-            hidden: role !== "Owner",
-        },
-        {
-            label: "Список заметок класса",
-            onClick: () => setSelectedList("notes"),
-            disabled: selectedList === "notes",
-            hidden: !(role === "Admin" || role === "Owner" || role === "Helper"),
-        },
-        {
-            label: "Список жалоб класса",
-            onClick: () => setSelectedList("complaints"),
-            disabled: selectedList === "complaints",
-            hidden: !(role === "Admin" || role === "Owner"),
-        },
-        {
             label: "Изменить классного руководителя",
             onClick: async () => {
                 await getStaff();
                 setChangeTeacherModalOpen(true);
             },
             hidden: role !== "Owner",
-            primary: true,
         },
         {
             label: "Удалить класс",
             onClick: () => setDeleteClassModalOpen(true),
             hidden: role !== "Owner",
-            danger: true,
         },
         {
             label: "Сбросить расписание",
             onClick: () => setRolloverModalOpen(true),
             hidden: role !== "Owner",
-            danger: true,
-        },
-        {
-            label: "На главную",
-            onClick: () => navigate("/"),
-            primary: true,
         },
     ];
+    
+    const tabs: TabsSwitcherItem<SelectedList>[] = [
+        {
+            value: "users",
+            label: "Ученики",
+        },
+        {
+            value: "schedule",
+            label: "Расписание",
+        },
+        {
+            value: "baseschedule",
+            label: "Стандартное расписание",
+            hidden: role !== "Owner",
+        },
+        {
+            value: "notes",
+            label: "Заметки",
+            hidden: !(role === "Admin" || role === "Owner" || role === "Helper"),
+        },
+        {
+            value: "complaints",
+            label: "Жалобы",
+            hidden: !(role === "Admin" || role === "Owner"),
+        },
+    ]
 
     return (
         <main className={"main"}>
             <section className={"page"}>
-                <div className="profile-hero class-dashboard-hero">
-                    <div className="class-dashboard-hero__content">
-                        <h1 className="info-row__value">{name} Класс</h1>
-
-                        <h2 className="info-row__label">
-                            Классный руководитель - {teacher?.Name} {teacher?.LastName}
-                        </h2>
-                    </div>
-
-                    <div className="class-dashboard-hero__menu">
-                        <BurgerDrawerMenu
-                            title="Меню класса"
-                            items={menuItems}
-                            side="right"
-                        />
-                    </div>
-                </div>
+                
+                <PageHeader 
+                    title={`${name} Класс`}
+                    description={`Классный руководитель - ${teacher?.Name ?? ""} ${teacher?.LastName ?? ""}`}
+                    menuItems={menuItems}
+                    hasBackButton={true}
+                />
                 
                 <div className="page-spacer"></div>
+                
+                <TabsSwitcher
+                    items={tabs}
+                    value={selectedList}
+                    onChange={setSelectedList}
+                />
 
+                <div className="page-spacer"></div>
+                
                 {isLoading && (
                     <div className="grid grid--3">
                         <div className="skeleton" style={{ height: 160 }} />

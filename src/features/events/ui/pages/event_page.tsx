@@ -8,7 +8,8 @@ import { ClassCard } from "../../../../shared/ui/cards/class_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 import {useClassStore} from "../../../class/store/class_store.ts";
-import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 
 function getStatusLabel(status: string): string {
     if (!status.trim()) {
@@ -63,20 +64,14 @@ export function EventPage() {
     const menuItems: BurgerDrawerMenuItem[] = [
         {
           label: "Завершить мероприятие",
-          primary: true,
           hidden: (role !== "Owner"),
           onClick: () => setIsCompleteConfirmOpen(true),  
         },
         {
             label: "Удалить мероприятие",
-            danger: true,
             hidden: (role !== "Owner"),
             onClick: () => setIsDeleteConfirmOpen(true),
         },
-        {
-            label: "Назад",
-            onClick: () => navigate(-1)
-        }
     ]
 
     useEffect(() => {
@@ -185,28 +180,15 @@ export function EventPage() {
         <main className="main">
             <section className="page">
                 <div className="event-page">
-                    <div className="event-page__header">
-                        <div>
-                            <p className="event-page__eyebrow">
-                                Мероприятие #{event.ID}
-                            </p>
-
-                            <h1 className="event-page__title">
-                                {event.Title}
-                            </h1>
-
-                            <p className="event-page__description">
-                                {event.Description || "Описание не указано"}
-                            </p>
-                        </div>
-                        
-                        <div className="btn-group">
-
-                            <BurgerDrawerMenu items={menuItems} title={"Меню"} />
-                            
-                        </div>
-
-                    </div>
+                    
+                    <PageHeader
+                        eyebrow={`Мероприятие #${event.ID}`}
+                        title={event.Title}
+                        description={event.Description} 
+                        menuTitle={`Меню мероприятия`}
+                        menuItems={menuItems}
+                        hasBackButton={true}
+                    />
 
                     <div className="event-page__grid">
                         <article className="event-info-card">

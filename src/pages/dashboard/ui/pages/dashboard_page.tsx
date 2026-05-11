@@ -7,7 +7,9 @@ import {AddEventModal} from "../../../../features/events/ui/components/add_event
 import {ClassesWidget} from "../../../../features/class/ui/components/classes_widget.tsx";
 import {EventsWidget} from "../../../../features/events/ui/components/events_widget.tsx";
 import {StaffWidget} from "../../../../features/users/ui/components/staff_widget.tsx";
-import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
+import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/tabs_switcher.tsx";
 
 type Lists = "classes" | "events" | "staff";
 
@@ -24,44 +26,43 @@ export function DashboardPage() {
     
     const menuItems: BurgerDrawerMenuItem[] = [
         {
-            label: "Список классов",
-            onClick: () => setSelectedList("classes"),
-            disabled: selectedList === "classes"
-        },
-        {
-            label: "Персонал школы",
-            onClick: () => setSelectedList("staff"),
-            disabled: selectedList === "staff",
-            hidden: (role !== "Owner")
-        },
-        {
-            label: "Мероприятия",
-            onClick: () => setSelectedList("events"),
-            disabled: selectedList === "events",
-        },
-        {
             label: "Добавить пользователя",
-            primary: true,
             onClick: () => setIsAddUserModalOpen(true),
             hidden: (role !== "Owner" || selectedList !== "classes"),
         },
         {
             label: "Добавить класс",
-            primary: true,
             onClick: () => setIsAddClassModalOpen(true),
             hidden: (role !== "Owner" || selectedList !== "classes"),
         },
         {
             label: "Добавить мероприятие",
-            primary: true,
             onClick: () => setIsAddEventModalOpen(true),
             hidden: (role !== "Owner" || selectedList !== "events"),
         },
         {
             label: "Профиль",
-            primary: true,
             onClick: () => navigate("/profile")
         },
+    ]
+    
+    const tabs: TabsSwitcherItem<Lists>[] = [
+        {
+            label: "Классы",
+            value: "classes",
+            disabled: selectedList === "classes"
+        },
+        {
+            value: "events",
+            label: "Мероприятия",
+            disabled: selectedList === "events"
+        },
+        {
+            label: "Персонал",
+            value: "staff",
+            disabled: selectedList === "staff",
+            hidden: role !== "Owner"
+        }
     ]
 
     if (!role) {
@@ -71,21 +72,24 @@ export function DashboardPage() {
     return (
         <main className="main">
             <section className="page">
-                <div className="profile-hero class-dashboard-hero">
-                    <div className="class-dashboard-hero__content">
-                        <h1 className="info-row__value">Панель управления</h1>
-                    </div>
-
-                    <div className="class-dashboard-hero__menu">
-                        <BurgerDrawerMenu
-                            title="Меню"
-                            items={menuItems}
-                            side="right"
-                        />
-                    </div>
-                </div>
+                
+                <PageHeader
+                    title={"Главная страница"}
+                    description={"Просматривайте список классов, мероприятий и прочее"}
+                    menuItems={menuItems}
+                    menuTitle={"Меню"}
+                />
 
                 <div className="page-spacer" />
+                
+                <TabsSwitcher
+                    items={tabs}
+                    value={selectedList}
+                    onChange={setSelectedList}
+                />
+                
+                <div className="page-spacer" />
+                
 
                 {selectedList === "classes" && (
                     <ClassesWidget key={key}/>

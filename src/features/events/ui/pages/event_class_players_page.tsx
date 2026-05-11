@@ -6,6 +6,7 @@ import {addEventPlayersSchema} from "../../../../shared/entities/events/api/even
 import {useEventStore} from "../../store/event_store.ts";
 import {useClassStore} from "../../../class/store/class_store.ts";
 import type {ClassType} from "../../../../shared/entities/class/types/class_types.ts";
+import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 
 export function EventClassPlayersPage() {
     const navigate = useNavigate();
@@ -250,30 +251,13 @@ export function EventClassPlayersPage() {
         <main className="main">
             <section className="page">
                 <div className="event-players-page">
-                    <div className="event-page__header">
-                        <div>
-                            <p className="event-page__eyebrow">
-                                Мероприятие #{event.ID}
-                            </p>
-
-                            <h1 className="event-page__title">
-                                Участники мероприятия
-                            </h1>
-
-                            <p className="event-page__description">
-                                {event.Title} · {classItem.Name} класс
-                            </p>
-                        </div>
-
-                        <button
-                            className="btn btn--secondary"
-                            type="button"
-                            onClick={() => navigate(-1)}
-                            disabled={isLoading}
-                        >
-                            Назад
-                        </button>
-                    </div>
+                    
+                    <PageHeader
+                        eyebrow={`Мероприятие #${event.ID}`}
+                        title={"Участники мероприятия"}
+                        description={`${event.Title} · ${classItem.Name} класс`}
+                        hasBackButton={true}
+                    />
 
                     <div className="event-players-toolbar">
                         <div>

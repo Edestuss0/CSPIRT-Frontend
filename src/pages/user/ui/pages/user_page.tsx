@@ -1,19 +1,17 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
 import { UserRoles } from "../../../../shared/entities/user/types/user_types.ts";
 import { NoteCard } from "../../../../shared/ui/cards/note_card.tsx";
 import { ComplaintCard } from "../../../../shared/ui/cards/complaint_card.tsx";
-
 import { useAuthStore } from "../../../../features/auth/store/auth_store.ts";
 import { useUserStore } from "../../store/user_store.ts";
-
 import { noteAddDto } from "../../../../shared/entities/notes/api/notes_api.ts";
 import { complaintAddDto } from "../../../../shared/entities/complaints/api/complaints_api.ts";
 import { ratingChangeDTO } from "../../../../shared/entities/rating/api/rating_api.ts";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 import {TeacherScheduleWidget} from "../../../../features/schedule/ui/components/teacher_schedule_widget.tsx";
-import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
+import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 
 export function UserPage() {
     const navigate = useNavigate();
@@ -187,8 +185,6 @@ export function UserPage() {
     const complaints = user.Complaints ?? [];
 
     const fullName = `${user.User.Name ?? ""} ${user.User.LastName ?? ""}`.trim();
-    const initials =
-        `${user.User.Name?.[0] ?? ""}${user.User.LastName?.[0] ?? ""}` || "?";
 
     const rating = user.User.Rating ?? 0;
     const ratingPercent = Math.min(Math.max((rating / 5000) * 100, 0), 100);
@@ -199,48 +195,36 @@ export function UserPage() {
     const menuItems: BurgerDrawerMenuItem[] = [
         {
             label: "Удалить пользователя",
-            danger: true,
             hidden: (currentRole !== "Owner"),
             onClick: () => setIsDeleteUserModalOpen(true)
         },
-        {
-            label: "Назад",
-            onClick: () => navigate(-1),
-        }
     ]
 
     return (
         <main className="main">
             <section className="page user-page">
-                <div className="user-hero">
-                    <div className="user-hero__main">
-                        <div className="profile-avatar">{initials}</div>
+                
+                <PageHeader 
+                    title={fullName || "Без имени"}
+                    meta={
+                        <>
+                            <span className="badge badge--info">
+                                    {UserRoles[targetRole] ?? targetRole}
+                                </span>
 
-                        <div className="user-hero__content">
-                            <h1 className="profile-hero__name">{fullName || "Без имени"}</h1>
+                            {isStudentLikeUser && (
+                                <span className="badge badge--neutral">
+                                        Класс {user.User.Class}
+                                    </span>
+                            )}
 
-                            <div className="profile-hero__meta">
-                <span className="badge badge--info">
-                  {UserRoles[targetRole] ?? targetRole}
-                </span>
-
-                                {isStudentLikeUser && (
-                                    <span className="badge badge--neutral">
-                    Класс {user.User.Class}
-                  </span>
-                                )}
-
-                                <span className="profile-login">@{user.User.Login}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="profile-actions">
-                        
-                        <BurgerDrawerMenu items={menuItems} title={"Меню"} />
-                        
-                    </div>
-                </div>
+                            <span className="profile-login">@{user.User.Login}</span>
+                        </>
+                    }
+                    hasBackButton={true}
+                    menuItems={menuItems}
+                    menuTitle={"Меню"}
+                />
 
                 {isLoading && <div className="profile-progress" />}
 

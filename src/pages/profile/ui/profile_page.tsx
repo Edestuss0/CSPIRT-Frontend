@@ -1,38 +1,26 @@
-import type { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import {type ReactNode} from "react";
 
 import { useAuthStore } from "../../../features/auth/store/auth_store.ts";
 import { UserRoles } from "../../../shared/entities/user/types/user_types.ts";
 import { NoteCard } from "../../../shared/ui/cards/note_card.tsx";
 import { ComplaintCard } from "../../../shared/ui/cards/complaint_card.tsx";
 import {TeacherScheduleWidget} from "../../../features/schedule/ui/components/teacher_schedule_widget.tsx";
-import {BurgerDrawerMenu, type BurgerDrawerMenuItem} from "../../../shared/ui/other/burger_menu.tsx";
+import {type BurgerDrawerMenuItem} from "../../../shared/ui/other/burger_menu.tsx";
+import {PageHeader} from "../../../shared/ui/other/page_header.tsx";
 
 export function ProfilePage() {
-    const navigate = useNavigate();
-
     const profile = useAuthStore((state) => state.user);
-    const getProfile = useAuthStore((state) => state.checkAuth);
+    // const getProfile = useAuthStore((state) => state.checkAuth);
     const logout = useAuthStore((state) => state.logout);
     const status = useAuthStore((state) => state.status);
     const error = useAuthStore((state) => state.error);
 
     const isLoading = status === "loading";
-
-    async function handleLogout() {
-        await logout();
-        navigate("/login", { replace: true });
-    }
     
     const menuItems: BurgerDrawerMenuItem[] = [
         {
-            label: "Назад",
-            onClick: () => navigate(-1),
-        },
-        {
             label: "Выйти",
             onClick: () => logout(),
-            danger: true
         }
     ]
 
@@ -69,7 +57,6 @@ export function ProfilePage() {
     const complaints = profile.Complaints ?? [];
 
     const fullName = `${user.Name ?? ""} ${user.LastName ?? ""}`.trim();
-    const initials = `${user.Name?.[0] ?? ""}${user.LastName?.[0] ?? ""}` || "?";
 
     const isStudentLikeUser = user.Role === "User" || user.Role === "Helper";
 
@@ -82,35 +69,27 @@ export function ProfilePage() {
     return (
         <main className="main">
             <section className="page user-page">
-                <div className="user-hero">
-                    <div className="user-hero__main">
-                        <div className="profile-avatar">{initials}</div>
-
-                        <div className="user-hero__content">
-                            <h1 className="profile-hero__name">
-                                {fullName || "Без имени"}
-                            </h1>
-
-                            <div className="profile-hero__meta">
-                                <span className="badge badge--info">
+                
+                <PageHeader
+                    title={`${fullName}`}
+                    meta={
+                        <>
+                            <span className="badge badge--info">
                                     {UserRoles[user.Role] ?? user.Role}
                                 </span>
 
-                                {isStudentLikeUser && (
-                                    <span className="badge badge--neutral">
+                            {isStudentLikeUser && (
+                                <span className="badge badge--neutral">
                                         Класс {user.Class}
                                     </span>
-                                )}
-
-                                <span className="profile-login">@{user.Login}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="profile-actions">
-                        <BurgerDrawerMenu items={menuItems} title={"Меню"} />
-                    </div>
-                </div>
+                            )}
+                            
+                            <span className="profile-login">@{user.Login}</span>
+                        </>
+                    }
+                    menuItems={menuItems}
+                    hasBackButton={true}
+                />
 
                 {isLoading && <div className="profile-progress" />}
 
