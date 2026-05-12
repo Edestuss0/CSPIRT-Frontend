@@ -33,7 +33,7 @@ export const classApi = {
     },
     
     async getClassById(id: number): Promise<ClassType> {
-        const response = await apiClient.get(`/api/classes/?class_id=${id}`, true);
+        const response = await apiClient.get(`/api/classes?class_id=${id}`, true);
 
         if (!response.checkStatus()) {
             throw new Error("Ошибка при получении класса");
