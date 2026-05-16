@@ -1,9 +1,8 @@
 import { type FormEvent, useEffect, useState } from "react";
 import {type UserRole, UserRoles} from "../../../../shared/entities/user/types/user_types.ts";
 import type {addUserValues} from "../../models/add_user_usecase.ts";
-import {useUsersStore} from "../../store/users_store.ts";
-import {useEventStore} from "../../../events/store/event_store.ts";
-import {useClassStore} from "../../../class/store/class_store.ts";
+import {useClasses} from "../../../class/hooks/use_classes.ts";
+import {useAddUser} from "../../hooks/use_add_user.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
@@ -12,17 +11,11 @@ interface AddUserModalProps {
 }
 
 export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
-    const error = useUsersStore((state) => state.error);
-    const classes = useClassStore((state) => state.classes);
-    const getClasses = useClassStore((state) => state.getClasses);
-    const addUser = useUsersStore((state) => state.addUser);
+    const classes = useClasses().data;
+    const {mutate, error, isSuccess} = useAddUser()
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole>("User");
     const shouldShowClass = selectedRole === "User" || selectedRole === "Helper";
-
-    useEffect(() => {
-        void getClasses();
-    }, [getClasses]);
     
     useEffect(() => {
         if (!isOpen) {
@@ -31,7 +24,6 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
 
         function handleEscape(event: KeyboardEvent) {
             if (event.key === "Escape") {
-                useUsersStore.setState({error: null});
                 onClose();
             }
         }
@@ -65,8 +57,8 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
         
         try {
             setIsSubmitting(true);
-            const response = await addUser(form);
-            if (response) {
+            await mutate(form)
+            if (isSuccess === true) {
                 onAddUser();
             }
         } finally {
@@ -76,7 +68,7 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
 
     if (!classes) {
         return (
-            <div className="modal-backdrop" onMouseDown={() => {onClose(); useEventStore.setState({error: null});}}>
+            <div className="modal-backdrop" onMouseDown={() => {onClose();;}}>
                 <section
                     className="modal modal--wide"
                     role="dialog"
@@ -101,7 +93,7 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
     }
     
     return (
-        <div className="modal-backdrop" onMouseDown={() => {onClose(); useUsersStore.setState({error: null});}}>
+        <div className="modal-backdrop" onMouseDown={() => {onClose();}}>
             <section
                 className="modal modal--wide"
                 role="dialog"
@@ -123,7 +115,7 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
                     <button
                         className="modal__close"
                         type="button"
-                        onClick={() => {onClose(); useUsersStore.setState({error: null});}}
+                        onClick={() => {onClose();}}
                         aria-label="Закрыть модальное окно"
                     >
                         ×
@@ -134,7 +126,7 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
                     <div className="modal__body">
                         {error && (
                             <div className="alert alert--danger">
-                                {error}
+                                {error.message}
                             </div>
                         )}
 
@@ -263,7 +255,7 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
                         <button
                             className="btn btn--secondary"
                             type="button"
-                            onClick={() => {onClose(); useUsersStore.setState({error: null});}}
+                            onClick={() => {onClose();}}
                             disabled={isSubmitting}
                         >
                             Отмена

@@ -1,15 +1,16 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import { format, isValid, parse } from "date-fns";
 import { ru } from "date-fns/locale";
-
-import { useEventStore } from "../../store/event_store.ts";
 import { ClassCard } from "../../../../shared/ui/cards/class_card.tsx";
 import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
-import {useClassStore} from "../../../class/store/class_store.ts";
 import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
+import {useClasses} from "../../../class/hooks/use_classes.ts";
+import {UseEventById} from "../../hooks/use_event_by_id.ts";
+import {useCompleteEvent} from "../../hooks/use_complete_event.ts";
+import {useDeleteEvent} from "../../hooks/use_delete_event.ts";
 
 function getStatusLabel(status: string): string {
     if (!status.trim()) {
@@ -46,20 +47,18 @@ export function EventPage() {
 
     const { id } = useParams<{id: string}>();
 
-    const classes = useClassStore((state) => state.classes);
-    const event = useEventStore((state) => state.event);
-    const getClasses = useClassStore((state) => state.getClasses);
-    const getEvent = useEventStore((state) => state.getEventById);
-    const completeEvent = useEventStore((state) => state.completeEvent);
-    const deleteEvent = useEventStore((state) => state.deleteEvent);
-    const error = useEventStore((state) => state.error);
-    const status = useEventStore((state) => state.status);
+    const classes = useClasses().data
+    const getEvent = UseEventById(Number(id))
+    const event = getEvent.data
+    const completeEvent = useCompleteEvent()
+    const deleteEvent = useDeleteEvent()
+    const error = getEvent.error?.message || completeEvent.error?.message || deleteEvent.error?.message;
     const role = useAuthStore((state) => state.user?.User.Role);
 
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [isCompleteConfirmOpen, setIsCompleteConfirmOpen] = useState(false);
     
-    const isLoading = status === "loading";
+    const isLoading = getEvent.isLoading
     
     const menuItems: BurgerDrawerMenuItem[] = [
         {
@@ -73,15 +72,6 @@ export function EventPage() {
             onClick: () => setIsDeleteConfirmOpen(true),
         },
     ]
-
-    useEffect(() => {
-        if (!id) {
-            return;
-        }
-
-        void getEvent(Number(id));
-        void getClasses();
-    }, [id, getClasses, getEvent]);
 
     if (!id) {
         return (
@@ -281,7 +271,7 @@ export function EventPage() {
                         title={"Удалить мероприятие?"}
                         content={`Это действие удалит мероприятие "${event.Title}". Отменить удаление будет нельзя.`}
                         onConfirm={async () => {
-                            await deleteEvent(event.ID);
+                            await deleteEvent.mutate({id: event.ID});
                             setIsDeleteConfirmOpen(false);
                             navigate(-1);
                         }}
@@ -298,7 +288,7 @@ export function EventPage() {
                         title={"Завершить мероприятие?"}
                         content={`После завершения участникам мероприятия "${event.Title}" будет начислена награда: +${event.RatingReward} рейтинга.`}
                         onConfirm={async () => {
-                            await completeEvent(event);
+                            await completeEvent.mutate({item: event});
                             setIsCompleteConfirmOpen(false);
                             navigate(-1);
                         }}
