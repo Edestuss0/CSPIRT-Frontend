@@ -11,6 +11,8 @@ import {useClasses} from "../../../class/hooks/use_classes.ts";
 import {UseEventById} from "../../hooks/use_event_by_id.ts";
 import {useCompleteEvent} from "../../hooks/use_complete_event.ts";
 import {useDeleteEvent} from "../../hooks/use_delete_event.ts";
+import {UseRewardParams} from "../../hooks/use_reward_params.ts";
+import {AddParamModal} from "../components/add_param_modal.tsx";
 
 function getStatusLabel(status: string): string {
     if (!status.trim()) {
@@ -47,24 +49,33 @@ export function EventPage() {
 
     const { id } = useParams<{id: string}>();
 
-    const classes = useClasses().data
+    const classes = useClasses().data;
     const getEvent = UseEventById(Number(id))
     const event = getEvent.data
     const completeEvent = useCompleteEvent()
     const deleteEvent = useDeleteEvent()
     const error = getEvent.error?.message || completeEvent.error?.message || deleteEvent.error?.message;
     const role = useAuthStore((state) => state.user?.User.Role);
+    
+    const getRewardParams = UseRewardParams(Number(id));
+    const rewardParams = getRewardParams.data;
 
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [isCompleteConfirmOpen, setIsCompleteConfirmOpen] = useState(false);
+    const [isAddRewardModalOpen, setIsAddRewardModalOpen] = useState(false);
     
-    const isLoading = getEvent.isLoading
+    const isLoading = getEvent.isLoading || getRewardParams.isLoading;
     
     const menuItems: BurgerDrawerMenuItem[] = [
         {
           label: "Завершить мероприятие",
           hidden: (role !== "Owner"),
           onClick: () => setIsCompleteConfirmOpen(true),  
+        },
+        {
+            label: "Изменить награду для класса",
+            hidden: (role !== "Owner"),
+            onClick: () => setIsAddRewardModalOpen(true),
         },
         {
             label: "Удалить мероприятие",
@@ -232,23 +243,50 @@ export function EventPage() {
 
                     {!isLoading && !error && eventClasses?.length > 0 && role === "Owner" && (
                         <div className="class-list">
-                            {eventClasses?.map((item) => (
-                                <ClassCard
-                                    key={item.Id}
-                                    item={item}
-                                    onClick={() => {
-                                        navigate(
-                                            `/events/${event.ID}/classes/${item.Id}/players/add`,
-                                            {
-                                                state: {
-                                                    event,
-                                                    classItem: item,
-                                                },
-                                            }
-                                        );
-                                    }}
-                                />
-                            ))}
+                            {eventClasses?.map((item) => {
+                                let params = null;
+                                rewardParams?.map((param) => {
+                                    if (param.ClassID === item.Id) {
+                                        params = param.Reason + ` Награда: ${param.ExtraRatingReward}`
+                                    }
+                                })
+                                
+                                if (params) {
+                                    return <ClassCard
+                                        key={item.Id}
+                                        item={item}
+                                        param={params}
+                                        onClick={() => {
+                                            navigate(
+                                                `/events/${event.ID}/classes/${item.Id}/players/add`,
+                                                {
+                                                    state: {
+                                                        event,
+                                                        classItem: item,
+                                                    },
+                                                }
+                                            );
+                                        }}
+                                    />
+                                } else {
+                                    return <ClassCard
+                                        key={item.Id}
+                                        item={item}
+                                        onClick={() => {
+                                            navigate(
+                                                `/events/${event.ID}/classes/${item.Id}/players/add`,
+                                                {
+                                                    state: {
+                                                        event,
+                                                        classItem: item,
+                                                    },
+                                                }
+                                            );
+                                        }}
+                                    />
+                                }
+                                
+                            })}
                         </div>
                     )}
 
@@ -264,6 +302,16 @@ export function EventPage() {
                         </div>
                     )}
                 </div>
+
+                {isAddRewardModalOpen && (
+                    <AddParamModal 
+                        isOpen={isAddRewardModalOpen} 
+                        onClose={() => setIsAddRewardModalOpen(false)} 
+                        Classes={eventClasses} 
+                        EventID={Number(id)}
+                        OnAdd={() => setIsAddRewardModalOpen(false)}
+                    />
+                )}
 
 
                 {isDeleteConfirmOpen && (

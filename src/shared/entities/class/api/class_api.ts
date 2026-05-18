@@ -29,7 +29,7 @@ export const classApi = {
             throw new Error("Некорректный формат классов");
         }
         
-        return parsed.data.Classes;
+        return parsed.data.Classes.sort((a, b) => (b.UserTotalRating + b.ClassTotalRating) - (a.ClassTotalRating + a.UserTotalRating));
     },
     
     async getClassById(id: number): Promise<ClassType> {

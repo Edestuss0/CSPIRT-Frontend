@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import {authApi, type AuthDto, type meType} from "../api/auth_api";
-import {clearAccessToken, setAccessToken} from "../../../core/auth/access_token_memory.ts";
 
 type AuthStatus =
     | "idle"
@@ -46,9 +45,8 @@ export const useAuthStore = create<AuthState>()((set) => ({
         });
 
         try {
-            const token = await authApi.login(dto);
+            await authApi.login(dto);
             
-            setAccessToken(token);
             
             const user = await authApi.checkAuth();
 
@@ -85,8 +83,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
                 user: userData,
             });
         } catch {
-            clearAccessToken();
-            
             set({
                 user: null,
                 status: "unauthenticated",
@@ -99,9 +95,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
       set({status: "loading", error: null});
       
       try {
-          const token = await authApi.refresh();
-          
-          setAccessToken(token);
+          await authApi.refresh();
           
           const user = await authApi.checkAuth();
           
@@ -112,8 +106,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
           });
           
       } catch {
-          clearAccessToken();
-
           set({
               user: null,
               status: "unauthenticated",
@@ -123,8 +115,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
     },
 
     logout: () => {
-        clearAccessToken();
-        
         set({
             user: null,
             status: "unauthenticated",
