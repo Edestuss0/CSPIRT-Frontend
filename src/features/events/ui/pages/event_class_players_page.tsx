@@ -50,7 +50,9 @@ export function EventClassPlayersPage() {
         }
 
         return classItem.Members.filter((user) => {
-            return user.Role === "User" || user.Role === "Helper";
+            const normalizedRole = user.Role.toLowerCase();
+
+            return normalizedRole === "user" || normalizedRole === "helper";
         });
     }, [classItem]);
 

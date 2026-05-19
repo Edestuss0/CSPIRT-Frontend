@@ -48,14 +48,15 @@ export function EventPage() {
     const navigate = useNavigate();
 
     const { id } = useParams<{id: string}>();
-
+    
     const classes = useClasses().data;
     const getEvent = UseEventById(Number(id))
     const event = getEvent.data
     const completeEvent = useCompleteEvent()
     const deleteEvent = useDeleteEvent()
     const error = getEvent.error?.message || completeEvent.error?.message || deleteEvent.error?.message;
-    const role = useAuthStore((state) => state.user?.User.Role);
+    const user = useAuthStore((state) => state.user?.User);
+    const normalizedRole = user?.Role.toLowerCase();
     
     const getRewardParams = UseRewardParams(Number(id));
     const rewardParams = getRewardParams.data;
@@ -69,17 +70,17 @@ export function EventPage() {
     const menuItems: BurgerDrawerMenuItem[] = [
         {
           label: "Завершить мероприятие",
-          hidden: (role !== "Owner"),
+          hidden: (normalizedRole !== "owner"),
           onClick: () => setIsCompleteConfirmOpen(true),  
         },
         {
             label: "Изменить награду для класса",
-            hidden: (role !== "Owner"),
+            hidden: (normalizedRole !== "owner"),
             onClick: () => setIsAddRewardModalOpen(true),
         },
         {
             label: "Удалить мероприятие",
-            hidden: (role !== "Owner"),
+            hidden: (normalizedRole !== "owner"),
             onClick: () => setIsDeleteConfirmOpen(true),
         },
     ]
@@ -241,7 +242,30 @@ export function EventPage() {
                         </div>
                     )}
 
-                    {!isLoading && !error && eventClasses?.length > 0 && role === "Owner" && (
+                    {!isLoading && !error && eventClasses?.length > 0 && (normalizedRole === "admin") && (
+                        <div className="class-list">
+                            {eventClasses?.map((item) => {
+                                if (user?.Id === item.Teacher?.Id) {
+                                    return <ClassCard
+                                        item={item}
+                                        onClick={() => {
+                                            navigate(
+                                                `/events/${event.ID}/classes/${item.Id}/players/add`,
+                                                {
+                                                    state: {
+                                                        event,
+                                                        classItem: item,
+                                                    },
+                                                }
+                                            );
+                                        }}
+                                    />
+                                }
+                            })}
+                        </div>
+                    )}
+                    
+                    {!isLoading && !error && eventClasses?.length > 0 && (normalizedRole === "owner") && (
                         <div className="class-list">
                             {eventClasses?.map((item) => {
                                 let params = null;

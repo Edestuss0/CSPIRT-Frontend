@@ -7,12 +7,13 @@ import {useUser} from "../../../users/hooks/use_user.ts";
 
 export const RatingSection = ({user, setFormError = () => {}}: {user: UserType, setFormError?: (value: string | null) => void}) => {
   const role = useAuthStore((state) => state.user?.User.Role);
+  const normalizedRole = role?.toLowerCase();
   
   const [ratingReason, setRatingReason] = useState("");
   const [ratingValue, setRatingValue] = useState("");
   const rating = user.Rating ?? 0;
   const ratingPercent = Math.min(Math.max((rating / 5000) * 100, 0), 100);
-  const canManageRating = role === "Owner" || role === "Admin";
+  const canManageRating = normalizedRole === "owner" || normalizedRole === "admin";
   const ratingLevel = rating < 1500 ? "low" : rating < 3500 ? "medium" : "high";
   const changeRating = UseChangeRating()
   const getUser = useUser(user.Id)

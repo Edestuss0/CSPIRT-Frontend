@@ -11,7 +11,8 @@ export const addUserFormSchema = z.object({
     Role: z.enum(["User", "Helper", "Admin", "Owner"]),
     Rating: z.number().int().min(0).max(5000)
 }).superRefine((data, ctx) => {
-    const roleRequiresClass = data.Role === "User" || data.Role === "Helper";
+    const normalizedRole = data.Role.toLowerCase();
+    const roleRequiresClass = normalizedRole === "user" || normalizedRole === "helper";
 
     if (roleRequiresClass && data.ClassID <= 0) {
         ctx.addIssue({

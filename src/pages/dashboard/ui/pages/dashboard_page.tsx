@@ -17,6 +17,7 @@ export function DashboardPage() {
     const navigate = useNavigate();
 
     const role = useAuthStore((state) => state.user?.User.Role);
+    const normalizedRole = role?.toLowerCase();
     
     const [selectedList, setSelectedList] = useState<Lists>("classes");
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
@@ -28,17 +29,17 @@ export function DashboardPage() {
         {
             label: "Добавить пользователя",
             onClick: () => setIsAddUserModalOpen(true),
-            hidden: (role !== "Owner" || selectedList !== "classes"),
+            hidden: (normalizedRole !== "owner" || selectedList !== "classes"),
         },
         {
             label: "Добавить класс",
             onClick: () => setIsAddClassModalOpen(true),
-            hidden: (role !== "Owner" || selectedList !== "classes"),
+            hidden: (normalizedRole !== "owner" || selectedList !== "classes"),
         },
         {
             label: "Добавить мероприятие",
             onClick: () => setIsAddEventModalOpen(true),
-            hidden: (role !== "Owner" || selectedList !== "events"),
+            hidden: (normalizedRole !== "owner" || selectedList !== "events"),
         },
         {
             label: "Профиль",
@@ -58,7 +59,7 @@ export function DashboardPage() {
         {
             label: "Персонал",
             value: "staff",
-            hidden: role !== "Owner"
+            hidden: normalizedRole !== "owner"
         }
     ]
 

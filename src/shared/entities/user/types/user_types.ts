@@ -5,7 +5,27 @@ const nullableArray = <T extends z.ZodTypeAny>(schema: T) =>
         .nullish()
         .transform((value) => value ?? []);
 
-export const userRoleSchema = z.enum(["Owner", "Admin", "Helper", "User"]);
+const roles = ["Owner", "Admin", "Helper", "User"] as const;
+
+export const userRoleSchema = z
+    .string()
+    .transform((value) => {
+        const lower = value.toLowerCase();
+
+        switch (lower) {
+            case "owner":
+                return "Owner";
+            case "admin":
+                return "Admin";
+            case "helper":
+                return "Helper";
+            case "user":
+                return "User";
+            default:
+                return value;
+        }
+    })
+    .pipe(z.enum(roles));
 
 export const fullNameSchema = z.object({
     Name: z.string(),
@@ -25,8 +45,6 @@ export const userSchema = z.object({
     Class: z.string().max(32),
     ClassID: z.number().int().nonnegative(),
 });
-
-export const usersSchema = z.array(userSchema);
 
 export type UserType = z.infer<typeof userSchema>;
 export type UserRole = z.infer<typeof userRoleSchema>;

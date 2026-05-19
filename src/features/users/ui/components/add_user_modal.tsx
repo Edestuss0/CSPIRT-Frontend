@@ -15,7 +15,8 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
     const {mutateAsync, error} = useAddUser()
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole>("User");
-    const shouldShowClass = selectedRole === "User" || selectedRole === "Helper";
+    const normalizedSelectedRole = selectedRole.toLowerCase();
+    const shouldShowClass = normalizedSelectedRole === "user" || normalizedSelectedRole === "helper";
     
     useEffect(() => {
         if (!isOpen) {

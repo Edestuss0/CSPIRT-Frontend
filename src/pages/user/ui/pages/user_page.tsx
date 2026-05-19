@@ -58,11 +58,13 @@ export function UserPage() {
 
     const targetRole = user.User.Role;
     const currentRole = currentUser?.Role;
+    const normalizedTargetRole = targetRole.toLowerCase();
+    const normalizedCurrentRole = currentRole?.toLowerCase();
     const isYou = user.User.Id === currentUser?.Id;
 
-    const isStudentLikeUser = targetRole === "User" || targetRole === "Helper";
+    const isStudentLikeUser = normalizedTargetRole === "user" || normalizedTargetRole === "helper";
     const canManageNotes =
-        currentRole === "Helper" || currentRole === "Owner" || currentRole === "Admin";
+        normalizedCurrentRole === "helper" || normalizedCurrentRole === "owner" || normalizedCurrentRole === "admin";
 
     const notes = user.Notes ?? [];
     const complaints = user.Complaints ?? [];
@@ -72,7 +74,7 @@ export function UserPage() {
     const menuItems: BurgerDrawerMenuItem[] = [
         {
             label: "Удалить пользователя",
-            hidden: (currentRole !== "Owner"),
+            hidden: (normalizedCurrentRole !== "owner"),
             onClick: () => setIsDeleteUserModalOpen(true)
         },
     ]
@@ -135,7 +137,7 @@ export function UserPage() {
                         </div>
                     </section>
 
-                    {(user.User.Role === "Admin" || user.User.Role === "Owner") && (currentRole === "Owner") && (
+                    {(normalizedTargetRole === "admin" || normalizedTargetRole === "owner") && (normalizedCurrentRole === "owner") && (
                         <section className="card card--padded">
                             <div className="section-head">
                                 <h2 className="section-title">Расписание учителя</h2>

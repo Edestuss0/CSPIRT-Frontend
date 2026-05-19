@@ -12,7 +12,6 @@ import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/tabs_switcher.tsx";
 import {useStaff} from "../../../../features/users/hooks/use_staff.ts";
-import type {UserType} from "../../../../shared/entities/user/types/user_types.ts";
 import {useChangeTeacher} from "../../../../features/class/hooks/use_change_teacher.ts";
 import {useClassTeacher} from "../../../../features/class/hooks/use_class_teacher.ts";
 import {useDeleteClass} from "../../../../features/class/hooks/use_delete_class.ts";
@@ -28,9 +27,9 @@ export function ClassDashboard() {
     const name = searchParams.get("name");
     const classId = id ? parseInt(id, 10) : null;
     const role = useAuthStore((state) => state.user?.User.Role);
+    const normalizedRole = role?.toLowerCase();
     const changeTeacher = useChangeTeacher();
     const getStaff = useStaff();
-    const staff = (getStaff.data as UserType[]) ||  [];
     const getClassTeacher = useClassTeacher(classId ?? 0);
     const deleteClass = useDeleteClass()
     const teacher = getClassTeacher.data
@@ -59,17 +58,17 @@ export function ClassDashboard() {
                 await getStaff.refetch();
                 setChangeTeacherModalOpen(true);
             },
-            hidden: role !== "Owner",
+            hidden: normalizedRole !== "owner",
         },
         {
             label: "Удалить класс",
             onClick: () => setDeleteClassModalOpen(true),
-            hidden: role !== "Owner",
+            hidden: normalizedRole !== "owner",
         },
         {
             label: "Сбросить расписание",
             onClick: () => setRolloverModalOpen(true),
-            hidden: role !== "Owner",
+            hidden: normalizedRole !== "owner",
         },
     ];
     
@@ -85,17 +84,17 @@ export function ClassDashboard() {
         {
             value: "baseschedule",
             label: "Стандартное расписание",
-            hidden: role !== "Owner",
+            hidden: normalizedRole !== "owner",
         },
         {
             value: "notes",
             label: "Заметки",
-            hidden: !(role === "Admin" || role === "Owner" || role === "Helper"),
+            hidden: !(normalizedRole === "admin" || normalizedRole === "owner" || normalizedRole === "helper"),
         },
         {
             value: "complaints",
             label: "Жалобы",
-            hidden: !(role === "Admin" || role === "Owner"),
+            hidden: !(normalizedRole === "admin" || normalizedRole === "owner"),
         },
     ]
 
@@ -165,7 +164,7 @@ export function ClassDashboard() {
                     setKey(key + 1);
                     setChangeTeacherModalOpen(false);
                 } 
-            }} staff={staff} className={name ?? ""}/>
+            }}className={name ?? ""}/>
             
             <ConfirmModal
                 title={"Удалить класс?"}

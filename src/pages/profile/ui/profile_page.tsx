@@ -57,8 +57,9 @@ export function ProfilePage() {
     const complaints = profile.Complaints ?? [];
 
     const fullName = `${user.Name ?? ""} ${user.LastName ?? ""}`.trim();
+    const normalizedRole = user.Role.toLowerCase();
 
-    const isStudentLikeUser = user.Role === "User" || user.Role === "Helper";
+    const isStudentLikeUser = normalizedRole === "user" || normalizedRole === "helper";
     
     return (
         <main className="main">
@@ -122,7 +123,7 @@ export function ProfilePage() {
                         </div>
                     </section>
 
-                    {(user.Role === "Admin" || user.Role === "Owner") && (
+                    {(normalizedRole === "admin" || normalizedRole === "owner") && (
                         <section className="card card--padded">
                             <div className="section-head">
                                 <h2 className="section-title">Расписание учителя</h2>
