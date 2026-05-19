@@ -319,7 +319,7 @@ export function EventPage() {
                         title={"Удалить мероприятие?"}
                         content={`Это действие удалит мероприятие "${event.Title}". Отменить удаление будет нельзя.`}
                         onConfirm={async () => {
-                            await deleteEvent.mutate({id: event.ID});
+                            await deleteEvent.mutateAsync({id: event.ID});
                             setIsDeleteConfirmOpen(false);
                             navigate(-1);
                         }}
@@ -336,7 +336,7 @@ export function EventPage() {
                         title={"Завершить мероприятие?"}
                         content={`После завершения участникам мероприятия "${event.Title}" будет начислена награда: +${event.RatingReward} рейтинга.`}
                         onConfirm={async () => {
-                            await completeEvent.mutate({item: event});
+                            await completeEvent.mutateAsync({item: event});
                             setIsCompleteConfirmOpen(false);
                             navigate(-1);
                         }}

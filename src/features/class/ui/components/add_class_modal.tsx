@@ -13,7 +13,7 @@ export function AddClassModal({isOpen, onClose, onAddClass}: AddUserModalProps) 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const getStaff = useStaff();
     const staff = getStaff.data
-    const {mutate, error, isError, isSuccess} = useAddClass()
+    const {mutateAsync, error, isError} = useAddClass()
     
     useEffect(() => {
         if (!isOpen) {
@@ -53,10 +53,8 @@ export function AddClassModal({isOpen, onClose, onAddClass}: AddUserModalProps) 
 
         try {
             setIsSubmitting(true);
-            await mutate(dto);
-            if (isSuccess === true) {
-                await onAddClass();
-            }
+            await mutateAsync(dto);
+            onAddClass();
         } finally {
             setIsSubmitting(false);
         }
@@ -160,7 +158,7 @@ export function AddClassModal({isOpen, onClose, onAddClass}: AddUserModalProps) 
                                     </option>
 
                                     {staff.map((item) => (
-                                        <option value={item.Login}>{item.Name} {item.LastName}</option>
+                                        <option key={item.Id} value={item.Login}>{item.Name} {item.LastName}</option>
                                     ))}
                                 </select>
                             </div>

@@ -70,7 +70,7 @@ export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, t
         try {
             setIsSubmitting(true);
             const dto = ScheduleChangeLessonUsecase(form);
-            await changeSchedule.mutate({id: lesson.Id, form: dto, type: type});
+            await changeSchedule.mutateAsync({id: lesson.Id, form: dto, type: type});
             onChanged();
         } finally {
             setIsSubmitting(false);
@@ -263,7 +263,7 @@ export function ChangeScheduleLessonModal({isOpen, onClose, lesson, onChanged, t
                     isOpen={isDeleteLessonModalOpen}
                     onClose={() => setIsDeleteLessonModalOpen(false)}
                     onConfirm={async () => {
-                        await deleteSchedule.mutate({id: lesson.Id, type: type});
+                        await deleteSchedule.mutateAsync({id: lesson.Id, type: type});
                         onChanged();
                     }}
                     isDanger={true}

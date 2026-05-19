@@ -4,10 +4,7 @@ import {UseEvents} from "../../hooks/use_events.ts";
 
 export function EventsWidget() {
     const navigate = useNavigate();
-    const events = UseEvents().data
-    const error = UseEvents().error?.message ?? null;
-
-    const isLoading = UseEvents().isLoading;
+    const {error: error, data: events, isLoading: isLoading} = UseEvents();
     
     return (
         <>
@@ -20,7 +17,7 @@ export function EventsWidget() {
             )}
 
             {error && !isLoading && (
-                <div className="alert alert--danger mb-4">{error}</div>
+                <div className="alert alert--danger mb-4">{error.message}</div>
             )}
 
             {events && !isLoading && !error && events.length > 0 ? (

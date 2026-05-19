@@ -12,7 +12,7 @@ interface AddUserModalProps {
 
 export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
     const classes = useClasses().data;
-    const {mutate, error, isSuccess} = useAddUser()
+    const {mutateAsync, error} = useAddUser()
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole>("User");
     const shouldShowClass = selectedRole === "User" || selectedRole === "Helper";
@@ -57,10 +57,8 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
         
         try {
             setIsSubmitting(true);
-            await mutate(form)
-            if (isSuccess === true) {
-                onAddUser();
-            }
+            await mutateAsync(form)
+            onAddUser();
         } finally {
             setIsSubmitting(false);
         }

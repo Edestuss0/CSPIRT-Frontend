@@ -9,7 +9,7 @@ export interface RatingChangeFormValues {
 
 export const RatingChangeUseCase = (form:  RatingChangeFormValues): RatingChangeFormType => {
     const dto = {
-        target: form.target,
+        target_login: form.target,
         reason: form.reason,
         rating: form.rating,
     };

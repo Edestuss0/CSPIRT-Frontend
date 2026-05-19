@@ -8,7 +8,7 @@ export type AddParamFormValues = {
     rating: number;
 }
 
-export function AddParamUsecase(form: AddParamFormValues) {
+export async function AddParamUsecase(form: AddParamFormValues) {
     const dto = {
         ClassID: form.class_id,
         Reason: form.reason,
@@ -20,10 +20,6 @@ export function AddParamUsecase(form: AddParamFormValues) {
     if (!parsed.success) {
         throw new Error("Проверьте правильность заполнения формы");
     }
-
-    try {
-        EventsApi.addRewardParams(form.event_id, dto);
-    } catch (error) {
-        console.error(error);
-    }
+    
+    await EventsApi.addRewardParams(form.event_id, dto);
 }

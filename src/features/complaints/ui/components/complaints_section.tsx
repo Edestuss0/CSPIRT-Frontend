@@ -29,7 +29,7 @@ export const ComplaintsSection = ({complaints, isYou, user, currentUser, setForm
 
         try {
             const dto = ComplaintAddUsecase(form);
-            await addComplaint.mutate(dto);
+            await addComplaint.mutateAsync(dto);
             setComplaintText("");
             await getUser.refetch();
         } catch (e) {
@@ -94,7 +94,7 @@ export const ComplaintsSection = ({complaints, isYou, user, currentUser, setForm
                             key={item.ID}
                             item={item}
                             onDelete={async () => {
-                                await deleteComplaint.mutate({id: item.ID});
+                                await deleteComplaint.mutateAsync({id: item.ID});
                                 await getUser.refetch()
                             }}
                             role={currentUser.Role ?? "User"}

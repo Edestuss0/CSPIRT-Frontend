@@ -35,7 +35,7 @@ export const RatingSection = ({user, setFormError = () => {}}: {user: UserType, 
 
     try {
       const dto= RatingChangeUseCase(form);
-      changeRating.mutate(dto);
+      changeRating.mutateAsync(dto);
       setRatingValue("");
       setRatingReason("");
       getUser.refetch()

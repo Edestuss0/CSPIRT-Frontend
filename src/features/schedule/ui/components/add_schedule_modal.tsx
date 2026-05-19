@@ -69,7 +69,7 @@ export function AddScheduleLessonModal({isOpen, onClose, classId, dayOfWeek, onA
             setIsSubmitting(true);
 
             const dto = ScheduleAddLessonUsecase(form);
-            addSchedule.mutate({form: dto, type: type});
+            addSchedule.mutateAsync({form: dto, type: type});
             onAdded();
         } finally {
             setIsSubmitting(false);

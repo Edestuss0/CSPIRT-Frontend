@@ -74,7 +74,7 @@ export function AddParamModal({isOpen, onClose, Classes, EventID, OnAdd}: AddUse
                 <div className="modal__header">
                     <div>
                         <h2 className="modal__title" id="add-user-modal-title">
-                            Добавление награды для класса
+                            Изменение награды для класса
                         </h2>
 
                         <p className="modal__description">
@@ -148,7 +148,7 @@ export function AddParamModal({isOpen, onClose, Classes, EventID, OnAdd}: AddUse
                                     </option>
 
                                     {Classes.map((item) => (
-                                        <option value={item.Id}>{item.Name} Класс</option>
+                                        <option key={item.Id} value={item.Id}>{item.Name} Класс</option>
                                     ))}
                                 </select>
                             </div>

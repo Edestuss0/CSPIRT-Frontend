@@ -78,7 +78,7 @@ export function AddEventModal({isOpen, onClose, onEventAdd,}: Props) {
         try {
             setIsSubmitting(true);
             const dto = await addEventUsecase(form);
-            addEvent.mutate(dto);
+            addEvent.mutateAsync(dto);
             await onEventAdd();
             setSelectedClassIds([]);
             setIsClassesDropdownOpen(false);

@@ -111,7 +111,7 @@ export function ChangeTeacherModal({isOpen, onClose, onChangeTeacher, staff, cla
                                     </option>
                                     
                                     {staff.map((item) => (
-                                        <option value={item.Login}>{item.Name} {item.LastName}</option>
+                                        <option key={item.Id} value={item.Login}>{item.Name} {item.LastName}</option>
                                     ))}
                                 </select>
                             </div>

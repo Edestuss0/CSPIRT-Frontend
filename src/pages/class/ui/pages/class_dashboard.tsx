@@ -160,12 +160,10 @@ export function ClassDashboard() {
             
             <ChangeTeacherModal isOpen={isChangeTeacherModalOpen} onClose={() => setChangeTeacherModalOpen(false)} onChangeTeacher={async (dto) => {
                 if (classId !== null) {
-                    await changeTeacher.mutate({id: classId, teacher: dto});
-                    if (changeTeacher.isSuccess === true) {
-                        getClassTeacher.refetch();
-                        setKey(key + 1);
-                        setChangeTeacherModalOpen(false);
-                    }
+                    await changeTeacher.mutateAsync({id: classId, teacher: dto});
+                    getClassTeacher.refetch();
+                    setKey(key + 1);
+                    setChangeTeacherModalOpen(false);
                 } 
             }} staff={staff} className={name ?? ""}/>
             
@@ -174,7 +172,7 @@ export function ClassDashboard() {
                 content={`Это действие удалит ${name} класс. Отменить удаление будет нельзя.`}
                 onConfirm={async () => {
                     if (classId !== null) {
-                        await deleteClass.mutate({id: classId});
+                        await deleteClass.mutateAsync({id: classId});
                         setKey(key + 1);
                         setDeleteClassModalOpen(false);
                     }
@@ -191,8 +189,9 @@ export function ClassDashboard() {
                 buttonContent={"Сбросить"}
                 onConfirm={async () => {
                     if (classId) {
-                        await rolloverSchedule.mutate({id: classId ?? 0});
+                        await rolloverSchedule.mutateAsync({id: classId ?? 0});
                         setKey(key + 1);
+                        setRolloverModalOpen(false);
                     }
                 }}
                 isOpen={isRolloverModalOpen}

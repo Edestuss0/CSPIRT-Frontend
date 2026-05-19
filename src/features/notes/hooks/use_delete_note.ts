@@ -6,10 +6,9 @@ export const useDeleteNote = () => {
 
     return useMutation({
         mutationFn: ({id}: {id: number}) => NotesApi.deleteNote(id),
-        onSuccess: async (data,variables) => {
-            const {id} = variables;
-            
-            await queryclient.invalidateQueries({queryKey: ["complaints", id]});
+        onSuccess: async () => {
+            await queryclient.invalidateQueries({queryKey: ["notes"]});
+            await queryclient.invalidateQueries({queryKey: ["user_by_id",]});
         }
     })
 }

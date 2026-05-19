@@ -30,7 +30,7 @@ export const NotesSection = ({isYou, notes, setFormError = () => {}, currentUser
     
     try {
       const dto = NoteAddUsecase(form);
-      await addNote.mutate({form: dto})
+      await addNote.mutateAsync({form: dto})
       setNoteText("");
       getUser.refetch()
     } catch (e) {
@@ -87,7 +87,7 @@ export const NotesSection = ({isYou, notes, setFormError = () => {}, currentUser
                       key={note.ID}
                       item={note}
                       onDelete={async () => {
-                        await deleteNote.mutate({id: note.ID});
+                        await deleteNote.mutateAsync({id: note.ID});
                         getUser.refetch();
                         console.log(getUser.data);
                       }}

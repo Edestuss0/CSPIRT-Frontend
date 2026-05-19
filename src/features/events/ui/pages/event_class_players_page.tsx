@@ -69,11 +69,11 @@ export function EventClassPlayersPage() {
     }, [students, eventPlayerIdSet]);
 
     useEffect(() => {
-        if (!initializedRef.current && initialSelectedUserIds.length > 0) {
+        if (!initializedRef.current && !getEventById.isLoading && !getClassById.isLoading) {
             setSelectedUserIds(initialSelectedUserIds);
             initializedRef.current = true;
         }
-    }, [initialSelectedUserIds]);
+    }, [initialSelectedUserIds, getEventById.isLoading, getClassById.isLoading]);
 
     if (!numericEventId || Number.isNaN(numericEventId)) {
         return (
