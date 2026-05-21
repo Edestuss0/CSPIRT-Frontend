@@ -14,6 +14,7 @@ interface AddUserModalProps {
 export function AddParamModal({isOpen, onClose, Classes, EventID, OnAdd}: AddUserModalProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const {mutateAsync, error, isError} = UseAddParam()
+    const [isBaranka, setIsBaranka] = useState(true);
 
     useEffect(() => {
         if (!isOpen) {
@@ -117,20 +118,56 @@ export function AddParamModal({isOpen, onClose, Classes, EventID, OnAdd}: AddUse
                                 />
                             </div>
 
-                            <div className="field">
-                                <label className="field__label" htmlFor="className">
-                                    Награда
-                                </label>
-                                <input
-                                    id="reward"
-                                    name="reward"
-                                    className="input"
-                                    type="number"
-                                    max={5000}
-                                    required
-                                />
-                            </div>
+                            <div className="field" style={{marginTop: "-25px"}}>
+                                <div className="field__top">
+                                    <label className="field__label" htmlFor="reward">
+                                        Награда
+                                    </label>
 
+                                    <div className="reward-mode">
+                                        <button
+                                            type="button"
+                                            className={`reward-mode__button ${isBaranka ? "active" : ""}`}
+                                            onClick={() => setIsBaranka(true)}
+                                        >
+                                            Готовые
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            className={`reward-mode__button ${!isBaranka ? "active" : ""}`}
+                                            onClick={() => setIsBaranka(false)}
+                                        >
+                                            Вручную
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {isBaranka ? (
+                                    <select
+                                        id="reward"
+                                        name="reward"
+                                        className="select"
+                                        required
+                                    >
+                                        <option value="50">50 Рейтинга</option> 🥨
+                                        <option value="100">100 Рейтинга</option>
+                                        <option value="250">250 Рейтинга</option>
+                                        <option value="500">500 Рейтинга</option>
+                                    </select>
+                                ) : (
+                                    <input
+                                        id="reward"
+                                        name="reward"
+                                        className="input"
+                                        type="number"
+                                        max={5000}
+                                        placeholder="Введите награду"
+                                        required
+                                    />
+                                )}
+                            </div>
+                            
                             <div className="field">
                                 <label className="field__label" htmlFor="teacher">
                                     Класс
@@ -154,6 +191,7 @@ export function AddParamModal({isOpen, onClose, Classes, EventID, OnAdd}: AddUse
                             </div>
                             
                         </div>
+                        
 
                     </div>
 
