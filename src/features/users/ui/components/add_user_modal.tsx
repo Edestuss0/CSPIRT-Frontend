@@ -8,9 +8,10 @@ interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAddUser: () => void;
+    classId?: number | null
 }
 
-export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
+export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUserModalProps) {
     const classes = useClasses().data;
     const {mutateAsync, error} = useAddUser()
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -215,8 +216,8 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
                                 >
                                     <option value="User">{UserRoles.User}</option>
                                     <option value="Helper">{UserRoles.Helper}</option>
-                                    <option value="Admin">{UserRoles.Admin}</option>
-                                    <option value="Owner">{UserRoles.Owner}</option>
+                                    {!classId && (<option value="Admin">{UserRoles.Admin}</option>)}
+                                    {!classId && (<option value="Owner">{UserRoles.Owner}</option>)}
                                 </select>
                             </div>
                             
@@ -226,7 +227,7 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
                                         Класс
                                     </label>
 
-                                    <select
+                                    {!classId ? (<select
                                         id="userClass"
                                         name="classId"
                                         className="select"
@@ -242,7 +243,24 @@ export function AddUserModal({isOpen, onClose, onAddUser}: AddUserModalProps) {
                                                 {item.Name}
                                             </option>
                                         ))}
-                                    </select>
+                                    </select>) : (<select
+                                        id="userClass"
+                                        name="classId"
+                                        className="select"
+                                        defaultValue={classId}
+                                        disabled={true}
+                                        required={shouldShowClass}
+                                    >
+                                        <option value="" disabled>
+                                            Выберите класс
+                                        </option>
+
+                                        {classes.map((item) => (
+                                            <option key={item.Id} value={String(item.Id)}>
+                                                {item.Name}
+                                            </option>
+                                        ))}
+                                    </select>)}
                                 </div>
                             )}
 

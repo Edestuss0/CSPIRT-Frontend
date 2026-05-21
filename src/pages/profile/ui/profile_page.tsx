@@ -106,7 +106,6 @@ export function ProfilePage() {
                         </div>
 
                         <div className="info-list">
-                            <InfoRow label="ID пользователя" value={user.Id} />
                             <InfoRow label="Имя" value={user.Name} />
                             <InfoRow label="Фамилия" value={user.LastName} />
                             <InfoRow label="Полное имя" value={fullName || "Не указано"} />

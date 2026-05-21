@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import { useAuthStore } from "../../../../features/auth/store/auth_store.ts";
 import { AddUserModal } from "../../../../features/users/ui/components/add_user_modal.tsx";
 import {AddClassModal} from "../../../../features/class/ui/components/add_class_modal.tsx";
@@ -10,6 +10,7 @@ import {StaffWidget} from "../../../../features/users/ui/components/staff_widget
 import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/tabs_switcher.tsx";
+import {UserRound} from "lucide-react";
 
 type Lists = "classes" | "events" | "staff";
 
@@ -18,8 +19,15 @@ export function DashboardPage() {
 
     const role = useAuthStore((state) => state.user?.User.Role);
     const normalizedRole = role?.toLowerCase();
-    
-    const [selectedList, setSelectedList] = useState<Lists>("classes");
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const selectedList =
+        (searchParams.get("tab") as Lists) || "classes";
+
+    const setSelectedList = (tab: Lists) => {
+        setSearchParams({ tab }, {replace: true});
+    };
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
     const [isAddClassModalOpen, setIsAddClassModalOpen] = useState(false);
     const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
@@ -40,10 +48,6 @@ export function DashboardPage() {
             label: "Добавить мероприятие",
             onClick: () => setIsAddEventModalOpen(true),
             hidden: (normalizedRole !== "owner" || selectedList !== "events"),
-        },
-        {
-            label: "Профиль",
-            onClick: () => navigate("/profile")
         },
     ]
     
@@ -76,6 +80,16 @@ export function DashboardPage() {
                     description={"Просматривайте список классов, мероприятий и прочее"}
                     menuItems={menuItems}
                     menuTitle={"Меню"}
+                    actions={
+                        <button
+                            className="app-drawer-button"
+                            type="button"
+                            onClick={() => navigate("/profile")}
+                            aria-label="Перейти в профиль"
+                        >
+                            <UserRound size={22} />
+                        </button>
+                    }
                 />
 
                 <div className="page-spacer" />

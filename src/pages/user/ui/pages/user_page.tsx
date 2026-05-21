@@ -120,11 +120,10 @@ export function UserPage() {
                         </div>
 
                         <div className="info-list">
-                            <InfoRow label="ID пользователя" value={user.User.Id} />
                             <InfoRow label="Имя" value={user.User.Name} />
                             <InfoRow label="Фамилия" value={user.User.LastName} />
                             <InfoRow label="Полное имя" value={fullName || "Не указано"} />
-                            <InfoRow label="Логин" value={user.User.Login} />
+                            {normalizedCurrentRole === "owner" && (<InfoRow label="Логин" value={user.User.Login}/>)}
 
                             {isStudentLikeUser && (
                                 <InfoRow label="Класс" value={user.User.Class} />

@@ -172,7 +172,7 @@ export function AddParamModal({isOpen, onClose, Classes, EventID, OnAdd}: AddUse
                             type="submit"
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? "Добавление..." : "Добавить класс"}
+                            {isSubmitting ? "Добавление..." : "Добавить награду"}
                         </button>
                     </div>
                 </form>

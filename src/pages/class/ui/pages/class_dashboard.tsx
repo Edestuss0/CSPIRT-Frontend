@@ -16,12 +16,13 @@ import {useChangeTeacher} from "../../../../features/class/hooks/use_change_teac
 import {useClassTeacher} from "../../../../features/class/hooks/use_class_teacher.ts";
 import {useDeleteClass} from "../../../../features/class/hooks/use_delete_class.ts";
 import {UseRolloverSchedule} from "../../../../features/schedule/hooks/use_rollover_schedule.ts";
+import {AddUserModal} from "../../../../features/users/ui/components/add_user_modal.tsx";
 // import {PlannedScheduleWidget} from "../../../../features/schedule/ui/components/planned_schedule_widget.tsx";
 
 type SelectedList = | "users" | "notes" | "complaints" | "schedule" | "baseschedule" | "plannedschedule";
 
 export function ClassDashboard() {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     
     const { id } = useParams<{id: string, name: string}>();
     const name = searchParams.get("name");
@@ -38,11 +39,21 @@ export function ClassDashboard() {
     
     
     const isLoading = changeTeacher.isPending || getStaff.isLoading || deleteClass.isPending || getStaff.isLoading || getClassTeacher.isLoading;
-    
-    const [selectedList, setSelectedList] = useState<SelectedList>("users"); 
+
+
+    const selectedList =
+        (searchParams.get("tab") as SelectedList) || "users";
+
+    const setSelectedList = (tab: SelectedList) => {
+        setSearchParams(prev => {
+            prev.set("tab", tab);
+            return prev;
+        }, { replace: true });
+    };
     const [isChangeTeacherModalOpen, setChangeTeacherModalOpen] = useState(false);
     const [isDeleteClassModalOpen, setDeleteClassModalOpen] = useState(false);
     const [isRolloverModalOpen, setRolloverModalOpen] = useState(false);
+    const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
     const [key, setKey] = useState<number>(0);
 
     useEffect(() => {
@@ -52,6 +63,11 @@ export function ClassDashboard() {
     }, [classId, getClassTeacher]);
 
     const menuItems: BurgerDrawerMenuItem[] = [
+        {
+            label: "Добавить пользователя",
+            onClick: () => setIsAddUserModalOpen(true),
+            hidden: (normalizedRole !== "owner" && normalizedRole !== "admin"),
+        },
         {
             label: "Изменить классного руководителя",
             onClick: async () => {
@@ -195,6 +211,16 @@ export function ClassDashboard() {
                 }}
                 isOpen={isRolloverModalOpen}
                 onClose={() => setRolloverModalOpen(false)}
+            />
+
+            <AddUserModal
+                isOpen={isAddUserModalOpen}
+                onClose={() => setIsAddUserModalOpen(false)}
+                onAddUser={async () => {
+                    setKey(prevKey => prevKey + 1);
+                    setIsAddUserModalOpen(false);
+                }}
+                classId={classId}
             />
             
         </main>

@@ -2941,3 +2941,36 @@ html[data-theme="dark"] .app-drawer__backdrop {
         transition-duration: 0.001ms !important;
     }
 }
+
+.app-profile-button {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 14px;
+
+    background: var(--card-color);
+    color: var(--text-color);
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            transform 0.15s ease;
+}
+
+.app-profile-button:hover {
+    background: var(--card-color-hover);
+}
+
+.app-profile-button:active {
+    transform: scale(0.96);
+}
+
+.app-profile-button svg {
+    flex-shrink: 0;
+}

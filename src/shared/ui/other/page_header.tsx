@@ -68,7 +68,9 @@ export function PageHeader({eyebrow, title, description, menuTitle = "Меню",
                                 items={menuItems}
                                 side="right"
                             />
+                            
                         )}
+                        
                     </>
                 )}
             </div>
