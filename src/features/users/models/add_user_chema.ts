@@ -8,7 +8,7 @@ export const addUserFormSchema = z.object({
     Password: z.string().min(6).max(35),
     ClassID: z.number().int().nonnegative(),
     Login: z.string().min(2).max(20),
-    Role: z.enum(["User", "Helper", "Admin", "Owner"]),
+    Role: z.enum(["User", "Helper", "Admin", "Owner", "Public"]),
     Rating: z.number().int().min(0).max(5000)
 }).superRefine((data, ctx) => {
     const normalizedRole = data.Role.toLowerCase();

@@ -3,7 +3,6 @@ import {useAuthStore} from "../../../auth/store/auth_store.ts";
 import type {UserType} from "../../../../shared/entities/user/types/user_types.ts";
 import {RatingChangeUseCase} from "../../models/rating_change_usecase.ts";
 import {UseChangeRating} from "../../hooks/use_change_rating.ts";
-import {useUser} from "../../../users/hooks/use_user.ts";
 
 export const RatingSection = ({user, setFormError = () => {}}: {user: UserType, setFormError?: (value: string | null) => void}) => {
   const role = useAuthStore((state) => state.user?.User.Role);
@@ -16,7 +15,6 @@ export const RatingSection = ({user, setFormError = () => {}}: {user: UserType, 
   const canManageRating = normalizedRole === "owner" || normalizedRole === "admin";
   const ratingLevel = rating < 1500 ? "low" : rating < 3500 ? "medium" : "high";
   const changeRating = UseChangeRating()
-  const getUser = useUser(user.Id)
 
   async function handleChangeRating() {
     setFormError(null);
@@ -36,10 +34,9 @@ export const RatingSection = ({user, setFormError = () => {}}: {user: UserType, 
 
     try {
       const dto= RatingChangeUseCase(form);
-      changeRating.mutateAsync(dto);
+      await changeRating.mutateAsync(dto);
       setRatingValue("");
       setRatingReason("");
-      getUser.refetch()
     } catch (e) {
       setFormError(e instanceof Error ? e.message : "Неизвестная ошибка");
     }

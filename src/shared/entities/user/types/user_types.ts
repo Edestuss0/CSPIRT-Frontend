@@ -5,7 +5,7 @@ const nullableArray = <T extends z.ZodTypeAny>(schema: T) =>
         .nullish()
         .transform((value) => value ?? []);
 
-const roles = ["Owner", "Admin", "Helper", "User"] as const;
+const roles = ["Owner", "Admin", "Helper", "User", "Public"] as const;
 
 export const userRoleSchema = z
     .string()
@@ -21,6 +21,8 @@ export const userRoleSchema = z
                 return "Helper";
             case "user":
                 return "User";
+            case "public":
+                return "Public";
             default:
                 return value;
         }
@@ -54,6 +56,7 @@ export const UserRoles: Record<UserRole, string> = {
     User: "Ученик",
     Owner: "Руководство",
     Helper: "Староста",
+    Public: "Публичный"
 };
 
 export type addUserFormType = {

@@ -32,8 +32,7 @@ export function NotesWidget({id, name}: props) {
                 <div className={"class-list"}>
                     {notes?.map((note) => (
                         <NoteCard item={note} key={note.ID} onDelete={async () => {
-                            await deleteNote.mutate({id: note.ID});
-                            getNotes.refetch();
+                            await deleteNote.mutateAsync({id: note.ID});
                         }} role={role ?? "User"} />
                     ))}
                 </div>

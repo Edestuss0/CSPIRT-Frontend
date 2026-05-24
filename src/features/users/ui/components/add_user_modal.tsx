@@ -216,6 +216,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                 >
                                     <option value="User">{UserRoles.User}</option>
                                     <option value="Helper">{UserRoles.Helper}</option>
+                                    {!classId && <option value="Public">{UserRoles.Public}</option>}
                                     {!classId && (<option value="Admin">{UserRoles.Admin}</option>)}
                                     {!classId && (<option value="Owner">{UserRoles.Owner}</option>)}
                                 </select>

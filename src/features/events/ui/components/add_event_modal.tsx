@@ -78,11 +78,11 @@ export function AddEventModal({isOpen, onClose, onEventAdd,}: Props) {
         try {
             setIsSubmitting(true);
             const dto = await addEventUsecase(form);
-            addEvent.mutateAsync(dto);
+            await addEvent.mutateAsync(dto);
             await onEventAdd();
             setSelectedClassIds([]);
             setIsClassesDropdownOpen(false);
-            getEvents.refetch();
+            await getEvents.refetch();
             onClose();
         } catch (e) {
             setError(e instanceof Error ? e.message : "Неизвестная ошибка")

@@ -8,10 +8,11 @@ import {PageHeader} from "../../../shared/ui/other/page_header.tsx";
 import {ComplaintsSection} from "../../../features/complaints/ui/components/complaints_section.tsx";
 import {NotesSection} from "../../../features/notes/ui/components/notes_section.tsx";
 import {RatingSection} from "../../../features/rating/ui/components/rating_section.tsx";
+import {useLogout} from "../../../features/auth/hooks/use_logout.ts";
 
 export function ProfilePage() {
     const profile = useAuthStore((state) => state.user);
-    const logout = useAuthStore((state) => state.logout);
+    const logout = useLogout()
     const status = useAuthStore((state) => state.status);
     const error = useAuthStore((state) => state.error);
 
@@ -20,7 +21,9 @@ export function ProfilePage() {
     const menuItems: BurgerDrawerMenuItem[] = [
         {
             label: "Выйти",
-            onClick: () => logout(),
+            onClick: async () => {
+                await logout.mutateAsync()
+            },
         }
     ]
 

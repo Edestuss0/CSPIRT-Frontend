@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useParams, useSearchParams} from "react-router-dom";
 import {useAuthStore} from "../../../../features/auth/store/auth_store.ts";
 import {ChangeTeacherModal} from "../components/change_teacher_modal.tsx";
@@ -55,12 +55,6 @@ export function ClassDashboard() {
     const [isRolloverModalOpen, setRolloverModalOpen] = useState(false);
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
     const [key, setKey] = useState<number>(0);
-
-    useEffect(() => {
-        if (classId) {
-            getClassTeacher.refetch();
-        }
-    }, [classId, getClassTeacher]);
 
     const menuItems: BurgerDrawerMenuItem[] = [
         {

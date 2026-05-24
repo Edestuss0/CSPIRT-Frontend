@@ -14,7 +14,6 @@ interface AuthState {
 
     login: (dto: AuthDto) => Promise<boolean>;
     checkAuth: () => Promise<void>;
-    logout: () => void;
     clearError: () => void;
     refreshAuth: () => Promise<void>;
 }
@@ -113,14 +112,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
           });
       }
     },
-
-    logout: () => {
-        set({
-            user: null,
-            status: "unauthenticated",
-            error: null,
-        });
-    },
+    
 
     clearError: () => {
         set({ error: null });

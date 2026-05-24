@@ -188,7 +188,7 @@ export function UserPage() {
                         onClose={() => setIsDeleteUserModalOpen(false)}
                         onConfirm={async () => {
                             if (id !== null) {
-                                await deleteUser.mutate({id: userId});
+                                await deleteUser.mutateAsync({id: userId});
                                 setIsDeleteUserModalOpen(false);
                                 navigate(-1);
                             }

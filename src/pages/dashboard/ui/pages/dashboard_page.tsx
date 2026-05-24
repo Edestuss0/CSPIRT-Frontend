@@ -11,11 +11,13 @@ import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/tabs_switcher.tsx";
 import {UserRound} from "lucide-react";
+import {useLogout} from "../../../../features/auth/hooks/use_logout.ts";
 
 type Lists = "classes" | "events" | "staff";
 
 export function DashboardPage() {
     const navigate = useNavigate();
+    const logout = useLogout();
 
     const role = useAuthStore((state) => state.user?.User.Role);
     const normalizedRole = role?.toLowerCase();
@@ -76,19 +78,32 @@ export function DashboardPage() {
             <section className="page">
                 
                 <PageHeader
-                    title={"Главная страница"}
-                    description={"Просматривайте список классов, мероприятий и прочее"}
+                    title={"Рейтинг классов МАОУ СОШ 16-Ф"}
+                    description={"Просматривайте список классов, мероприятий и прочую информацию"}
                     menuItems={menuItems}
                     menuTitle={"Меню"}
                     actions={
+                    <>
+                        {normalizedRole !== "public" ? (
+                            <button
+                                className="app-drawer-button"
+                                type="button"
+                                onClick={() => navigate("/profile")}
+                                aria-label="Перейти в профиль"
+                            >
+                                <UserRound size={22} />
+                            </button>
+                        ) : (
                         <button
-                            className="app-drawer-button"
+                            className="btn btn--danger"
                             type="button"
-                            onClick={() => navigate("/profile")}
-                            aria-label="Перейти в профиль"
+                            onClick={async () => await logout.mutateAsync()}
+                            aria-label="Выйти из аккаунта"
                         >
-                            <UserRound size={22} />
+                            Выйти
                         </button>
+                        )}
+                    </>
                     }
                 />
 

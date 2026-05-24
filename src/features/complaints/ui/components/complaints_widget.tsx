@@ -38,7 +38,7 @@ export function ComplaintsWidget({id, name}: props) {
                 <div className={"class-list"}>
                     {complaints.map((item) => (
                         <ComplaintCard item={item} key={item.ID} onDelete={() => {
-                            mutate(item.ID)
+                            mutate({id: item.ID})
                         }} role={role ?? "User"} />
                     ))}
                 </div>

@@ -241,31 +241,8 @@ export function EventPage() {
                             {error}
                         </div>
                     )}
-
-                    {!isLoading && !error && eventClasses?.length > 0 && (normalizedRole === "admin") && (
-                        <div className="class-list">
-                            {eventClasses?.map((item) => {
-                                if (user?.Id === item.Teacher?.Id) {
-                                    return <ClassCard
-                                        item={item}
-                                        onClick={() => {
-                                            navigate(
-                                                `/events/${event.ID}/classes/${item.Id}/players/add`,
-                                                {
-                                                    state: {
-                                                        event,
-                                                        classItem: item,
-                                                    },
-                                                }
-                                            );
-                                        }}
-                                    />
-                                }
-                            })}
-                        </div>
-                    )}
                     
-                    {!isLoading && !error && eventClasses?.length > 0 && (normalizedRole === "owner") && (
+                    {!isLoading && !error && eventClasses?.length > 0 && (
                         <div className="class-list">
                             {eventClasses?.map((item) => {
                                 let params = null;
@@ -281,15 +258,17 @@ export function EventPage() {
                                         item={item}
                                         param={params}
                                         onClick={() => {
-                                            navigate(
-                                                `/events/${event.ID}/classes/${item.Id}/players/add`,
-                                                {
-                                                    state: {
-                                                        event,
-                                                        classItem: item,
-                                                    },
-                                                }
-                                            );
+                                            if ((normalizedRole === "owner") || (user?.Id === item.Teacher?.Id)) {
+                                                navigate(
+                                                    `/events/${event.ID}/classes/${item.Id}/players/add`,
+                                                    {
+                                                        state: {
+                                                            event,
+                                                            classItem: item,
+                                                        },
+                                                    }
+                                                );
+                                            }
                                         }}
                                     />
                                 } else {
@@ -297,15 +276,17 @@ export function EventPage() {
                                         key={item.Id}
                                         item={item}
                                         onClick={() => {
-                                            navigate(
-                                                `/events/${event.ID}/classes/${item.Id}/players/add`,
-                                                {
-                                                    state: {
-                                                        event,
-                                                        classItem: item,
-                                                    },
-                                                }
-                                            );
+                                            if ((normalizedRole === "owner") || (user?.Id === item.Teacher?.Id)) {
+                                                navigate(
+                                                    `/events/${event.ID}/classes/${item.Id}/players/add`,
+                                                    {
+                                                        state: {
+                                                            event,
+                                                            classItem: item,
+                                                        },
+                                                    }
+                                                );
+                                            }
                                         }}
                                     />
                                 }
