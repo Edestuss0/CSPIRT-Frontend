@@ -152,8 +152,8 @@ export function AddParamModal({isOpen, onClose, Classes, EventID, OnAdd}: AddUse
                                     >
                                         <option value="50">50 Рейтинга</option> 🥨
                                         <option value="100">100 Рейтинга</option>
-                                        <option value="250">250 Рейтинга</option>
-                                        <option value="500">500 Рейтинга</option>
+                                        <option value="250">250 Рейтинга</option> ⭐
+                                        <option value="500">500 Рейтинга</option>  🚀
                                     </select>
                                 ) : (
                                     <input
