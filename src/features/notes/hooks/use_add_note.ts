@@ -7,7 +7,7 @@ export const useAddNote = () => {
     
     return useMutation({
         mutationFn: ({form}: {form: NoteFormType}) => NotesApi.addNote(form),
-        onSuccess: (data, variables) => {
+        onSuccess: (_data, variables) => {
             const {form} = variables;
             queryclient.invalidateQueries({queryKey: ["notes"]});
             queryclient.invalidateQueries({queryKey: ["user_by_id", form.TargetID]});

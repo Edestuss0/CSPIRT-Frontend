@@ -6,8 +6,7 @@ export const useDeleteUser = () => {
     
     return useMutation({
         mutationFn: ({id}: {id: number}) => UserApi.deleteUser(id),
-        onSuccess: (data, variables) => {
-            const {id} = variables;
+        onSuccess: () => {
             queryclient.invalidateQueries({queryKey: ["users_by_class",]});
         }
     })

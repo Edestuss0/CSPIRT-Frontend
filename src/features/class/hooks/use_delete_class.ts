@@ -6,7 +6,7 @@ export const useDeleteClass = () => {
     
     return useMutation({
         mutationFn: ({id}: {id: number}) => classApi.deleteClass(id),
-        onSuccess: (data, variables) => {
+        onSuccess: (_data, variables) => {
             const { id } = variables;
             
             queryclient.invalidateQueries({queryKey: ["classes", id]});

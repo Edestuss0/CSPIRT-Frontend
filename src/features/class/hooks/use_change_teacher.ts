@@ -6,7 +6,7 @@ export const useChangeTeacher = () => {
     
     return useMutation({
         mutationFn: ({id, teacher}: {id: number, teacher: string}) => classApi.changeClassTeacher(id, teacher),
-        onSuccess: (data, variables) => {
+        onSuccess: (_data, variables) => {
             const { id } = variables;
             
             queryClient.invalidateQueries({queryKey: ["classes", id]});
