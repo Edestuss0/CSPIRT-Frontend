@@ -12,8 +12,9 @@ import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/tabs_switcher.tsx";
 import {UserRound} from "lucide-react";
 import {useLogout} from "../../../../features/auth/hooks/use_logout.ts";
+import {ParallelsWidget} from "../../../../features/class/ui/components/parallels_widget.tsx";
 
-type Lists = "classes" | "events" | "staff";
+type Lists = "classes" | "events" | "staff" | "parallels";
 
 export function DashboardPage() {
     const navigate = useNavigate();
@@ -57,6 +58,10 @@ export function DashboardPage() {
         {
             label: "Классы",
             value: "classes",
+        },
+        {
+            label: "Параллели",
+            value: "parallels",
         },
         {
             value: "events",
@@ -128,6 +133,10 @@ export function DashboardPage() {
 
                 {selectedList === "staff" && (
                     <StaffWidget key={key}/>
+                )}
+
+                {selectedList === "parallels" && (
+                    <ParallelsWidget key={key}/>
                 )}
 
                 <AddUserModal
