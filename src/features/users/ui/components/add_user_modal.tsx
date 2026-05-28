@@ -52,7 +52,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
             name: String(formData.get("name") ?? "").trim(),
             lastname: String(formData.get("lastName") ?? "").trim(),
             password: String(formData.get("password") ?? "").trim(),
-            classId: shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0,
+            classId: classId ?? (shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0),
             login: String(formData.get("login") ?? "").trim(),
             role: String(formData.get("role") ?? "User").trim() as UserRole,
         };
