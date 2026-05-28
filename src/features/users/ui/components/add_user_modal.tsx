@@ -257,7 +257,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                         </option>
 
                                         {classes.map((item) => (
-                                            <option key={item.Id} value={String(item.Id)}>
+                                            <option key={item.Id} value={item.Id}>
                                                 {item.Name}
                                             </option>
                                         ))}
