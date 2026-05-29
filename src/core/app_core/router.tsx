@@ -10,6 +10,7 @@ import type {ReactNode} from "react";
 import {EventPage} from "../../features/events/ui/pages/event_page.tsx";
 import {EventClassPlayersPage} from "../../features/events/ui/pages/event_class_players_page.tsx";
 import {ParallelPage} from "../../pages/parallel/ui/pages/parrallel_page.tsx";
+import {PublicDashboard} from "../../pages/public_dasboard/ui/pages/public_dashboard.tsx";
 
 const withBoundary = (element: ReactNode, name: string) => (
     <ErrorBoundary
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: withBoundary(<DashboardPage />, "главной"),
+      },
+      {
+        path: "/public",
+        element: withBoundary(<PublicDashboard/>, "главной")
       },
       {
         path: "/profile",

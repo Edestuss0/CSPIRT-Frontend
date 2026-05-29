@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {Navigate, useNavigate, useSearchParams} from "react-router-dom";
 import { useAuthStore } from "../../../../features/auth/store/auth_store.ts";
 import { AddUserModal } from "../../../../features/users/ui/components/add_user_modal.tsx";
 import {AddClassModal} from "../../../../features/class/ui/components/add_class_modal.tsx";
@@ -77,11 +77,14 @@ export function DashboardPage() {
     if (!role) {
         return null;
     }
+    
+    if (normalizedRole === "public") {
+        return <Navigate to={"/public"}/>
+    }
 
     return (
         <main className="main">
             <section className="page">
-                
                 <PageHeader
                     title={"Рейтинг классов МАОУ СОШ 16-Ф"}
                     description={"Просматривайте список классов, мероприятий и прочую информацию"}
