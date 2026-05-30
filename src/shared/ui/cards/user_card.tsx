@@ -20,8 +20,15 @@ export function UserCard({user, onClick}: Props) {
             
             <div className={"class-flat-card__main"}>
                 <div className="class-flat-card__icon">
-                    {user.Name.split("")[0]}{user.LastName.split("")[0]}
+                    {user.Avatar.Valid ? (
+                        <img
+                            className="class-flat-card__icon-img"
+                            src={user.Avatar.String}
+                            alt="avatar"
+                        />
+                    ) : null}
                 </div>
+                
                 <div className={"class-flat-card__info"}>
                     <h2 className={"class-flat-card__title"}>{user.Name} {user.LastName}</h2>
                     <h2 className={"class-flat-card__subtitle"}>Рейтинг: {user.Rating}</h2>

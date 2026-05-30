@@ -12,8 +12,8 @@ export type addUserValues = {
     role: UserRole;
 }
 
-export async function AddUserUseCase(form: addUserValues): Promise<boolean> {
-    
+export async function UpdateUserUseCase(form: addUserValues): Promise<boolean> {
+
     const dto = {
         Avatar: form.avatar,
         Name: form.name,
@@ -29,12 +29,12 @@ export async function AddUserUseCase(form: addUserValues): Promise<boolean> {
         Rating: 100
     }
     const parsed = addUserFormSchema.safeParse(dto);
-    
+
     if (!parsed.success) {
         throw new Error(JSON.stringify(parsed.error?.format()));
     }
-    
-    await UserApi.addUser(parsed.data);
-    
+
+    await UserApi.updateUser(parsed.data);
+
     return true;
 }

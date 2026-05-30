@@ -5,8 +5,12 @@ import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {useLogout} from "../../../../features/auth/hooks/use_logout.ts";
 import {CurrentPublicList} from "../../context/public_context.ts";
 import {ParallelsWidget} from "../../../../features/class/ui/components/parallels_widget.tsx";
+import {Settings} from "lucide-react";
+import {useNavigate} from "react-router-dom";
 
 export function PublicDashboard() {
+    const navigate = useNavigate();
+    
     const {data: classes} = useClasses()
     const [classId, setClassId] = useState(1)
     const [className, setClassName] = useState("")
@@ -19,6 +23,7 @@ export function PublicDashboard() {
     useEffect(() => {
         if (!classes || classes.length === 0) return;
         
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setClassId(classes[0].Id ?? 0);
         setClassName(classes[0].Name ?? "")
 
@@ -52,16 +57,26 @@ export function PublicDashboard() {
             <section className="page">
                 
                 <PageHeader 
-                    title={`Расписание для ${className} класса`}
+                    title={`${CurrentPublicList === "schedule" ? `Расписание для ${className} класса` : CurrentPublicList === "parallels" ? "Просматривайте список параллелей школы" : ""}`}
                     actions={
-                        <button
-                            className="btn btn--danger"
-                            type="button"
-                            onClick={async () => await logout.mutateAsync()}
-                            aria-label="Выйти из аккаунта"
-                        >
-                            Выйти
-                        </button>
+                        <>
+                            <button
+                                className="app-drawer-button"
+                                type="button"
+                                onClick={() => navigate("/public/settings")}
+                                aria-label="Перейти в профиль"
+                            >
+                                <Settings size={22} />
+                            </button>
+                            <button
+                                className="btn btn--danger"
+                                type="button"
+                                onClick={async () => await logout.mutateAsync()}
+                                aria-label="Выйти из аккаунта"
+                            >
+                                Выйти
+                            </button>
+                        </>
                     }
                 />
                 

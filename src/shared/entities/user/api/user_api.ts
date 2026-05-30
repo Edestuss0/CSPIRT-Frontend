@@ -48,8 +48,32 @@ export const UserApi = {
         return parsed.data
     },
     
+    async updateUser(form: addUserFormType): Promise<void> {
+        const response = await apiClient.patch("/api/user/update", {
+            Avatar: {
+                String: form.Avatar,
+                Valid: true,
+            },
+            Name: form.Name,
+            LastName: form.LastName,
+            FullName: form.FullName,
+            Password: form.Password,
+            ClassID: form.ClassID,
+            Login: form.Login,
+            Role: form.Role,
+        }, true);
+
+        if (!response.checkStatus()) {
+            throw new Error("Ошибка при обновлении пользователя");
+        }
+    },
+    
     async addUser(form: addUserFormType): Promise<boolean> {
       const response = await apiClient.patch("/api/user/add", {
+          Avatar: {
+            String: form.Avatar,
+            Valid: true,  
+          },
           Name: form.Name,
           LastName: form.LastName,
           FullName: form.FullName,

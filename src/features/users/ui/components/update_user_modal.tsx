@@ -1,26 +1,27 @@
 import {type ChangeEvent, type FormEvent, useEffect, useState} from "react";
-import {type UserRole, UserRoles} from "../../../../shared/entities/user/types/user_types.ts";
+import {type UserRole, UserRoles, type UserType} from "../../../../shared/entities/user/types/user_types.ts";
 import type {addUserValues} from "../../models/add_user_usecase.ts";
 import {useClasses} from "../../../class/hooks/use_classes.ts";
-import {useAddUser} from "../../hooks/use_add_user.ts";
 import {getBase64} from "../../../../core/image/image_reader.ts";
+import {useUpdateUser} from "../../hooks/use_update_user.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAddUser: () => void;
-    classId?: number | null
+    classId?: number | null;
+    user: UserType;
 }
 
-export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUserModalProps) {
+export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, user}: AddUserModalProps) {
     const classes = useClasses().data;
-    const {mutateAsync, error} = useAddUser()
+    const {mutateAsync, error} = useUpdateUser()
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole>("User");
     const normalizedSelectedRole = selectedRole.toLowerCase();
     const shouldShowClass = normalizedSelectedRole === "user" || normalizedSelectedRole === "helper";
     const [selectedImage, setSelectedImage] = useState("")
-    
+
     useEffect(() => {
         if (!isOpen) {
             return;
@@ -58,7 +59,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
         event.preventDefault();
 
         const formData = new FormData(event.currentTarget);
-        
+
         const form: addUserValues = {
             avatar: selectedImage,
             name: String(formData.get("name") ?? "").trim(),
@@ -68,7 +69,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
             login: String(formData.get("login") ?? "").trim(),
             role: String(formData.get("role") ?? "User").trim() as UserRole,
         };
-        
+
         try {
             setIsSubmitting(true);
             await mutateAsync(form)
@@ -103,7 +104,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
             </div>
         )
     }
-    
+
     return (
         <div className="modal-backdrop" onMouseDown={() => {onClose();}}>
             <section
@@ -116,11 +117,11 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                 <div className="modal__header">
                     <div>
                         <h2 className="modal__title" id="add-user-modal-title">
-                            Добавление пользователя
+                            Изменение пользователя
                         </h2>
 
                         <p className="modal__description">
-                            Заполните данные нового пользователя системы.
+                            Заполните новые данные о пользователе
                         </p>
                     </div>
 
@@ -169,6 +170,8 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                         accept="image/*"
                                         onChange={handleChangeImage}
                                         hidden
+                                        required
+                                        defaultValue={user.Avatar.String}
                                     />
 
                                     <button
@@ -182,7 +185,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div className="field">
                                 <label className="field__label" htmlFor="userName">
                                     Имя
@@ -196,6 +199,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                     minLength={2}
                                     maxLength={20}
                                     required
+                                    defaultValue={user.Name}
                                 />
                             </div>
 
@@ -212,6 +216,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                     minLength={2}
                                     maxLength={20}
                                     required
+                                    defaultValue={user.LastName}
                                 />
                             </div>
                         </div>
@@ -231,23 +236,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                     minLength={2}
                                     maxLength={20}
                                     required
-                                />
-                            </div>
-
-                            <div className="field">
-                                <label className="field__label" htmlFor="userPassword">
-                                    Пароль
-                                </label>
-                                <input
-                                    id="userPassword"
-                                    name="password"
-                                    className="input"
-                                    type="password"
-                                    placeholder="Введите пароль"
-                                    autoComplete="new-password"
-                                    minLength={6}
-                                    maxLength={35}
-                                    required
+                                    defaultValue={user.Login}
                                 />
                             </div>
                         </div>
@@ -265,6 +254,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                     value={selectedRole}
                                     onChange={(event) => setSelectedRole(event.target.value as UserRole)}
                                     required
+                                    defaultValue={user.Role}
                                 >
                                     <option value="User">{UserRoles.User}</option>
                                     <option value="Helper">{UserRoles.Helper}</option>
@@ -273,7 +263,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                     {!classId && (<option value="Owner">{UserRoles.Owner}</option>)}
                                 </select>
                             </div>
-                            
+
                             {shouldShowClass && (
                                 <div className="field">
                                     <label className="field__label" htmlFor="userClass">
@@ -284,7 +274,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                                         id="userClass"
                                         name="classId"
                                         className="select"
-                                        defaultValue=""
+                                        defaultValue={user.ClassID}
                                         required={shouldShowClass}
                                     >
                                         <option value="" disabled>
@@ -318,7 +308,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                             )}
 
                         </div>
-                        
+
                     </div>
 
                     <div className="modal__footer">
@@ -336,7 +326,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
                             type="submit"
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? "Создание..." : "Создать пользователя"}
+                            {isSubmitting ? "Изменение..." : "Изменить пользователя"}
                         </button>
                     </div>
                 </form>
