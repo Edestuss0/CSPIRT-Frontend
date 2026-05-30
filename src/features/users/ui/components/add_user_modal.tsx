@@ -75,6 +75,7 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
             onAddUser();
         } finally {
             setIsSubmitting(false);
+            setSelectedImage("")
         }
     }
 
