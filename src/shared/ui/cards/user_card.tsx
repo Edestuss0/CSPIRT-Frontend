@@ -26,7 +26,9 @@ export function UserCard({user, onClick}: Props) {
                             src={user.Avatar.String}
                             alt="avatar"
                         />
-                    ) : null}
+                    ) : <div className="class-flat-card__name">
+                        {user.Name.split("")[0]}{user.LastName.split("")[0]}
+                    </div>}
                 </div>
                 
                 <div className={"class-flat-card__info"}>
