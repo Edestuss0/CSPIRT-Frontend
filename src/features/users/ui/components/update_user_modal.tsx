@@ -20,6 +20,7 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
     const [selectedRole, setSelectedRole] = useState<UserRole>("User");
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedRole(user.Role);
     }, [user.Role]);
     const normalizedSelectedRole = selectedRole.toLowerCase();
@@ -61,6 +62,7 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setIsSubmitting(true)
 
         const formData = new FormData(event.currentTarget);
 
@@ -77,6 +79,7 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
 
         await mutateAsync(form);
         onAddUser();
+        setIsSubmitting(false);
     }
 
     if (!classes) {
