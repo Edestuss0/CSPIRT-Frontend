@@ -79,11 +79,11 @@ export function UserPage() {
             hidden: (normalizedCurrentRole !== "owner"),
             onClick: () => setIsDeleteUserModalOpen(true)
         },
-        // {
-        //     label: "Изменить пользователя",
-        //     hidden: (normalizedCurrentRole !== "owner"),
-        //     onClick: () => setIsUpdateUserModalOpen(true)
-        // }
+        {
+            label: "Изменить пользователя",
+            hidden: (normalizedCurrentRole !== "owner"),
+            onClick: () => setIsUpdateUserModalOpen(true)
+        }
     ]
 
     return (

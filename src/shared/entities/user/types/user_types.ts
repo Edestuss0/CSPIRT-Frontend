@@ -75,3 +75,14 @@ export type addUserFormType = {
     Role: UserRole;
     Rating: number;
 }
+
+export type updateUserFormType = {
+    Avatar: string;
+    Name: string;
+    LastName: string;
+    ClassID: number;
+    Login: string;
+    Role: UserRole;
+    Rating: number;
+    Id: number;
+}

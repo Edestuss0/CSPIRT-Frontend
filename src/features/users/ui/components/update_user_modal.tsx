@@ -1,9 +1,9 @@
 import {type ChangeEvent, type FormEvent, useEffect, useState} from "react";
 import {type UserRole, UserRoles, type UserType} from "../../../../shared/entities/user/types/user_types.ts";
-import type {addUserValues} from "../../models/add_user_usecase.ts";
 import {useClasses} from "../../../class/hooks/use_classes.ts";
 import {getBase64} from "../../../../core/image/image_reader.ts";
 import {useUpdateUser} from "../../hooks/use_update_user.ts";
+import type {updateUserValues} from "../../models/update_user_usecase.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
@@ -18,6 +18,10 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
     const {mutateAsync, error} = useUpdateUser()
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole>("User");
+
+    useEffect(() => {
+        setSelectedRole(user.Role);
+    }, [user.Role]);
     const normalizedSelectedRole = selectedRole.toLowerCase();
     const shouldShowClass = normalizedSelectedRole === "user" || normalizedSelectedRole === "helper";
     const [selectedImage, setSelectedImage] = useState("")
@@ -60,23 +64,19 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
 
         const formData = new FormData(event.currentTarget);
 
-        const form: addUserValues = {
-            avatar: selectedImage,
+        const form: updateUserValues = {
+            rating: user.Rating,
+            id: user.Id,
+            avatar: selectedImage || user.Avatar.String,
             name: String(formData.get("name") ?? "").trim(),
             lastname: String(formData.get("lastName") ?? "").trim(),
-            password: String(formData.get("password") ?? "").trim(),
             classId: classId ?? (shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0),
             login: String(formData.get("login") ?? "").trim(),
-            role: String(formData.get("role") ?? "User").trim() as UserRole,
+            role: selectedRole,
         };
 
-        try {
-            setIsSubmitting(true);
-            await mutateAsync(form)
-            onAddUser();
-        } finally {
-            setIsSubmitting(false);
-        }
+        await mutateAsync(form);
+        onAddUser();
     }
 
     if (!classes) {
@@ -171,7 +171,6 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
                                         onChange={handleChangeImage}
                                         hidden
                                         required
-                                        defaultValue={user.Avatar.String}
                                     />
 
                                     <button
@@ -254,7 +253,6 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
                                     value={selectedRole}
                                     onChange={(event) => setSelectedRole(event.target.value as UserRole)}
                                     required
-                                    defaultValue={user.Role}
                                 >
                                     <option value="User">{UserRoles.User}</option>
                                     <option value="Helper">{UserRoles.Helper}</option>
