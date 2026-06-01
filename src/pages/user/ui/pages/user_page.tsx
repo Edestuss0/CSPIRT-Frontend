@@ -193,7 +193,7 @@ export function UserPage() {
                     <UpdateUserModal 
                         isOpen={isUpdateUserModalOpen}
                          onClose={() => setIsUpdateUserModalOpen(false)} 
-                         onAddUser={() => {}} 
+                         onAddUser={() => setIsUpdateUserModalOpen(false)} 
                          user={user.User}
                     />
                 )}
