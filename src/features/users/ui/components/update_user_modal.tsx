@@ -25,7 +25,7 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
     }, [user.Role]);
     const normalizedSelectedRole = selectedRole.toLowerCase();
     const shouldShowClass = normalizedSelectedRole === "user" || normalizedSelectedRole === "helper";
-    const [selectedImage, setSelectedImage] = useState("")
+    const [selectedImage, setSelectedImage] = useState(user.Avatar.String)
 
     useEffect(() => {
         if (!isOpen) {
@@ -173,7 +173,6 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
                                         accept="image/*"
                                         onChange={handleChangeImage}
                                         hidden
-                                        required
                                     />
 
                                     <button
