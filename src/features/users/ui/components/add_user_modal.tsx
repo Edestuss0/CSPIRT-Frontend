@@ -3,7 +3,7 @@ import {type UserRole, UserRoles} from "../../../../shared/entities/user/types/u
 import type {addUserValues} from "../../models/add_user_usecase.ts";
 import {useClasses} from "../../../class/hooks/use_classes.ts";
 import {useAddUser} from "../../hooks/use_add_user.ts";
-import {getBase64} from "../../../../core/image/image_reader.ts";
+import {compressImage} from "../../../../core/image/image_compress.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
@@ -47,11 +47,10 @@ export function AddUserModal({isOpen, onClose, onAddUser, classId = null}: AddUs
 
     const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-
         if (!file) return;
 
-        const base64 = await getBase64(file);
-        setSelectedImage(base64);
+        const compressed = await compressImage(file, 512, 512, 0.75);
+        setSelectedImage(compressed);
     };
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {

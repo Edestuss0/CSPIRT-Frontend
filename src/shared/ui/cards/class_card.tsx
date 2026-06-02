@@ -22,7 +22,7 @@ export function ClassCard({ item, onClick, param }: Props) {
             <div className="class-flat-card__main">
 
                 <div className="class-flat-card__info">
-                    <h2 className="class-flat-card__title">{item.Name} Класс</h2>
+                    <h2 className="class-flat-card__title">{item.Grade}{item.Letter} Класс</h2>
 
                     <p className="class-flat-card__subtitle">
                         Классный руководитель: {teacherFullName}

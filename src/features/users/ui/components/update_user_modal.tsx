@@ -1,9 +1,9 @@
 import {type ChangeEvent, type FormEvent, useEffect, useState} from "react";
 import {type UserRole, UserRoles, type UserType} from "../../../../shared/entities/user/types/user_types.ts";
 import {useClasses} from "../../../class/hooks/use_classes.ts";
-import {getBase64} from "../../../../core/image/image_reader.ts";
 import {useUpdateUser} from "../../hooks/use_update_user.ts";
 import type {updateUserValues} from "../../models/update_user_usecase.ts";
+import {compressImage} from "../../../../core/image/image_compress.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
@@ -53,11 +53,10 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
 
     const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-
         if (!file) return;
 
-        const base64 = await getBase64(file);
-        setSelectedImage(base64);
+        const compressed = await compressImage(file, 512, 512, 0.75);
+        setSelectedImage(compressed);
     };
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {

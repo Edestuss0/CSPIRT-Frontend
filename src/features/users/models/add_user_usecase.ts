@@ -31,7 +31,7 @@ export async function AddUserUseCase(form: addUserValues): Promise<boolean> {
     const parsed = addUserFormSchema.safeParse(dto);
     
     if (!parsed.success) {
-        throw new Error(JSON.stringify(parsed.error?.format()));
+        throw new Error("Проверьте правильность заполнения полей");
     }
     
     await UserApi.addUser(parsed.data);

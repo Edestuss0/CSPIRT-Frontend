@@ -13,6 +13,8 @@ import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/t
 import {UserRound} from "lucide-react";
 import {useLogout} from "../../../../features/auth/hooks/use_logout.ts";
 import {ParallelsWidget} from "../../../../features/class/ui/components/parallels_widget.tsx";
+import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
+import {useCompleteYear} from "../../../../features/class/hooks/use_complete_year.ts";
 
 type Lists = "classes" | "events" | "staff" | "parallels";
 
@@ -34,7 +36,10 @@ export function DashboardPage() {
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
     const [isAddClassModalOpen, setIsAddClassModalOpen] = useState(false);
     const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
+    const [isYearCompleteModalOpen, setIsYearCompleteModalOpen] = useState(false);
     const [key, setKey] = useState(0);
+    
+    const completeYear = useCompleteYear()
     
     const menuItems: BurgerDrawerMenuItem[] = [
         {
@@ -52,6 +57,11 @@ export function DashboardPage() {
             onClick: () => setIsAddEventModalOpen(true),
             hidden: (normalizedRole !== "owner" || selectedList !== "events"),
         },
+        {
+            label: "Завершить учебный год",
+            onClick: () => setIsYearCompleteModalOpen(true),
+            hidden: (normalizedRole !== "owner"),
+        }
     ]
     
     const tabs: TabsSwitcherItem<Lists>[] = [
@@ -141,6 +151,17 @@ export function DashboardPage() {
                 {selectedList === "parallels" && (
                     <ParallelsWidget key={key}/>
                 )}
+
+                <ConfirmModal 
+                    content={"Вы уверены что хотите завершить учебный год?"} 
+                    buttonContent={"Завершить"} 
+                    isOpen={isYearCompleteModalOpen} 
+                    onClose={() => setIsYearCompleteModalOpen(false)} 
+                    onConfirm={async () => {
+                        await completeYear.mutateAsync()
+                        setIsYearCompleteModalOpen(false);
+                    }}
+                />
 
                 <AddUserModal
                     isOpen={isAddUserModalOpen}

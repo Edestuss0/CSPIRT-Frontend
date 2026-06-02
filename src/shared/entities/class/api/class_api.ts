@@ -85,6 +85,14 @@ export const classApi = {
 
         return parsed.data
     },
+
+    async completeYear(): Promise<void> {
+        const response = await apiClient.patch(`/api/classes/year/complete`, {}, true);
+
+        if (!response.checkStatus()) {
+            throw new Error("Ошибка при попытке завершения учебного года");
+        }
+    },
     
     async getClassesByParallel(id: number): Promise<ClassType[]> {
         const response = await apiClient.get(`/api/classes/parallel/${id}/classes`, true);
