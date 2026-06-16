@@ -1,37 +1,18 @@
-# Бинарные файлы (скомпилированный Go код)
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-bin/
-main
-
-# Переменные окружения (пароли и секреты)
-.env
-
-# База данных SQLite
-*.db
-*.db-journal
-*.db-wal
-
-# Логи
-*.log
-data/*.log
-*.rar
-
-node_modules/
-backend/
-dist/
-
-# Зависимости
-vendor/
-
-# Настройки редакторов
-.vscode/
-.idea/
-*.swp
-
-# Временные файлы ОС
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
 .DS_Store
-Thumbs.db
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+config.properties
+.env
+*.env
