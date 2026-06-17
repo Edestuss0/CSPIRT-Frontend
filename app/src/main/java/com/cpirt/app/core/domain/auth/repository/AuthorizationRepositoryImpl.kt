@@ -1,28 +1,26 @@
-package com.cpirt.app.core.data.auth
+package com.cpirt.app.core.domain.auth.repository
 
-import android.util.Log
 import com.cpirt.app.core.api.ApiClient
+import com.cpirt.app.core.api.PersistentCookiesStorage
 import com.cpirt.app.core.app.API_URL
-import com.cpirt.app.core.data.user.UserRepository
-import com.cpirt.app.entities.UserInfo
-import io.ktor.client.call.body
-import io.ktor.client.request.get
+import com.cpirt.app.core.domain.user.repository.UserRepository
+import com.cpirt.app.core.domain.auth.dto.LoginDto
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import javax.inject.Inject
 
-class AuthorizationRepository @Inject constructor(
+class AuthorizationRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient,
-    private val userRepository: UserRepository
-) {
+    private val userRepository: UserRepository,
+    private val sessionStorage: PersistentCookiesStorage
+) : IAuthRepository {
     val client = apiClient.client
 
-   suspend fun login(form: LoginDto): String {
+   override suspend fun login(form: LoginDto): String {
         val response = client.post("${API_URL}/login") {
             contentType(ContentType.Application.Json)
             setBody(form)
@@ -40,26 +38,15 @@ class AuthorizationRepository @Inject constructor(
         throw kotlinx.io.IOException("Непредвиденная ошибка сервера")
     }
 
-    suspend fun logout() {
+    override suspend fun logout() {
         val response = client.patch("${API_URL}/api/user/logout")
 
         if (response.status.isSuccess()) {
+            sessionStorage.clearAll()
             userRepository.logout()
             return
         }
 
         throw kotlinx.io.IOException("Непредвиденная ошибка сервера")
-    }
-
-    suspend fun getMe(): UserInfo {
-        val response = client.get("${API_URL}/api/me")
-
-        Log.d("PROFILE", response.bodyAsText())
-
-        if (response.status.isSuccess()) {
-            return response.body<UserInfo>()
-        }
-
-        throw kotlinx.io.IOException("Ошибка при попытке получения профиля пользователя")
     }
 }

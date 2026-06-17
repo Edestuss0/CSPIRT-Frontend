@@ -2,8 +2,9 @@ package com.cpirt.app.features.authorization.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.data.auth.AuthorizationRepository
-import com.cpirt.app.core.data.auth.LoginDto
+import com.cpirt.app.core.domain.auth.repository.AuthorizationRepositoryImpl
+import com.cpirt.app.core.domain.auth.dto.LoginDto
+import com.cpirt.app.core.domain.auth.repository.IAuthRepository
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthorizationViewmodel @Inject constructor(
-    private val authorizationRepository: AuthorizationRepository
+    private val authorizationRepository: IAuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthorizationState())

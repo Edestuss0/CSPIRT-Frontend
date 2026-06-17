@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,10 +19,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.cpirt.app.features.my_class.view.MyClassHost
+import com.cpirt.app.features.my_class.view.MyClassScreen
 import com.cpirt.app.features.profile.ui.ProfileScreen
+import com.cpirt.app.ui.components.BottomBar
 import com.cpirt.app.ui.components.LoadingScreen
 
 enum class Screens(val route: String, val title: String, val icon: ImageVector) {
+    MyClass("my_class", "Мой класс", Icons.Default.School),
     Profile("profile", "Профиль", Icons.Default.Person)
 }
 
@@ -64,10 +69,13 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             navController = tabNavController,
-            startDestination = Screens.Profile.route
+            startDestination = Screens.MyClass.route
         ) {
             composable(Screens.Profile.route) {
                 ProfileScreen()
+            }
+            composable(Screens.MyClass.route) {
+                MyClassHost()
             }
         }
     }

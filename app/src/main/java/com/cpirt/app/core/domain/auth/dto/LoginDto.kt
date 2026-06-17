@@ -1,4 +1,4 @@
-package com.cpirt.app.core.data.auth
+package com.cpirt.app.core.domain.auth.dto
 
 import kotlinx.serialization.Serializable
 

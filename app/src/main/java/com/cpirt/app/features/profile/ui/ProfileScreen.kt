@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,7 +57,7 @@ fun ProfileScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(key1 = state.snackbarMessage) {
-        state.snackbarMessage?.message?.let { message ->
+        state.snackbarMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onMessageShown()
         }
@@ -110,6 +112,7 @@ private fun ProfileContent(
             .padding(horizontal = 16.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Spacer(Modifier.height(48.dp))
         Icon(
             imageVector = Icons.Default.Person,
             contentDescription = null,
@@ -122,10 +125,33 @@ private fun ProfileContent(
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold
         )
+        Spacer(Modifier.height(48.dp))
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Рейтинг:",
+                        fontSize = 24.sp,
+                    )
+                    Text(text = userInfo.user.rating.toString(), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                }
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                    Text(
+                        text = "Показатель поведения, активности и вклада в школьную жизнь",
+                        fontSize = 16.sp,
+                    )
+                }
+            }
+        }
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 32.dp),
+                .padding(16.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
             ProfileValueCard(

@@ -1,12 +1,11 @@
 package com.cpirt.app.core.api
 
 import com.cpirt.app.core.app.API_URL
-import com.cpirt.app.core.data.user.UserRepository
+import com.cpirt.app.core.domain.user.repository.UserRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
@@ -24,7 +23,8 @@ import javax.inject.Singleton
 
 @Singleton
 class ApiClient @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val cookiesStorage: PersistentCookiesStorage
 ) {
     val client = HttpClient(OkHttp) {
         install(ContentNegotiation) {
@@ -52,7 +52,7 @@ class ApiClient @Inject constructor(
             sanitizeHeader { it == HttpHeaders.Authorization }
         }
         install(HttpCookies) {
-            storage = AcceptAllCookiesStorage()
+            storage = cookiesStorage
         }
         expectSuccess = false
     }

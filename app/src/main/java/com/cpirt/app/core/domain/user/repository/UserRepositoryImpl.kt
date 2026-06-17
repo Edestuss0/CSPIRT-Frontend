@@ -1,10 +1,11 @@
-package com.cpirt.app.core.data.user
+package com.cpirt.app.core.domain.user.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import com.cpirt.app.core.domain.user.dto.IS_AUTHORIZED
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,28 +17,22 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 @Singleton
 class UserRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-) {
+) :  IUserRepository {
     private val datastore = context.applicationContext.dataStore
 
-//    fun getProfile(): Flow<User?> {
-//        return datastore.data.map { preferences ->
-//            null
-//        }
-//    }
-
-    fun getAuthorizedStatus(): Flow<Boolean?> {
+    override fun getAuthorizedStatus(): Flow<Boolean?> {
         return datastore.data.map { preferences ->
             preferences[IS_AUTHORIZED]
         }
     }
 
-    suspend fun authorize() {
+    override suspend fun authorize() {
         datastore.edit { preferences ->
             preferences[IS_AUTHORIZED] = true
         }
     }
 
-    suspend fun logout() {
+    override suspend fun logout() {
         datastore.edit { preferences ->
             preferences.remove(IS_AUTHORIZED)
         }

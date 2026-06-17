@@ -1,4 +1,4 @@
-package com.cpirt.app.core.data.user
+package com.cpirt.app.core.domain.user.dto
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 
