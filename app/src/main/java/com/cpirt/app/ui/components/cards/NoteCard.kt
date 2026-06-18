@@ -1,6 +1,7 @@
 package com.cpirt.app.ui.components.cards
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,17 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.cpirt.app.entities.UserPersonalInfo
-import com.cpirt.app.entities.toDisplayName
+import com.cpirt.app.core.utils.toDate
+import com.cpirt.app.entities.Note
 
 @Composable
-fun UserCard(
-    user: UserPersonalInfo,
+fun NoteCard(
     modifier: Modifier = Modifier,
-    onUserClick: () -> Unit = {}
+    note: Note,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().clickable{onUserClick()},
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp)
     ) {
         Row(
@@ -39,34 +39,41 @@ fun UserCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = "${user.name} ${user.lastName}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "От ${note.authorName}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            text = note.createdAt.toDate() ?: "Неизвестно",
+                            modifier = Modifier.padding(
+                                horizontal = 12.dp,
+                                vertical = 6.dp
+                            ),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+
+                }
 
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    text = user.role.toDisplayName(),
+                    text = note.content,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Text(
-                    text = "Рейтинг: ${user.rating}",
-                    modifier = Modifier.padding(
-                        horizontal = 12.dp,
-                        vertical = 6.dp
-                    ),
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
         }
     }
 }

@@ -2,7 +2,7 @@ package com.cpirt.app.core.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.user.repository.UserRepository
+import com.cpirt.app.core.domain.session.repository.SessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ sealed class AuthState {
 
 @HiltViewModel
 class NavigationViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: SessionRepository
 ) : ViewModel() {
     val authState: StateFlow<AuthState> = userRepository.getAuthorizedStatus().map { status ->
         if (status == true) AuthState.Authorized else AuthState.NotAuthorized

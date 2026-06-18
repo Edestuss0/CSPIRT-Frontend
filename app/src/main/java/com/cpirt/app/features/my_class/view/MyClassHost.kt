@@ -11,7 +11,8 @@ import com.cpirt.app.features.my_class.viewmodel.MyClassViewModel
 
 @Composable
 fun MyClassHost(
-    viewModel: MyClassViewModel = hiltViewModel()
+    viewModel: MyClassViewModel = hiltViewModel(),
+    onUserClick: (id: Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val navController = rememberNavController()
@@ -24,14 +25,15 @@ fun MyClassHost(
             MyClassScreen(
                 viewModel = viewModel,
                 state = state,
-                onUsersClick = {navController.navigate("users")}
+                onUsersClick = {navController.navigate("users")},
             )
         }
 
         composable("users") {
             MyClassUsersScreen(
                 users = state.schoolClassInfo?.members ?: emptyList(),
-                onBackClick = {navController.popBackStack()}
+                onBackClick = {navController.popBackStack()},
+                onUserClick = {id -> onUserClick(id)}
             )
         }
     }

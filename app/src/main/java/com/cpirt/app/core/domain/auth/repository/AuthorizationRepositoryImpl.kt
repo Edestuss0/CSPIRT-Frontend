@@ -3,7 +3,7 @@ package com.cpirt.app.core.domain.auth.repository
 import com.cpirt.app.core.api.ApiClient
 import com.cpirt.app.core.api.PersistentCookiesStorage
 import com.cpirt.app.core.app.API_URL
-import com.cpirt.app.core.domain.user.repository.UserRepository
+import com.cpirt.app.core.domain.session.repository.SessionRepository
 import com.cpirt.app.core.domain.auth.dto.LoginDto
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class AuthorizationRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient,
-    private val userRepository: UserRepository,
+    private val userRepository: SessionRepository,
     private val sessionStorage: PersistentCookiesStorage
 ) : IAuthRepository {
     val client = apiClient.client

@@ -1,9 +1,11 @@
 package com.cpirt.app.core.domain.user.repository
 
-import kotlinx.coroutines.flow.Flow
+import com.cpirt.app.core.domain.user.dto.AddNoteDto
+import com.cpirt.app.core.domain.user.dto.ChangeRatingDto
+import com.cpirt.app.entities.UserInfo
 
 interface IUserRepository {
-    fun getAuthorizedStatus(): Flow<Boolean?>
-    suspend fun authorize()
-    suspend fun logout()
+    suspend fun getUserById(id: Int): UserInfo
+    suspend fun changeUserRating(form: ChangeRatingDto): String
+    suspend fun addNote(form: AddNoteDto): String
 }

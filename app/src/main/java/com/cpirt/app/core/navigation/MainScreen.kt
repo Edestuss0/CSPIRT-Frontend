@@ -20,10 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cpirt.app.features.my_class.view.MyClassHost
-import com.cpirt.app.features.my_class.view.MyClassScreen
-import com.cpirt.app.features.profile.ui.ProfileScreen
-import com.cpirt.app.ui.components.BottomBar
-import com.cpirt.app.ui.components.LoadingScreen
+import com.cpirt.app.features.profile.view.ProfileScreen
 
 enum class Screens(val route: String, val title: String, val icon: ImageVector) {
     MyClass("my_class", "Мой класс", Icons.Default.School),
@@ -75,7 +72,7 @@ fun MainScreen(
                 ProfileScreen()
             }
             composable(Screens.MyClass.route) {
-                MyClassHost()
+                MyClassHost(onUserClick = {id -> rootNavController.navigate("user/$id")})
             }
         }
     }

@@ -14,8 +14,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -97,7 +100,7 @@ private fun MyClassContent(
             ) {
                 Text(
                     text = "Не удалось получить информацию о классе",
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center
                 )
@@ -106,8 +109,122 @@ private fun MyClassContent(
         return
     }
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(horizontal = 16.dp)
+            .verticalScroll(scrollState)
+    ) {
+        Spacer(Modifier.height(16.dp))
+        MyClassHeader(schoolClassInfo = schoolClassInfo)
+        Spacer(Modifier.height(16.dp))
+        MyClassRating(rating = schoolClassInfo.classTotalRating + schoolClassInfo.userTotalRating)
+        Spacer(Modifier.height(16.dp))
+        if (userInfo.user.role == UserRole.User || userInfo.user.role == UserRole.Helper){
+            MeInMembers(
+                users = schoolClassInfo.members,
+                userInfo = userInfo,
+                onUsersClick = onUsersClick
+            )
+        } else {
+            ClassMembersTop(
+                users = schoolClassInfo.members,
+                onUsersClick = onUsersClick
+            )
+        }
+        Spacer(Modifier.height(32.dp))
+    }
+}
+
+@Composable
+private fun MyClassRating(rating: Int) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
+            Text(
+                text = "Общий рейтинг класса",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            Text(
+                text = rating.toString(),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+private fun MyClassHeader(
+    schoolClassInfo: SchoolClass
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
+            Text(
+                text = "${schoolClassInfo.grade} ${schoolClassInfo.letter} Класс",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.height(8.dp))
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Text(
+                    text = "${schoolClassInfo.members.size} Учеников",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = "Классный руководитель",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = if (schoolClassInfo.teacher != null) {
+                    "${schoolClassInfo.teacher.name} ${schoolClassInfo.teacher.lastName}"
+                } else {
+                    schoolClassInfo.teacherLogin
+                },
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+@Composable
+private fun MeInMembers(
+    users: List<UserPersonalInfo>,
+    userInfo: UserInfo,
+    onUsersClick: () -> Unit
+) {
     val meInList = buildList {
-        val sortedMembers = schoolClassInfo.members.sortedByDescending { it.rating }
+        val sortedMembers = users.sortedByDescending { it.rating }
         val index = sortedMembers.indexOfFirst { it.id == userInfo.user.id }
 
         if (index > 0)
@@ -119,136 +236,137 @@ private fun MyClassContent(
             add(sortedMembers[index + 1])
     }
 
-    Column(
+    Card(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .padding(horizontal = 16.dp)
-            .verticalScroll(scrollState)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(24.dp)
     ) {
-        Spacer(Modifier.height(48.dp))
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)) {
-                Text(
-                    text = "${schoolClassInfo.grade} ${schoolClassInfo.letter} Класс",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
+
+            Text(
+                text = "Позиция в классе",
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            meInList.forEachIndexed { index, it ->
+                MemberItem(
+                    member = it,
+                    isMe = it.id == userInfo.user.id
                 )
-                Text(
-                    text = "${schoolClassInfo.members.size} Учеников",
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding()
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = "Классный руководитель:",
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding()
-                )
-                Text(
-                    text = if (schoolClassInfo.teacher != null) "${schoolClassInfo.teacher.name} ${schoolClassInfo.teacher.lastName}" else schoolClassInfo.teacherLogin,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding()
-                )
-            }
-        }
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)) {
-                Text(
-                    text = "Общий рейтинг класса:",
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding()
-                )
-                Text(
-                    text = (schoolClassInfo.classTotalRating + schoolClassInfo.userTotalRating).toString(),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding()
-                )
-            }
-        }
-        Spacer(Modifier.height(16.dp))
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)) {
-                meInList.forEach {
-                    MemberItem(
-                        member = it,
-                        isMe = it.id == userInfo.user.id
-                    )
-                }
-                TextButton(
-                    onClick = {onUsersClick()},
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Все ученики")
+                if (!(meInList.lastIndex == index)) {
+                    HorizontalDivider()
                 }
             }
+
+            Spacer(Modifier.height(8.dp))
+
+            TextButton(
+                onClick = {onUsersClick()},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Все ученики")
+            }
         }
-        Spacer(Modifier.height(32.dp))
     }
 }
+
+@Composable
+private fun ClassMembersTop(
+    users: List<UserPersonalInfo>,
+    onUsersClick: () -> Unit
+) {
+    val topUsers = users.sortedByDescending { it.rating }.take(3)
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
+
+            Text(
+                text = "Топ 3 класса",
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            topUsers.forEachIndexed { index, it ->
+                MemberItem(
+                    member = it,
+                    isMe = false
+                )
+                if (topUsers.lastIndex != index) {
+                    HorizontalDivider()
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            TextButton(
+                onClick = {onUsersClick()},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Все ученики")
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun MemberItem(
     member: UserPersonalInfo,
     isMe: Boolean
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "${member.name} ${member.lastName}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                )
-
-                if (isMe) {
-                    Text(
-                        text = "Вы",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(4.dp))
-
             Text(
-                text = member.rating.toString(),
+                text = "${member.name} ${member.lastName}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
+            )
+
+            if (isMe) {
+                Text(
+                    text = "Вы",
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+
+        Spacer(Modifier.height(4.dp))
+
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Text(
+                text = "Рейтинг: ${member.rating}",
                 fontSize = 16.sp,
+                modifier = Modifier.padding(
+                    horizontal = 12.dp,
+                    vertical = 6.dp
+                ),
             )
         }
     }

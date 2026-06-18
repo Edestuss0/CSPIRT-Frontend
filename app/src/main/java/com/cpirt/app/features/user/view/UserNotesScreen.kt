@@ -1,18 +1,14 @@
-package com.cpirt.app.features.my_class.view
+package com.cpirt.app.features.user.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,27 +22,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.cpirt.app.entities.UserPersonalInfo
-import com.cpirt.app.ui.components.cards.UserCard
+import com.cpirt.app.entities.Note
+import com.cpirt.app.ui.components.cards.NoteCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyClassUsersScreen(
-    users: List<UserPersonalInfo>,
-    onBackClick: () -> Unit,
-    onUserClick: (id: Int) -> Unit
+fun UserNotesScreen(
+    notes: List<Note>,
+    onBackClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                windowInsets = WindowInsets(0),
                 title = {
                     Text(
-                        text = "Список учеников",
+                        text = "Список заметок",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -62,7 +54,7 @@ fun MyClassUsersScreen(
             )
         }
     ) {innerPadding ->
-        if (users.isEmpty()) {
+        if (notes.isEmpty()) {
 
             Column(
                 modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -74,7 +66,7 @@ fun MyClassUsersScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Не удалось получить информацию о классе",
+                        text = "Заметки о пользователе не найдены",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
@@ -89,19 +81,9 @@ fun MyClassUsersScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp)
         ) {
-            items(items = users) { user ->
-                UserCard(user = user, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), onUserClick = {onUserClick(user.id)})
+            items(items = notes) { note ->
+                NoteCard(note = note, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp))
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun MyClassUsersScreenPreview() {
-    MyClassUsersScreen(
-        users = emptyList(),
-        onBackClick = {},
-        onUserClick = {}
-    )
 }

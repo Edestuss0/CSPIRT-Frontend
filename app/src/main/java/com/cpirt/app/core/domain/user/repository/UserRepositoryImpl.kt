@@ -1,40 +1,59 @@
 package com.cpirt.app.core.domain.user.repository
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
-import com.cpirt.app.core.domain.user.dto.IS_AUTHORIZED
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import com.cpirt.app.core.api.ApiClient
+import com.cpirt.app.core.app.API_URL
+import com.cpirt.app.core.domain.user.dto.AddNoteDto
+import com.cpirt.app.core.domain.user.dto.ChangeRatingDto
+import com.cpirt.app.entities.UserInfo
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.patch
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+import java.io.IOException
 import javax.inject.Inject
-import javax.inject.Singleton
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_data")
+class UserRepositoryImpl @Inject constructor(
+    private val apiClient: ApiClient
+) : IUserRepository {
+    val client = apiClient.client
 
-@Singleton
-class UserRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
-) :  IUserRepository {
-    private val datastore = context.applicationContext.dataStore
+    override suspend fun getUserById(id: Int): UserInfo {
+        val response = client.get("$API_URL/api/users?id=$id")
 
-    override fun getAuthorizedStatus(): Flow<Boolean?> {
-        return datastore.data.map { preferences ->
-            preferences[IS_AUTHORIZED]
+        if (response.status.isSuccess()) {
+            val body = response.body<UserInfo>()
+            return body
         }
+
+        throw IOException("Ошибка при попытке получения пользователя")
     }
 
-    override suspend fun authorize() {
-        datastore.edit { preferences ->
-            preferences[IS_AUTHORIZED] = true
+    override suspend fun changeUserRating(form: ChangeRatingDto): String {
+        val response = client.patch("$API_URL/api/rating/update") {
+            contentType(ContentType.Application.Json)
+            setBody(form)
         }
+
+        if (response.status.isSuccess()) {
+            return "Рейтинг успешно изменён"
+        }
+
+        throw IOException("Ошибка при изменения рейтинга")
     }
 
-    override suspend fun logout() {
-        datastore.edit { preferences ->
-            preferences.remove(IS_AUTHORIZED)
+    override suspend fun addNote(form: AddNoteDto): String {
+        val response = client.patch("$API_URL/api/note/add") {
+            contentType(ContentType.Application.Json)
+            setBody(form)
         }
+
+        if (response.status.isSuccess()) {
+            return "Заметка успешно добавлена"
+        }
+
+        throw IOException("Ошибка при попытке добавления заметки")
     }
 }

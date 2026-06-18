@@ -1,7 +1,7 @@
 package com.cpirt.app.core.api
 
 import com.cpirt.app.core.app.API_URL
-import com.cpirt.app.core.domain.user.repository.UserRepository
+import com.cpirt.app.core.domain.session.repository.SessionRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpSend
@@ -23,7 +23,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ApiClient @Inject constructor(
-    private val userRepository: UserRepository,
+    private val userRepository: SessionRepository,
     private val cookiesStorage: PersistentCookiesStorage
 ) {
     val client = HttpClient(OkHttp) {

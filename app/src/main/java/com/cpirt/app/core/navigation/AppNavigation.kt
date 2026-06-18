@@ -4,10 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.cpirt.app.features.authorization.view.AuthorizationScreen
+import com.cpirt.app.features.user.view.UserHost
+import com.cpirt.app.features.user.view.UserScreen
 import com.cpirt.app.ui.components.LoadingScreen
 
 @Composable
@@ -38,6 +42,19 @@ fun AppNavigation(
 
         composable("main") {
             MainScreen(rootNavController)
+        }
+
+        composable(
+            route = "user/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            UserHost(
+                onBackClick = {rootNavController.popBackStack()}
+            )
         }
     }
 }
