@@ -8,7 +8,8 @@ export const updateUserFormSchema = z.object({
     ClassID: z.number().int().nonnegative(),
     Login: z.string().min(2).max(20),
     Role: z.enum(["User", "Helper", "Admin", "Owner", "Public"]),
-    Rating: z.number().int().min(0).max(5000)
+    Rating: z.number().int().min(0).max(5000),
+    Class: z.string().min(0).max(5),
 }).superRefine((data, ctx) => {
     const normalizedRole = data.Role.toLowerCase();
     const roleRequiresClass = normalizedRole === "user" || normalizedRole === "helper";

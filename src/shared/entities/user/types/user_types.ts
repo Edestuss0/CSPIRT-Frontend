@@ -85,4 +85,5 @@ export type updateUserFormType = {
     Role: UserRole;
     Rating: number;
     Id: number;
+    Class: string;
 }

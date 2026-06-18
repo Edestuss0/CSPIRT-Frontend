@@ -74,6 +74,7 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
             classId: classId ?? (shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0),
             login: String(formData.get("login") ?? "").trim(),
             role: selectedRole,
+            className: classes?.find((clas) => clas.Id === classId)?.Name ?? ""
         };
 
         await mutateAsync(form);

@@ -11,6 +11,7 @@ export type updateUserValues = {
     login: string;
     role: UserRole;
     rating: number;
+    className: string;
 }
 
 export async function UpdateUserUseCase(form: updateUserValues): Promise<boolean> {
@@ -24,6 +25,7 @@ export async function UpdateUserUseCase(form: updateUserValues): Promise<boolean
         Login: form.login,
         Role: form.role,
         Rating: form.rating,
+        Class: form.className,
     }
     const parsed = updateUserFormSchema.safeParse(dto);
 
