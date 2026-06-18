@@ -128,7 +128,16 @@ export const classApi = {
             throw new Error("Класс не найден");
         }
 
-        return parsed.data.Classes[0];
+        const classData = parsed.data.Classes[0];
+        
+        const nonAdminMembers = classData.Members.filter(
+            (member) => member.Role !== "Owner" && member.Role !== "Admin"
+        );
+        
+        return {
+            ...classData,
+            Members: nonAdminMembers,
+        };
     },
     
     async getUsersByClass(id: number): Promise<UserType[]> {
