@@ -65,17 +65,23 @@ export function UpdateUserModal({isOpen, onClose, onAddUser, classId = null, use
 
         const formData = new FormData(event.currentTarget);
 
+        const selectedClassId = classId ?? (shouldShowClass ? Number(formData.get("classId")) : 0);
+
+        const selectedClassName = classes?.find(c => c.Id === selectedClassId)?.Name ?? "";
+
         const form: updateUserValues = {
             rating: user.Rating,
             id: user.Id,
             avatar: selectedImage || user.Avatar.String,
             name: String(formData.get("name") ?? "").trim(),
             lastname: String(formData.get("lastName") ?? "").trim(),
-            classId: classId ?? (shouldShowClass ? Number(String(formData.get("classId") ?? "")) : 0),
+            classId: selectedClassId,
             login: String(formData.get("login") ?? "").trim(),
             role: selectedRole,
-            className: classes?.find((clas) => clas.Id === classId)?.Name ?? ""
+            className: selectedClassName,
         };
+        
+        console.log(form, classes)
 
         await mutateAsync(form);
         onAddUser();

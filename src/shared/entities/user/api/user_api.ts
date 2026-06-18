@@ -60,6 +60,7 @@ export const UserApi = {
             Login: form.Login,
             Role: form.Role,
             Rating: form.Rating,
+            Class: form.Class,
         }, true);
 
         if (!response.checkStatus()) {
