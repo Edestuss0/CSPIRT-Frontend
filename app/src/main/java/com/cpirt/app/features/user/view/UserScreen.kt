@@ -79,6 +79,7 @@ fun UserScreen(
 
     val ratingSheetState = rememberModalBottomSheetState()
     val addNoteSheetState = rememberModalBottomSheetState()
+    val addComplaintSheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(state.addNoteState.show) {
         if (state.addNoteState.show) {
@@ -93,6 +94,14 @@ fun UserScreen(
             ratingSheetState.show()
         } else {
             ratingSheetState.hide()
+        }
+    }
+
+    LaunchedEffect(state.addComplaintState.show) {
+        if (state.addComplaintState.show) {
+            addComplaintSheetState.show()
+        } else {
+            addComplaintSheetState.hide()
         }
     }
 
@@ -168,6 +177,36 @@ fun UserScreen(
         }
     }
 
+    if (state.addComplaintState.show || addComplaintSheetState.isVisible) {
+        ModalBottomSheet(
+            onDismissRequest = {viewModel.onChangeAddComplaintModalVisibility()},
+            sheetState = addComplaintSheetState
+        ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                label = { Text("Текст жалобы") },
+                shape = RoundedCornerShape(16.dp),
+                value = state.addComplaintState.content,
+                onValueChange = { newValue: String ->
+                    viewModel.onAddComplaintContentInput(newValue)
+                },
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Button(
+                onClick = { viewModel.addComplaint() },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text(text = "Добавить жалобу", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+
     val snackbarHostState = SnackbarHostState()
 
     LaunchedEffect(key1 = state.snackbarMessage) {
@@ -202,7 +241,8 @@ fun UserScreen(
             onNotesClick = onNotesClick,
             onComplaintsClick = onComplaintsClick,
             onChangeRatingClick = {viewModel.onChangeRatingChangeModalVisibility()},
-            onAddNoteClick = {viewModel.onChangeAddNoteModalVisibility()}
+            onAddNoteClick = {viewModel.onChangeAddNoteModalVisibility()},
+            onAddComplaint = {viewModel.onChangeAddComplaintModalVisibility()}
         )
     }
 }
@@ -215,7 +255,8 @@ private fun UserContent(
     onNotesClick: () -> Unit,
     onComplaintsClick: () -> Unit,
     onChangeRatingClick: () -> Unit,
-    onAddNoteClick: () -> Unit
+    onAddNoteClick: () -> Unit,
+    onAddComplaint: () -> Unit
 ) {
     if (userInfo == null || profileInfo == null) {
         Column(
@@ -270,7 +311,8 @@ private fun UserContent(
             UserActions(
                 role = profileInfo.user.role,
                 onChangeRatingClick = onChangeRatingClick,
-                onAddNoteClick = onAddNoteClick
+                onAddNoteClick = onAddNoteClick,
+                onAddComplaint = onAddComplaint
             )
         }
     }
@@ -472,7 +514,8 @@ private fun UserTransitions(
 private fun UserActions(
     role: UserRole,
     onChangeRatingClick: () -> Unit,
-    onAddNoteClick: () -> Unit
+    onAddNoteClick: () -> Unit,
+    onAddComplaint: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -480,7 +523,7 @@ private fun UserActions(
     ) {
         UserActionButton(
             title = "Написать жалобу",
-            onClick = {}
+            onClick = {onAddComplaint()}
         )
         if (role != UserRole.User) {
             HorizontalDivider()
@@ -595,7 +638,6 @@ private fun ProfileContentPreview() {
         classTeacher = null
     )
 
-
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         UserContent(
             innerPadding = innerPadding,
@@ -604,7 +646,8 @@ private fun ProfileContentPreview() {
             onNotesClick = {},
             onComplaintsClick = {},
             onChangeRatingClick = {},
-            onAddNoteClick = {}
+            onAddNoteClick = {},
+            onAddComplaint = {}
         )
     }
 }

@@ -2,6 +2,8 @@ package com.cpirt.app.core.domain.user.repository
 
 import com.cpirt.app.core.api.ApiClient
 import com.cpirt.app.core.app.API_URL
+import com.cpirt.app.core.domain.cache.user.repository.IUserCacheRepository
+import com.cpirt.app.core.domain.user.dto.AddComplaintDto
 import com.cpirt.app.core.domain.user.dto.AddNoteDto
 import com.cpirt.app.core.domain.user.dto.ChangeRatingDto
 import com.cpirt.app.entities.UserInfo
@@ -16,7 +18,8 @@ import java.io.IOException
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient,
+    private val userCache: IUserCacheRepository
 ) : IUserRepository {
     val client = apiClient.client
 
@@ -51,9 +54,24 @@ class UserRepositoryImpl @Inject constructor(
         }
 
         if (response.status.isSuccess()) {
+            userCache.invalidateUser(form.targetId)
             return "Заметка успешно добавлена"
         }
 
         throw IOException("Ошибка при попытке добавления заметки")
+    }
+
+    override suspend fun addComplaint(form: AddComplaintDto): String {
+        val response = client.patch("$API_URL/api/complaint/add") {
+            contentType(ContentType.Application.Json)
+            setBody(form)
+        }
+
+        if (response.status.isSuccess()) {
+            userCache.invalidateUser(form.targetId)
+            return "Жалоба успешно добавлена"
+        }
+
+        throw IOException("Ошибка при попытке добавления Жалобы")
     }
 }

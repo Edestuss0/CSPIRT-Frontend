@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -70,19 +72,19 @@ fun ProfileScreen(
         }
     }
 
-    if (state.isLoading) {
-        LoadingScreen()
-        return
-    }
-
     Scaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState) },
             modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        ProfileContent(
-            innerPadding = innerPadding,
-            userInfo = state.userInfo
-        )
+        when {
+            state.isLoading -> LoadingScreen()
+            state.userInfo != null -> {
+                ProfileContent(
+                    innerPadding = innerPadding,
+                    userInfo = state.userInfo
+                )
+            }
+        }
     }
 }
 

@@ -3,6 +3,7 @@ package com.cpirt.app.features.my_class.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cpirt.app.core.domain.my_class.repository.IMyClassRepository
+import com.cpirt.app.core.domain.profile.dto.ProfileResult
 import com.cpirt.app.core.domain.profile.repository.IProfileRepository
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
@@ -26,13 +27,45 @@ class MyClassViewModel @Inject constructor(
         loadData()
     }
 
-    fun loadData() {
+    fun loadData(force: Boolean = false) {
         _state.update { it.copy(isLoading = true, isError = false) }
         viewModelScope.launch {
             try {
-                val userData = profileRepository.getMe()
                 val classData = async { myClassRepository.getMyClass() }
-                _state.update { it.copy(schoolClassInfo = classData.await(), userInfo = userData, isLoading = false) }
+                _state.update { it.copy(schoolClassInfo = classData.await()) }
+                profileRepository.getMe(force).collect { result ->
+                    when (result) {
+                        is ProfileResult.Loading -> {
+                            _state.update { it.copy(
+                                isLoading = true
+                            ) }
+                        }
+                        is ProfileResult.Success -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                userInfo = result.data,
+                            ) }
+                            if (result.fromCache) {
+                                _state.update { it.copy(
+                                    snackbarMessage = AppSnackbarVisuals(
+                                        type = SnackbarMessageType.INFO,
+                                        message = "Данные могут быть устаревшими"
+                                    )
+                                ) }
+                            }
+                        }
+                        is ProfileResult.Error -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                userInfo = result.oldData ?: it.userInfo,
+                                snackbarMessage = AppSnackbarVisuals(
+                                    type = SnackbarMessageType.ERROR,
+                                    message = result.message
+                                )
+                            )}
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 _state.update { it.copy(
                     snackbarMessage = AppSnackbarVisuals(

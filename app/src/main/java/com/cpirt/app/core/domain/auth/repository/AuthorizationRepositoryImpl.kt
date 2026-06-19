@@ -3,8 +3,13 @@ package com.cpirt.app.core.domain.auth.repository
 import com.cpirt.app.core.api.ApiClient
 import com.cpirt.app.core.api.PersistentCookiesStorage
 import com.cpirt.app.core.app.API_URL
+import com.cpirt.app.core.di.UserCacheRepository
 import com.cpirt.app.core.domain.session.repository.SessionRepository
 import com.cpirt.app.core.domain.auth.dto.LoginDto
+import com.cpirt.app.core.domain.cache.user.repository.IUserCacheRepository
+import com.cpirt.app.entities.UserInfo
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -16,7 +21,8 @@ import javax.inject.Inject
 class AuthorizationRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient,
     private val userRepository: SessionRepository,
-    private val sessionStorage: PersistentCookiesStorage
+    private val sessionStorage: PersistentCookiesStorage,
+    private val userCacheRepository: IUserCacheRepository
 ) : IAuthRepository {
     val client = apiClient.client
 
@@ -27,7 +33,9 @@ class AuthorizationRepositoryImpl @Inject constructor(
         }
 
         if (response.status.isSuccess()) {
-            userRepository.authorize()
+            val body = client.get("$API_URL/api/me").body<UserInfo>()
+            userCacheRepository.insert(body, isMe = true)
+            userRepository.authorize(body.user.id)
             return "Вход успешен"
         }
 

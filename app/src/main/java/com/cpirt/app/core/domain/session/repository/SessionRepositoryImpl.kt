@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import com.cpirt.app.core.domain.session.dto.ID
 import com.cpirt.app.core.domain.session.dto.IS_AUTHORIZED
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -26,15 +27,23 @@ class SessionRepository @Inject constructor(
         }
     }
 
-    override suspend fun authorize() {
+    override suspend fun authorize(id: Int) {
         datastore.edit { preferences ->
             preferences[IS_AUTHORIZED] = true
+            preferences[ID] = id
         }
     }
 
     override suspend fun logout() {
         datastore.edit { preferences ->
             preferences.remove(IS_AUTHORIZED)
+            preferences.remove(ID)
+        }
+    }
+
+    override suspend fun getId(): Flow<Int?> {
+        return datastore.data.map { preferences ->
+            preferences[ID]
         }
     }
 }

@@ -3,7 +3,9 @@ package com.cpirt.app.features.user.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cpirt.app.core.domain.profile.dto.ProfileResult
 import com.cpirt.app.core.domain.profile.repository.IProfileRepository
+import com.cpirt.app.core.domain.user.dto.AddComplaintDto
 import com.cpirt.app.core.domain.user.dto.AddNoteDto
 import com.cpirt.app.core.domain.user.dto.ChangeRatingDto
 import com.cpirt.app.core.domain.user.repository.IUserRepository
@@ -38,9 +40,41 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
             try {
-                val profileDeferred = async { profileRepository.getMe() }
                 val userDeferred = async { userRepository.getUserById(userId) }
-                _state.update { it.copy(isLoading = false, userInfo = userDeferred.await(), profileInfo = profileDeferred.await()) }
+                _state.update { it.copy(isLoading = false, userInfo = userDeferred.await(),) }
+                profileRepository.getMe(false).collect { result ->
+                    when (result) {
+                        is ProfileResult.Loading -> {
+                            _state.update { it.copy(
+                                isLoading = true
+                            ) }
+                        }
+                        is ProfileResult.Success -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                userInfo = result.data,
+                            ) }
+                            if (result.fromCache) {
+                                _state.update { it.copy(
+                                    snackbarMessage = AppSnackbarVisuals(
+                                        type = SnackbarMessageType.INFO,
+                                        message = "Данные могут быть устаревшими"
+                                    )
+                                ) }
+                            }
+                        }
+                        is ProfileResult.Error -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                userInfo = result.oldData ?: it.userInfo,
+                                snackbarMessage = AppSnackbarVisuals(
+                                    type = SnackbarMessageType.ERROR,
+                                    message = result.message
+                                )
+                            )}
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 _state.update { it.copy(
                     isLoading = false,
@@ -131,6 +165,61 @@ class UserViewModel @Inject constructor(
                 )}
             }
         }
+    }
+
+    fun addComplaint() {
+        val addComplaintState = state.value.addComplaintState
+        if (state.value.userInfo == null || addComplaintState.content.isEmpty() || state.value.profileInfo == null) {
+            return
+        }
+        _state.update { it.copy(isLoading = true, isError = false) }
+        val form = AddComplaintDto(
+            authorId = state.value.profileInfo!!.user.id,
+            targetId = state.value.userInfo!!.user.id,
+            authorName = "${state.value.profileInfo!!.user.name} ${state.value.profileInfo!!.user.lastName}",
+            targetName = "${state.value.userInfo!!.user.name} ${state.value.userInfo!!.user.lastName}",
+            content = addComplaintState.content,
+            createdAt = getCurrentIsoTime()
+        )
+        viewModelScope.launch {
+            try {
+                val response = userRepository.addComplaint(form)
+                _state.update { it.copy(
+                    addComplaintState = addComplaintState.copy(show = false, content = ""),
+                    isLoading = false,
+                    isError = false,
+                    snackbarMessage = AppSnackbarVisuals(
+                        type = SnackbarMessageType.SUCCESS,
+                        message = response
+                    )
+                )}
+                loadData()
+            } catch (e: Exception) {
+                _state.update { it.copy(
+                    addComplaintState = addComplaintState.copy(show = false, content = ""),
+                    isLoading = false,
+                    isError = true,
+                    snackbarMessage = AppSnackbarVisuals(
+                        type = SnackbarMessageType.ERROR,
+                        message = e.message ?: "Произошла непредвиденная ошибка"
+                    )
+                )}
+            }
+        }
+    }
+
+    fun onChangeAddComplaintModalVisibility() {
+        val addComplaintState = state.value.addComplaintState
+        _state.update { it.copy(
+            addComplaintState = addComplaintState.copy(show = !addComplaintState.show)
+        ) }
+    }
+
+    fun onAddComplaintContentInput(input: String) {
+        val addComplaintState = state.value.addComplaintState
+        _state.update { it.copy(
+            addComplaintState = addComplaintState.copy(content = input)
+        ) }
     }
 
     fun onChangeAddNoteModalVisibility() {

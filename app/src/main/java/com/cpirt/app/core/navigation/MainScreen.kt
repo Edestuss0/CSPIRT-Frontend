@@ -66,7 +66,7 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             navController = tabNavController,
-            startDestination = Screens.MyClass.route
+            startDestination = Screens.Profile.route
         ) {
             composable(Screens.Profile.route) {
                 ProfileScreen()

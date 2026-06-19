@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cpirt.app.core.domain.auth.repository.AuthorizationRepositoryImpl
 import com.cpirt.app.core.domain.auth.repository.IAuthRepository
+import com.cpirt.app.core.domain.profile.dto.ProfileResult
 import com.cpirt.app.core.domain.profile.repository.IProfileRepository
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
@@ -26,8 +27,39 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
             try {
-                val userData = profileRepository.getMe()
-                _state.update { it.copy(isLoading = false, isError = false, userInfo = userData) }
+                profileRepository.getMe(false).collect { result ->
+                    when (result) {
+                        is ProfileResult.Loading -> {
+                            _state.update { it.copy(
+                                isLoading = true
+                            ) }
+                        }
+                        is ProfileResult.Success -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                userInfo = result.data,
+                            ) }
+                            if (result.fromCache) {
+                                _state.update { it.copy(
+                                    snackbarMessage = AppSnackbarVisuals(
+                                        type = SnackbarMessageType.INFO,
+                                        message = "Данные могут быть устаревшими"
+                                    )
+                                ) }
+                            }
+                        }
+                        is ProfileResult.Error -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                userInfo = result.oldData ?: it.userInfo,
+                                snackbarMessage = AppSnackbarVisuals(
+                                    type = SnackbarMessageType.ERROR,
+                                    message = result.message
+                                )
+                            )}
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 _state.update { it.copy(
                     snackbarMessage = AppSnackbarVisuals(

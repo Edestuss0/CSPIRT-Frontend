@@ -10,7 +10,8 @@ data class UserState(
     val profileInfo: UserInfo? = null,
     val snackbarMessage: AppSnackbarVisuals? = null,
     val changeRatingState: ChangeRatingState = ChangeRatingState(),
-    val addNoteState: AddNoteState = AddNoteState()
+    val addNoteState: AddNoteState = AddNoteState(),
+    val addComplaintState: AddComplaintState = AddComplaintState()
 )
 
 data class ChangeRatingState(
@@ -20,6 +21,11 @@ data class ChangeRatingState(
 )
 
 data class AddNoteState(
+    val show: Boolean = false,
+    val content: String = ""
+)
+
+data class AddComplaintState(
     val show: Boolean = false,
     val content: String = ""
 )
