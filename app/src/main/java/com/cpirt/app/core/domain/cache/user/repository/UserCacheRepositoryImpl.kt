@@ -4,6 +4,7 @@ import com.cpirt.app.core.data.users.UserCacheDao
 import com.cpirt.app.core.data.users.UserCacheEntity
 import com.cpirt.app.entities.UserInfo
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +18,7 @@ class UserCacheRepositoryImpl @Inject constructor(
     companion object {
         private const val CACHE_TTL_MS = 72 * 60 * 60 * 1000L
         private val scope = CoroutineScope(
-            SupervisorJob()
+            SupervisorJob() + Dispatchers.IO
         )
     }
 

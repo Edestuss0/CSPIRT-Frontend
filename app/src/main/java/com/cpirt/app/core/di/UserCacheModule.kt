@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class UserCacheRepository {
+abstract class UserCacheModule {
     @Binds @Singleton
     abstract fun bindUserCacheRepository(
         impl: UserCacheRepositoryImpl

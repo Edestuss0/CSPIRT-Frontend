@@ -3,7 +3,6 @@ package com.cpirt.app.core.domain.auth.repository
 import com.cpirt.app.core.api.ApiClient
 import com.cpirt.app.core.api.PersistentCookiesStorage
 import com.cpirt.app.core.app.API_URL
-import com.cpirt.app.core.di.UserCacheRepository
 import com.cpirt.app.core.domain.session.repository.SessionRepository
 import com.cpirt.app.core.domain.auth.dto.LoginDto
 import com.cpirt.app.core.domain.cache.user.repository.IUserCacheRepository

@@ -2,7 +2,9 @@ package com.cpirt.app.core.di
 
 import android.content.Context
 import androidx.room.Room
+import com.cpirt.app.core.data.classes.ClassCacheDao
 import com.cpirt.app.core.data.core.MainDb
+import com.cpirt.app.core.data.parallels.ParallelsCacheDao
 import com.cpirt.app.core.data.users.UserCacheDao
 import dagger.Module
 import dagger.Provides
@@ -27,4 +29,14 @@ object DatabaseModule {
     fun provideUserCacheDao(
         db: MainDb
     ): UserCacheDao = db.userCacheDao()
+
+    @Provides @Singleton
+    fun provideClassCacheDao(
+        db: MainDb
+    ): ClassCacheDao = db.classCacheDao()
+
+    @Provides @Singleton
+    fun provideParallelsCacheDao(
+        db: MainDb
+    ): ParallelsCacheDao = db.parallelsCacheDao()
 }

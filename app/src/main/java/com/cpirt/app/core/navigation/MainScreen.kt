@@ -3,6 +3,7 @@ package com.cpirt.app.core.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Icon
@@ -20,11 +21,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cpirt.app.features.my_class.view.MyClassHost
+import com.cpirt.app.features.parallels.view.ParallelsScreen
 import com.cpirt.app.features.profile.view.ProfileScreen
 
 enum class Screens(val route: String, val title: String, val icon: ImageVector) {
     MyClass("my_class", "Мой класс", Icons.Default.School),
-    Profile("profile", "Профиль", Icons.Default.Person)
+    Rating("rating", "Рейтинг", Icons.Default.Leaderboard),
+    Profile("profile", "Профиль", Icons.Default.Person),
 }
 
 @Composable
@@ -73,6 +76,9 @@ fun MainScreen(
             }
             composable(Screens.MyClass.route) {
                 MyClassHost(onUserClick = {id -> rootNavController.navigate("user/$id")})
+            }
+            composable(Screens.Rating.route) {
+                ParallelsScreen()
             }
         }
     }

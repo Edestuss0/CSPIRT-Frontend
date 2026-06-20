@@ -2,10 +2,8 @@ package com.cpirt.app.features.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.auth.repository.AuthorizationRepositoryImpl
-import com.cpirt.app.core.domain.auth.repository.IAuthRepository
-import com.cpirt.app.core.domain.profile.dto.ProfileResult
-import com.cpirt.app.core.domain.profile.repository.IProfileRepository
+import com.cpirt.app.core.domain.user.dto.UserResult
+import com.cpirt.app.core.domain.user.repository.IUserRepository
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    profileRepository: IProfileRepository
+    userRepository: IUserRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -27,28 +25,20 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
             try {
-                profileRepository.getMe(false).collect { result ->
+                userRepository.getMe(false).collect { result ->
                     when (result) {
-                        is ProfileResult.Loading -> {
+                        is UserResult.Loading -> {
                             _state.update { it.copy(
                                 isLoading = true
                             ) }
                         }
-                        is ProfileResult.Success -> {
+                        is UserResult.Success -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.data,
                             ) }
-                            if (result.fromCache) {
-                                _state.update { it.copy(
-                                    snackbarMessage = AppSnackbarVisuals(
-                                        type = SnackbarMessageType.INFO,
-                                        message = "Данные могут быть устаревшими"
-                                    )
-                                ) }
-                            }
                         }
-                        is ProfileResult.Error -> {
+                        is UserResult.Error -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.oldData ?: it.userInfo,

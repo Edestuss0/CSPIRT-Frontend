@@ -1,7 +1,7 @@
 package com.cpirt.app.core.di
 
-import com.cpirt.app.core.domain.my_class.repository.IMyClassRepository
-import com.cpirt.app.core.domain.my_class.repository.MyClassRepositoryImpl
+import com.cpirt.app.core.domain.classes.repository.IClassRepository
+import com.cpirt.app.core.domain.classes.repository.ClassRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,6 +14,6 @@ abstract class MyClassModule {
     @Binds
     @Singleton
     abstract fun bindMyClassRepository(
-        impl: MyClassRepositoryImpl
-    ): IMyClassRepository
+        impl: ClassRepositoryImpl
+    ): IClassRepository
 }

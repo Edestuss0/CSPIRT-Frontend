@@ -2,13 +2,13 @@ package com.cpirt.app.features.my_class.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.my_class.repository.IMyClassRepository
-import com.cpirt.app.core.domain.profile.dto.ProfileResult
-import com.cpirt.app.core.domain.profile.repository.IProfileRepository
+import com.cpirt.app.core.domain.classes.dto.ClassResult
+import com.cpirt.app.core.domain.classes.repository.IClassRepository
+import com.cpirt.app.core.domain.user.dto.UserResult
+import com.cpirt.app.core.domain.user.repository.IUserRepository
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,8 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyClassViewModel @Inject constructor(
-    private val myClassRepository: IMyClassRepository,
-    private val profileRepository: IProfileRepository
+    private val сlassRepository: IClassRepository,
+    private val userRepository: IUserRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(MyClassState())
     val state = _state.asStateFlow()
@@ -31,30 +31,45 @@ class MyClassViewModel @Inject constructor(
         _state.update { it.copy(isLoading = true, isError = false) }
         viewModelScope.launch {
             try {
-                val classData = async { myClassRepository.getMyClass() }
-                _state.update { it.copy(schoolClassInfo = classData.await()) }
-                profileRepository.getMe(force).collect { result ->
+                сlassRepository.getMyClass(force).collect { result ->
                     when (result) {
-                        is ProfileResult.Loading -> {
+                        is ClassResult.Loading -> {
                             _state.update { it.copy(
                                 isLoading = true
                             ) }
                         }
-                        is ProfileResult.Success -> {
+                        is ClassResult.Success -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                schoolClassInfo = result.data
+                            ) }
+                        }
+                        is ClassResult.Error -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                schoolClassInfo = result.data ?: it.schoolClassInfo,
+                                snackbarMessage = AppSnackbarVisuals(
+                                    type = SnackbarMessageType.ERROR,
+                                    message = result.message
+                                )
+                            ) }
+                        }
+                    }
+                }
+                userRepository.getMe(force).collect { result ->
+                    when (result) {
+                        is UserResult.Loading -> {
+                            _state.update { it.copy(
+                                isLoading = true
+                            ) }
+                        }
+                        is UserResult.Success -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.data,
                             ) }
-                            if (result.fromCache) {
-                                _state.update { it.copy(
-                                    snackbarMessage = AppSnackbarVisuals(
-                                        type = SnackbarMessageType.INFO,
-                                        message = "Данные могут быть устаревшими"
-                                    )
-                                ) }
-                            }
                         }
-                        is ProfileResult.Error -> {
+                        is UserResult.Error -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.oldData ?: it.userInfo,

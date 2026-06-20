@@ -1,10 +1,10 @@
 package com.cpirt.app.features.user.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.profile.dto.ProfileResult
-import com.cpirt.app.core.domain.profile.repository.IProfileRepository
+import com.cpirt.app.core.domain.user.dto.UserResult
 import com.cpirt.app.core.domain.user.dto.AddComplaintDto
 import com.cpirt.app.core.domain.user.dto.AddNoteDto
 import com.cpirt.app.core.domain.user.dto.ChangeRatingDto
@@ -18,15 +18,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val userRepository: IUserRepository,
-    private val profileRepository: IProfileRepository
 ) : ViewModel() {
     val userId = savedStateHandle.get<Int>("id") ?: 1
     private val _state = MutableStateFlow(UserState())
@@ -40,33 +37,48 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
             try {
-                val userDeferred = async { userRepository.getUserById(userId) }
-                _state.update { it.copy(isLoading = false, userInfo = userDeferred.await(),) }
-                profileRepository.getMe(false).collect { result ->
+                userRepository.getUserById(userId).collect { result ->
                     when (result) {
-                        is ProfileResult.Loading -> {
+                        is UserResult.Loading -> {
                             _state.update { it.copy(
                                 isLoading = true
                             ) }
                         }
-                        is ProfileResult.Success -> {
+                        is UserResult.Success -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.data,
                             ) }
-                            if (result.fromCache) {
-                                _state.update { it.copy(
-                                    snackbarMessage = AppSnackbarVisuals(
-                                        type = SnackbarMessageType.INFO,
-                                        message = "Данные могут быть устаревшими"
-                                    )
-                                ) }
-                            }
                         }
-                        is ProfileResult.Error -> {
+                        is UserResult.Error -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.oldData ?: it.userInfo,
+                                snackbarMessage = AppSnackbarVisuals(
+                                    type = SnackbarMessageType.ERROR,
+                                    message = result.message
+                                )
+                            )}
+                        }
+                    }
+                }
+                userRepository.getMe(false).collect { result ->
+                    when (result) {
+                        is UserResult.Loading -> {
+                            _state.update { it.copy(
+                                isLoading = true
+                            ) }
+                        }
+                        is UserResult.Success -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                profileInfo = result.data,
+                            ) }
+                        }
+                        is UserResult.Error -> {
+                            _state.update { it.copy(
+                                isLoading = false,
+                                profileInfo = result.oldData ?: it.profileInfo,
                                 snackbarMessage = AppSnackbarVisuals(
                                     type = SnackbarMessageType.ERROR,
                                     message = result.message

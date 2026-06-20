@@ -1,4 +1,4 @@
-package com.cpirt.app.core.domain.my_class.dto
+package com.cpirt.app.core.domain.classes.dto
 
 import com.cpirt.app.entities.SchoolClass
 import kotlinx.serialization.SerialName
