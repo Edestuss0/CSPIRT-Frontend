@@ -1,10 +1,9 @@
 package com.cpirt.app.features.parallels.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.classes.dto.ParallelsResult
-import com.cpirt.app.core.domain.classes.repository.IClassRepository
+import com.cpirt.app.core.entity.AppResult
+import com.cpirt.app.domain.classes.usecases.GetParallelsUseCase
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ParallelsViewmodel @Inject constructor(
-    private val classRepository: IClassRepository
+    private val getParallels: GetParallelsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ParallelsState())
@@ -26,20 +25,20 @@ class ParallelsViewmodel @Inject constructor(
         loadData()
     }
 
-    fun loadData() {
+    fun loadData(force: Boolean = false) {
         viewModelScope.launch {
-            classRepository.getParallels().collect { result ->
+            getParallels(force).collect { result ->
                 when (result) {
-                    is ParallelsResult.Loading -> {
+                    is AppResult.Loading -> {
                         _state.update { it.copy(isLoading = true) }
                     }
-                    is ParallelsResult.Success -> {
+                    is AppResult.Success -> {
                         _state.update { it.copy(
                             isLoading = false,
                             parallels = result.data
                         ) }
                     }
-                    is ParallelsResult.Error -> {
+                    is AppResult.Error -> {
                         _state.update { it.copy(
                             isLoading = false,
                             parallels = result.data,
@@ -51,7 +50,6 @@ class ParallelsViewmodel @Inject constructor(
                     }
                 }
             }
-            Log.d("PARALLEL", state.value.parallels.toString())
         }
     }
 }

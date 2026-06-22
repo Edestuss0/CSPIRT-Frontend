@@ -2,8 +2,9 @@ package com.cpirt.app.features.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.user.dto.UserResult
-import com.cpirt.app.core.domain.user.repository.IUserRepository
+import com.cpirt.app.core.entity.AppResult
+import com.cpirt.app.domain.user.usecases.GetMeUseCase
+import com.cpirt.app.domain.user.usecases.LogoutUseCase
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,33 +16,38 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    userRepository: IUserRepository
+    private val getMeUseCase: GetMeUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
     val state = _state.asStateFlow()
 
     init {
+        loadData(false)
+    }
+
+    fun loadData(force: Boolean) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
             try {
-                userRepository.getMe(false).collect { result ->
+                getMeUseCase(force).collect { result ->
                     when (result) {
-                        is UserResult.Loading -> {
+                        is AppResult.Loading -> {
                             _state.update { it.copy(
                                 isLoading = true
                             ) }
                         }
-                        is UserResult.Success -> {
+                        is AppResult.Success -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.data,
                             ) }
                         }
-                        is UserResult.Error -> {
+                        is AppResult.Error -> {
                             _state.update { it.copy(
                                 isLoading = false,
-                                userInfo = result.oldData ?: it.userInfo,
+                                userInfo = result.data ?: it.userInfo,
                                 snackbarMessage = AppSnackbarVisuals(
                                     type = SnackbarMessageType.ERROR,
                                     message = result.message
@@ -60,6 +66,12 @@ class ProfileViewModel @Inject constructor(
                     isLoading = false
                 )}
             }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            logoutUseCase
         }
     }
 

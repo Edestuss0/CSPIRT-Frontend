@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.cpirt.app.entities.Note
+import com.cpirt.app.domain.user.entity.Note
 import com.cpirt.app.ui.components.cards.NoteCard
 
 @OptIn(ExperimentalMaterial3Api::class)

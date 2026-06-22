@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,8 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -51,21 +48,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cpirt.app.core.utils.toImageBitmap
-import com.cpirt.app.entities.FullNameSchema
-import com.cpirt.app.entities.UserAvatarInfo
-import com.cpirt.app.entities.UserInfo
-import com.cpirt.app.entities.UserPersonalInfo
-import com.cpirt.app.entities.UserRole
-import com.cpirt.app.entities.toDisplayName
+import com.cpirt.app.domain.user.entity.UserInfo
+import com.cpirt.app.domain.user.entity.UserPersonalInfo
+import com.cpirt.app.domain.user.entity.UserRole
+import com.cpirt.app.domain.user.entity.toDisplayName
 import com.cpirt.app.features.user.viewmodel.UserState
+import com.cpirt.app.features.user.viewmodel.UserUIEventState
 import com.cpirt.app.features.user.viewmodel.UserViewModel
 import com.cpirt.app.ui.components.AppSnackbarHost
+import com.cpirt.app.ui.components.AppSnackbarVisuals
+import com.cpirt.app.ui.components.SnackbarMessageType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -209,10 +206,22 @@ fun UserScreen(
 
     val snackbarHostState = SnackbarHostState()
 
-    LaunchedEffect(key1 = state.snackbarMessage) {
-        state.snackbarMessage?.let {message ->
-            snackbarHostState.showSnackbar(message)
-            viewModel.onMessageShown()
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when {
+                event is UserUIEventState.ShowError -> {
+                    snackbarHostState.showSnackbar(AppSnackbarVisuals(
+                        type = SnackbarMessageType.ERROR,
+                        message = event.message
+                    ))
+                }
+                event is UserUIEventState.ShowSuccess -> {
+                    snackbarHostState.showSnackbar(AppSnackbarVisuals(
+                        type = SnackbarMessageType.SUCCESS,
+                        message = event.message
+                    ))
+                }
+            }
         }
     }
 
@@ -322,8 +331,8 @@ private fun UserContent(
 private fun UserHeader(
     user: UserPersonalInfo
 ) {
-    val avatar = remember(user.avatar.string) {
-        user.avatar.string.toImageBitmap()
+    val avatar = remember(user.avatar) {
+        user.avatar?.toImageBitmap()
     }
 
     Column(
@@ -605,8 +614,7 @@ private fun ProfileContentPreview() {
             id = 3,
             name = "Veronika",
             lastName = "Traktaristka",
-            avatar = UserAvatarInfo(valid = false, string = ""),
-            fullName = listOf(FullNameSchema(name = "Veronika", lastName = "Traktaristka")),
+            avatar = null,
             login = "traktar",
             rating = 4251,
             role = UserRole.User,
@@ -624,8 +632,7 @@ private fun ProfileContentPreview() {
             id = 3,
             name = "Margasisa",
             lastName = "hachatryan",
-            avatar = UserAvatarInfo(valid = false, string = ""),
-            fullName = listOf(FullNameSchema(name = "margasisa", lastName = "fdsfds")),
+            avatar = null,
             login = "margas",
             rating = 4251,
             role = UserRole.Owner,

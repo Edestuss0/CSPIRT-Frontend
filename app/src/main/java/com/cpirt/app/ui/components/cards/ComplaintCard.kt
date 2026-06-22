@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cpirt.app.core.utils.toDate
-import com.cpirt.app.entities.Complaint
+import com.cpirt.app.domain.user.entity.Complaint
 
 @Composable
 fun ComplaintCard(

@@ -2,9 +2,8 @@ package com.cpirt.app.features.authorization.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.auth.repository.AuthorizationRepositoryImpl
-import com.cpirt.app.core.domain.auth.dto.LoginDto
-import com.cpirt.app.core.domain.auth.repository.IAuthRepository
+import com.cpirt.app.domain.user.entity.LoginForm
+import com.cpirt.app.domain.user.usecases.LoginUseCase
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthorizationViewmodel @Inject constructor(
-    private val authorizationRepository: IAuthRepository
+    private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthorizationState())
@@ -35,10 +34,10 @@ class AuthorizationViewmodel @Inject constructor(
             )}
             return
         }
-        val form = LoginDto(state.value.loginInput, state.value.passwordInput)
+        val form = LoginForm(state.value.loginInput, state.value.passwordInput)
         viewModelScope.launch {
             try {
-                val loginResponse = authorizationRepository.login(form)
+                val loginResponse = loginUseCase(form)
                 _state.update { it.copy(
                     isError = false,
                     passwordInput = "",

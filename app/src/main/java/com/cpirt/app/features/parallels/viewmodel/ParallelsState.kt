@@ -1,6 +1,6 @@
 package com.cpirt.app.features.parallels.viewmodel
 
-import com.cpirt.app.entities.Parallel
+import com.cpirt.app.domain.classes.entity.Parallel
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 
 data class ParallelsState(

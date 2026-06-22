@@ -1,21 +1,25 @@
 package com.cpirt.app.features.user.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.user.dto.UserResult
-import com.cpirt.app.core.domain.user.dto.AddComplaintDto
-import com.cpirt.app.core.domain.user.dto.AddNoteDto
-import com.cpirt.app.core.domain.user.dto.ChangeRatingDto
-import com.cpirt.app.core.domain.user.repository.IUserRepository
+import com.cpirt.app.core.entity.AppResult
+import com.cpirt.app.domain.user.entity.AddComplaintForm
+import com.cpirt.app.domain.user.entity.AddNoteForm
+import com.cpirt.app.domain.user.entity.ChangeRatingForm
 import com.cpirt.app.core.utils.getCurrentIsoTime
+import com.cpirt.app.domain.user.usecases.AddComplaintUseCase
+import com.cpirt.app.domain.user.usecases.AddNoteUseCase
+import com.cpirt.app.domain.user.usecases.ChangeRatingUseCase
+import com.cpirt.app.domain.user.usecases.GetMeUseCase
+import com.cpirt.app.domain.user.usecases.GetUserUseCase
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,67 +27,67 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val userRepository: IUserRepository,
+    private val getUser: GetUserUseCase,
+    private val getMe: GetMeUseCase,
+    private val changeRating: ChangeRatingUseCase,
+    private val addNote: AddNoteUseCase,
+    private val addComplaint: AddComplaintUseCase
 ) : ViewModel() {
     val userId = savedStateHandle.get<Int>("id") ?: 1
     private val _state = MutableStateFlow(UserState())
     val state = _state.asStateFlow()
+    private val _events = Channel<UserUIEventState>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     init {
-        loadData()
+        loadData(false)
     }
 
-    fun loadData() {
+    fun loadData(force: Boolean) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
             try {
-                userRepository.getUserById(userId).collect { result ->
+                getUser(userId, force).collect { result ->
                     when (result) {
-                        is UserResult.Loading -> {
+                        is AppResult.Loading -> {
                             _state.update { it.copy(
                                 isLoading = true
                             ) }
                         }
-                        is UserResult.Success -> {
+                        is AppResult.Success -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 userInfo = result.data,
                             ) }
                         }
-                        is UserResult.Error -> {
+                        is AppResult.Error -> {
                             _state.update { it.copy(
                                 isLoading = false,
-                                userInfo = result.oldData ?: it.userInfo,
-                                snackbarMessage = AppSnackbarVisuals(
-                                    type = SnackbarMessageType.ERROR,
-                                    message = result.message
-                                )
+                                userInfo = result.data ?: it.userInfo,
                             )}
+                            _events.send(UserUIEventState.ShowError(result.message))
                         }
                     }
                 }
-                userRepository.getMe(false).collect { result ->
+                getMe(force).collect { result ->
                     when (result) {
-                        is UserResult.Loading -> {
+                        is AppResult.Loading -> {
                             _state.update { it.copy(
                                 isLoading = true
                             ) }
                         }
-                        is UserResult.Success -> {
+                        is AppResult.Success -> {
                             _state.update { it.copy(
                                 isLoading = false,
                                 profileInfo = result.data,
                             ) }
                         }
-                        is UserResult.Error -> {
+                        is AppResult.Error -> {
                             _state.update { it.copy(
                                 isLoading = false,
-                                profileInfo = result.oldData ?: it.profileInfo,
-                                snackbarMessage = AppSnackbarVisuals(
-                                    type = SnackbarMessageType.ERROR,
-                                    message = result.message
-                                )
+                                profileInfo = result.data ?: it.profileInfo,
                             )}
+                            _events.send(UserUIEventState.ShowError(result.message))
                         }
                     }
                 }
@@ -91,11 +95,8 @@ class UserViewModel @Inject constructor(
                 _state.update { it.copy(
                     isLoading = false,
                     isError = true,
-                    snackbarMessage = AppSnackbarVisuals(
-                        type = SnackbarMessageType.ERROR,
-                        message = e.message ?: "Произошла непредвиденная ошибка"
-                    )
                 )}
+                _events.send(UserUIEventState.ShowError(e.message ?: "Произошла непредвиденная ошибка"))
             }
         }
     }
@@ -106,34 +107,22 @@ class UserViewModel @Inject constructor(
             return
         }
         _state.update { it.copy(isLoading = true, isError = false) }
-        val form = ChangeRatingDto(
+        val form = ChangeRatingForm(
             targetLogin = _state.value.userInfo!!.user.login,
             reason = changeRatingState.reason,
             rating = changeRatingState.rating.toIntOrNull() ?: 0
         )
         viewModelScope.launch {
             try {
-                val response = userRepository.changeUserRating(form)
-                _state.update { it.copy(
-                    changeRatingState = changeRatingState.copy(show = false, reason = "", rating = ""),
-                    isLoading = false,
-                    isError = false,
-                    snackbarMessage = AppSnackbarVisuals(
-                        type = SnackbarMessageType.SUCCESS,
-                        message = response
-                    )
-                )}
-                loadData()
+                changeRating(form, state.value.profileInfo?.user)
+                loadData(true)
             } catch (e: Exception) {
                 _state.update { it.copy(
                     changeRatingState = changeRatingState.copy(show = false, reason = "", rating = ""),
                     isLoading = false,
                     isError = true,
-                    snackbarMessage = AppSnackbarVisuals(
-                        type = SnackbarMessageType.ERROR,
-                        message = e.message ?: "Произошла непредвиденная ошибка"
-                    )
                 )}
+                _events.send(UserUIEventState.ShowError(e.message ?: "Произошла непредвиденная ошибка"))
             }
         }
     }
@@ -144,7 +133,7 @@ class UserViewModel @Inject constructor(
             return
         }
         _state.update { it.copy(isLoading = true, isError = false) }
-        val form = AddNoteDto(
+        val form = AddNoteForm(
             authorId = state.value.profileInfo!!.user.id,
             targetId = state.value.userInfo!!.user.id,
             authorName = "${state.value.profileInfo!!.user.name} ${state.value.profileInfo!!.user.lastName}",
@@ -154,27 +143,21 @@ class UserViewModel @Inject constructor(
         )
         viewModelScope.launch {
             try {
-                val response = userRepository.addNote(form)
+                val response = addNote(form, state.value.profileInfo?.user)
                 _state.update { it.copy(
                     addNoteState = addNoteState.copy(show = false, content = ""),
                     isLoading = false,
                     isError = false,
-                    snackbarMessage = AppSnackbarVisuals(
-                        type = SnackbarMessageType.SUCCESS,
-                        message = response
-                    )
                 )}
-                loadData()
+                _events.send(UserUIEventState.ShowSuccess(response))
+                loadData(true)
             } catch (e: Exception) {
                 _state.update { it.copy(
                     addNoteState = addNoteState.copy(show = false, content = ""),
                     isLoading = false,
                     isError = true,
-                    snackbarMessage = AppSnackbarVisuals(
-                        type = SnackbarMessageType.ERROR,
-                        message = e.message ?: "Произошла непредвиденная ошибка"
-                    )
                 )}
+                _events.send(UserUIEventState.ShowError(e.message ?: "Произошла непредвиденная ошибка"))
             }
         }
     }
@@ -185,7 +168,7 @@ class UserViewModel @Inject constructor(
             return
         }
         _state.update { it.copy(isLoading = true, isError = false) }
-        val form = AddComplaintDto(
+        val form = AddComplaintForm(
             authorId = state.value.profileInfo!!.user.id,
             targetId = state.value.userInfo!!.user.id,
             authorName = "${state.value.profileInfo!!.user.name} ${state.value.profileInfo!!.user.lastName}",
@@ -195,27 +178,21 @@ class UserViewModel @Inject constructor(
         )
         viewModelScope.launch {
             try {
-                val response = userRepository.addComplaint(form)
+                val response = addComplaint(form, state.value.profileInfo?.user)
                 _state.update { it.copy(
                     addComplaintState = addComplaintState.copy(show = false, content = ""),
                     isLoading = false,
                     isError = false,
-                    snackbarMessage = AppSnackbarVisuals(
-                        type = SnackbarMessageType.SUCCESS,
-                        message = response
-                    )
                 )}
-                loadData()
+                _events.send(UserUIEventState.ShowSuccess(response))
+                loadData(true)
             } catch (e: Exception) {
                 _state.update { it.copy(
                     addComplaintState = addComplaintState.copy(show = false, content = ""),
                     isLoading = false,
                     isError = true,
-                    snackbarMessage = AppSnackbarVisuals(
-                        type = SnackbarMessageType.ERROR,
-                        message = e.message ?: "Произошла непредвиденная ошибка"
-                    )
                 )}
+                _events.send(UserUIEventState.ShowError(e.message ?: "Произошла непредвиденная ошибка"))
             }
         }
     }
@@ -266,12 +243,6 @@ class UserViewModel @Inject constructor(
         val changeRatingState = state.value.changeRatingState
         _state.update { it.copy(
             changeRatingState = changeRatingState.copy(rating = input)
-        ) }
-    }
-
-    fun onMessageShown() {
-        _state.update { it.copy(
-            snackbarMessage = null
         ) }
     }
 }

@@ -1,6 +1,6 @@
 package com.cpirt.app.features.profile.viewmodel
 
-import com.cpirt.app.entities.UserInfo
+import com.cpirt.app.domain.user.entity.UserInfo
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 
 data class ProfileState(

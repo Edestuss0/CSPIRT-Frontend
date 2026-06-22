@@ -2,10 +2,10 @@ package com.cpirt.app.core.di
 
 import android.content.Context
 import androidx.room.Room
-import com.cpirt.app.core.data.classes.ClassCacheDao
-import com.cpirt.app.core.data.core.MainDb
-import com.cpirt.app.core.data.parallels.ParallelsCacheDao
-import com.cpirt.app.core.data.users.UserCacheDao
+import com.cpirt.app.data.features.classes.local.dao.ClassCacheDao
+import com.cpirt.app.data.db.MainDb
+import com.cpirt.app.data.features.classes.local.dao.ParallelsCacheDao
+import com.cpirt.app.data.features.user.local.dao.UserCacheDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

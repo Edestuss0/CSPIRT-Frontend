@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.cpirt.app.entities.UserPersonalInfo
-import com.cpirt.app.entities.toDisplayName
+import com.cpirt.app.domain.user.entity.UserPersonalInfo
+import com.cpirt.app.domain.user.entity.toDisplayName
 
 @Composable
 fun UserCard(

@@ -2,10 +2,8 @@ package com.cpirt.app.features.my_class.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cpirt.app.core.domain.classes.dto.ClassResult
-import com.cpirt.app.core.domain.classes.repository.IClassRepository
-import com.cpirt.app.core.domain.user.dto.UserResult
-import com.cpirt.app.core.domain.user.repository.IUserRepository
+import com.cpirt.app.core.entity.AppResult
+import com.cpirt.app.domain.classes.usecases.GetMyClassUseCase
 import com.cpirt.app.ui.components.AppSnackbarVisuals
 import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyClassViewModel @Inject constructor(
-    private val сlassRepository: IClassRepository,
-    private val userRepository: IUserRepository
+    private val getMyClass: GetMyClassUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(MyClassState())
     val state = _state.asStateFlow()
@@ -31,53 +28,30 @@ class MyClassViewModel @Inject constructor(
         _state.update { it.copy(isLoading = true, isError = false) }
         viewModelScope.launch {
             try {
-                сlassRepository.getMyClass(force).collect { result ->
+                getMyClass(force).collect { result ->
                     when (result) {
-                        is ClassResult.Loading -> {
+                        is AppResult.Loading -> {
                             _state.update { it.copy(
                                 isLoading = true
                             ) }
                         }
-                        is ClassResult.Success -> {
+                        is AppResult.Success -> {
                             _state.update { it.copy(
                                 isLoading = false,
-                                schoolClassInfo = result.data
+                                schoolClassInfo = result.data.schoolClass,
+                                userInfo = result.data.me
                             ) }
                         }
-                        is ClassResult.Error -> {
+                        is AppResult.Error -> {
                             _state.update { it.copy(
                                 isLoading = false,
-                                schoolClassInfo = result.data ?: it.schoolClassInfo,
+                                schoolClassInfo = result.data?.schoolClass ?: it.schoolClassInfo,
+                                userInfo = result.data?.me ?: it.userInfo,
                                 snackbarMessage = AppSnackbarVisuals(
                                     type = SnackbarMessageType.ERROR,
                                     message = result.message
                                 )
                             ) }
-                        }
-                    }
-                }
-                userRepository.getMe(force).collect { result ->
-                    when (result) {
-                        is UserResult.Loading -> {
-                            _state.update { it.copy(
-                                isLoading = true
-                            ) }
-                        }
-                        is UserResult.Success -> {
-                            _state.update { it.copy(
-                                isLoading = false,
-                                userInfo = result.data,
-                            ) }
-                        }
-                        is UserResult.Error -> {
-                            _state.update { it.copy(
-                                isLoading = false,
-                                userInfo = result.oldData ?: it.userInfo,
-                                snackbarMessage = AppSnackbarVisuals(
-                                    type = SnackbarMessageType.ERROR,
-                                    message = result.message
-                                )
-                            )}
                         }
                     }
                 }

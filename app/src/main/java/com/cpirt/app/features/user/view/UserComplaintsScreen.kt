@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.cpirt.app.entities.Complaint
+import com.cpirt.app.domain.user.entity.Complaint
 import com.cpirt.app.ui.components.cards.ComplaintCard
 
 @OptIn(ExperimentalMaterial3Api::class)

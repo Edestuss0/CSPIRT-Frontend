@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -28,7 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,12 +47,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.cpirt.app.core.utils.toImageBitmap
-import com.cpirt.app.entities.FullNameSchema
-import com.cpirt.app.entities.UserAvatarInfo
-import com.cpirt.app.entities.UserInfo
-import com.cpirt.app.entities.UserPersonalInfo
-import com.cpirt.app.entities.UserRole
-import com.cpirt.app.entities.toDisplayName
+import com.cpirt.app.domain.user.entity.UserInfo
+import com.cpirt.app.domain.user.entity.UserPersonalInfo
+import com.cpirt.app.domain.user.entity.UserRole
+import com.cpirt.app.domain.user.entity.toDisplayName
 import com.cpirt.app.features.profile.viewmodel.ProfileViewModel
 import com.cpirt.app.ui.components.AppSnackbarHost
 import com.cpirt.app.ui.components.LoadingScreen
@@ -77,12 +75,18 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         when {
-            state.isLoading -> LoadingScreen()
-            state.userInfo != null -> {
-                ProfileContent(
-                    innerPadding = innerPadding,
-                    userInfo = state.userInfo
-                )
+            state.isLoading && state.userInfo == null -> LoadingScreen()
+            else -> {
+                PullToRefreshBox(
+                    onRefresh = { viewModel.loadData(true) },
+                    isRefreshing = state.isLoading
+                ) {
+                    ProfileContent(
+                        innerPadding = innerPadding,
+                        userInfo = state.userInfo,
+                        onLogout = {viewModel.logout()}
+                    )
+                }
             }
         }
     }
@@ -91,7 +95,8 @@ fun ProfileScreen(
 @Composable
 private fun ProfileContent(
     innerPadding: PaddingValues,
-    userInfo: UserInfo?
+    userInfo: UserInfo?,
+    onLogout: () -> Unit
 ) {
     if (userInfo == null) {
         Column(
@@ -133,6 +138,18 @@ private fun ProfileContent(
         item {
             ProfileInfoCard(userInfo.user)
         }
+        item {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                onClick = { onLogout() },
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text(text = "Выйти", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        }
     }
 }
 
@@ -140,8 +157,8 @@ private fun ProfileContent(
 private fun ProfileHeader(
     user: UserPersonalInfo
 ) {
-    val avatar = remember(user.avatar.string) {
-        user.avatar.string.toImageBitmap()
+    val avatar = remember(user.avatar) {
+        user.avatar?.toImageBitmap()
     }
 
     Column(
@@ -311,8 +328,7 @@ private fun ProfileContentPreview() {
             id = 3,
             name = "Veronika",
             lastName = "Traktaristka",
-            avatar = UserAvatarInfo(valid = false, string = ""),
-            fullName = listOf(FullNameSchema(name = "Veronika", lastName = "Traktaristka")),
+            avatar = null,
             login = "traktar",
             rating = 4251,
             role = UserRole.Owner,
@@ -329,7 +345,8 @@ private fun ProfileContentPreview() {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         ProfileContent(
             innerPadding = innerPadding,
-            userInfo = userInfo
+            userInfo = userInfo,
+            onLogout = {}
         )
     }
 }

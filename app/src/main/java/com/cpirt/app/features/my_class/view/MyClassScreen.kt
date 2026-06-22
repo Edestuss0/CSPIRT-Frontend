@@ -21,10 +21,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,12 +33,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.cpirt.app.entities.SchoolClass
-import com.cpirt.app.entities.FullNameSchema
-import com.cpirt.app.entities.UserAvatarInfo
-import com.cpirt.app.entities.UserInfo
-import com.cpirt.app.entities.UserPersonalInfo
-import com.cpirt.app.entities.UserRole
+import com.cpirt.app.domain.classes.entity.SchoolClass
+import com.cpirt.app.domain.user.entity.UserInfo
+import com.cpirt.app.domain.user.entity.UserPersonalInfo
+import com.cpirt.app.domain.user.entity.UserRole
 import com.cpirt.app.features.my_class.viewmodel.MyClassState
 import com.cpirt.app.features.my_class.viewmodel.MyClassViewModel
 import com.cpirt.app.ui.components.AppSnackbarHost
@@ -60,21 +57,29 @@ fun MyClassScreen(
         }
     }
 
-    if (state.isLoading) {
-        LoadingScreen()
-        return
-    }
 
     Scaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState) },
         modifier = Modifier.fillMaxSize()
     ) {innerPadding ->
-        MyClassContent(
-            innerPadding = innerPadding,
-            schoolClassInfo = state.schoolClassInfo,
-            userInfo = state.userInfo,
-            onUsersClick = onUsersClick
-        )
+        when {
+            state.isLoading && state.userInfo == null && state.schoolClassInfo == null -> {
+                LoadingScreen()
+            }
+            else -> {
+                PullToRefreshBox(
+                    onRefresh = {viewModel.loadData(true)},
+                    isRefreshing = state.isLoading
+                ) {
+                    MyClassContent(
+                        innerPadding = innerPadding,
+                        schoolClassInfo = state.schoolClassInfo,
+                        userInfo = state.userInfo,
+                        onUsersClick = onUsersClick
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -380,8 +385,7 @@ private fun MyClassContentPreview() {
             id = 3,
             name = "Veronika",
             lastName = "Traktaristka",
-            avatar = UserAvatarInfo(valid = false, string = ""),
-            fullName = listOf(FullNameSchema(name = "Veronika", lastName = "Traktaristka")),
+            avatar = null,
             login = "traktar",
             rating = 4251,
             role = UserRole.Owner,
@@ -398,8 +402,7 @@ private fun MyClassContentPreview() {
             id = 2,
             name = "Alisa",
             lastName = "Zhidkova",
-            avatar = UserAvatarInfo(valid = false, string = ""),
-            fullName = listOf(FullNameSchema(name = "Veronika", lastName = "Traktaristka")),
+            avatar = null,
             login = "traktar",
             rating = 124,
             role = UserRole.Owner,
@@ -416,8 +419,7 @@ private fun MyClassContentPreview() {
             id = 1,
             name = "Margasisa",
             lastName = "Zhidkova",
-            avatar = UserAvatarInfo(valid = false, string = ""),
-            fullName = listOf(FullNameSchema(name = "Veronika", lastName = "Traktaristka")),
+            avatar = null,
             login = "traktar",
             rating = 5000,
             role = UserRole.Owner,
