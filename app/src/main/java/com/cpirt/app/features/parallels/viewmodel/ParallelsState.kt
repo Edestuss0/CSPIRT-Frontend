@@ -1,7 +1,7 @@
 package com.cpirt.app.features.parallels.viewmodel
 
 import com.cpirt.app.domain.classes.entity.Parallel
-import com.cpirt.app.ui.components.AppSnackbarVisuals
+import com.cpirt.app.ui.components.snackbar.AppSnackbarVisuals
 
 data class ParallelsState(
     val isLoading: Boolean = false,

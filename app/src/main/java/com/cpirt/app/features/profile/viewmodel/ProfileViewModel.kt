@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.cpirt.app.core.entity.AppResult
 import com.cpirt.app.domain.user.usecases.GetMeUseCase
 import com.cpirt.app.domain.user.usecases.LogoutUseCase
-import com.cpirt.app.ui.components.AppSnackbarVisuals
-import com.cpirt.app.ui.components.SnackbarMessageType
+import com.cpirt.app.ui.components.snackbar.AppSnackbarVisuals
+import com.cpirt.app.ui.components.snackbar.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,12 +66,6 @@ class ProfileViewModel @Inject constructor(
                     isLoading = false
                 )}
             }
-        }
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-            logoutUseCase
         }
     }
 

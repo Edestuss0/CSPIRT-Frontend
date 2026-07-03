@@ -30,6 +30,7 @@ class ClassRemoteSource @Inject constructor(
             throw ServerException(response.status.value)
         }
         return response.body<ClassesResponseDto>().schoolClasses.map { it.toDomain() }
+            .sortedByDescending {(it.classTotalRating + it.userTotalRating)}
     }
 
 }

@@ -13,8 +13,6 @@ import com.cpirt.app.domain.user.usecases.AddNoteUseCase
 import com.cpirt.app.domain.user.usecases.ChangeRatingUseCase
 import com.cpirt.app.domain.user.usecases.GetMeUseCase
 import com.cpirt.app.domain.user.usecases.GetUserUseCase
-import com.cpirt.app.ui.components.AppSnackbarVisuals
-import com.cpirt.app.ui.components.SnackbarMessageType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

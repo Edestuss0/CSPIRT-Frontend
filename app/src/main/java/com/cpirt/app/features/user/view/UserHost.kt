@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cpirt.app.features.user.viewmodel.UserViewModel
-import com.cpirt.app.ui.components.LoadingScreen
+import com.cpirt.app.ui.components.screens.LoadingScreen
 
 @Composable
 fun UserHost(

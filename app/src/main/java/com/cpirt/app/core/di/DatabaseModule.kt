@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.cpirt.app.data.features.classes.local.dao.ClassCacheDao
 import com.cpirt.app.data.db.MainDb
 import com.cpirt.app.data.features.classes.local.dao.ParallelsCacheDao
+import com.cpirt.app.data.features.events.local.dao.EventsCacheDao
+import com.cpirt.app.data.features.schedule.local.dao.ScheduleLessonDao
 import com.cpirt.app.data.features.user.local.dao.UserCacheDao
 import dagger.Module
 import dagger.Provides
@@ -39,4 +41,14 @@ object DatabaseModule {
     fun provideParallelsCacheDao(
         db: MainDb
     ): ParallelsCacheDao = db.parallelsCacheDao()
+
+    @Provides @Singleton
+    fun provideScheduleCacheDao(
+        db: MainDb
+    ): ScheduleLessonDao = db.scheduleCacheDao()
+
+    @Provides @Singleton
+    fun provideEventsCacheDao(
+        db: MainDb
+    ): EventsCacheDao = db.eventsCacheDao()
 }

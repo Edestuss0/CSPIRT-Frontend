@@ -7,28 +7,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cpirt.app.core.utils.toDate
 import com.cpirt.app.domain.user.entity.Note
+import com.cpirt.app.ui.theme.AppBadge
+import com.cpirt.app.ui.theme.AppCard
 
 @Composable
 fun NoteCard(
     modifier: Modifier = Modifier,
     note: Note,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp)
-    ) {
+    AppCard(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -45,26 +40,13 @@ fun NoteCard(
                 ) {
                     Text(
                         text = "От ${note.authorName}",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleSmall
                     )
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        Text(
-                            text = note.createdAt.toDate() ?: "Неизвестно",
-                            modifier = Modifier.padding(
-                                horizontal = 12.dp,
-                                vertical = 6.dp
-                            ),
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
 
+                    AppBadge(text = note.createdAt.toDate() ?: "Неизвестно")
                 }
 
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
 
                 Text(
                     text = note.content,
@@ -72,7 +54,6 @@ fun NoteCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
         }
     }
 }

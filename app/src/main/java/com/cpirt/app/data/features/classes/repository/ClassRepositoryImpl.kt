@@ -35,8 +35,8 @@ class ClassRepositoryImpl @Inject constructor(
         }
 
         try {
-        val response = remoteClass.getClass(id)
-        val members = response.members.filter { it.role == UserRole.User || it.role == UserRole.Helper }
+            val response = remoteClass.getClass(id)
+            val members = response.members.filter { it.role == UserRole.User || it.role == UserRole.Helper }
             val finalClass = response.copy(members = members)
             classCacheRepository.insert(finalClass)
             emit(

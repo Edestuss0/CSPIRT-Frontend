@@ -10,10 +10,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cpirt.app.features.authorization.view.AuthorizationScreen
+import com.cpirt.app.features.classes.view.ClassesScreen
 import com.cpirt.app.features.navigation.viewmodel.AuthState
 import com.cpirt.app.features.navigation.viewmodel.NavigationViewModel
 import com.cpirt.app.features.user.view.UserHost
-import com.cpirt.app.ui.components.LoadingScreen
+import com.cpirt.app.ui.components.screens.LoadingScreen
 
 @Composable
 fun AppNavigation(
@@ -52,9 +53,23 @@ fun AppNavigation(
                     type = NavType.IntType
                 }
             )
-        ) { backStackEntry ->
+        ) {
             UserHost(
                 onBackClick = {rootNavController.popBackStack()}
+            )
+        }
+
+        composable(
+            route = "classes/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            ClassesScreen(
+                onBackClick = {rootNavController.popBackStack()},
+                onUsersClick = {id -> rootNavController.navigate("user/$id")}
             )
         }
     }

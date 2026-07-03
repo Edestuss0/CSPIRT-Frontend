@@ -1,6 +1,6 @@
 package com.cpirt.app.features.authorization.viewmodel
 
-import com.cpirt.app.ui.components.AppSnackbarVisuals
+import com.cpirt.app.ui.components.snackbar.AppSnackbarVisuals
 
 data class AuthorizationState(
     val loginInput: String = "",

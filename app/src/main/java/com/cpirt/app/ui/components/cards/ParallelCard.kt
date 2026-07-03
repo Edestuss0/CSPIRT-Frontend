@@ -1,23 +1,24 @@
 package com.cpirt.app.ui.components.cards
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cpirt.app.domain.classes.entity.Parallel
+import com.cpirt.app.ui.theme.AppBadge
+import com.cpirt.app.ui.theme.AppCard
 
 @Composable
 fun ParallelCard(
@@ -25,52 +26,52 @@ fun ParallelCard(
     modifier: Modifier = Modifier,
     onParallelClick: () -> Unit = {}
 ) {
-    Card(
+    AppCard(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onParallelClick() },
-        shape = RoundedCornerShape(20.dp)
+            .clickable(onClick = onParallelClick)
     ) {
-        Row(
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
+
+            Text(
+                text = parallel.name,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Text(
+                text = "${parallel.classes?.size ?: 0} классов",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = parallel.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+
+                Icon(
+                    imageVector = Icons.Rounded.EmojiEvents,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
                 )
 
-                Spacer(Modifier.height(4.dp))
-
-                Text(
-                    text = "${parallel.classes?.size ?: 0} Классов",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                AppBadge(
+                    text = parallel.bestClass?.let {
+                        "Лучший класс: ${it.grade}${it.letter}"
+                    } ?: "Лучший класс неизвестен"
                 )
-
-                Spacer(Modifier.height(4.dp))
-
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer
-                ) {
-                    Text(
-                        text = if (parallel.bestClass != null) { "Лучший класс: ${parallel.bestClass.grade}${parallel.bestClass.letter}" } else "Неизвестный класс",
-                        modifier = Modifier.padding(
-                            horizontal = 12.dp,
-                            vertical = 6.dp
-                        ),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
             }
-
         }
     }
 }

@@ -3,6 +3,7 @@ package com.cpirt.app.data.features.classes.remote.dto
 import com.cpirt.app.data.features.user.remote.dto.UserPersonalInfoDto
 import com.cpirt.app.domain.classes.entity.SchoolClass
 import com.cpirt.app.domain.user.entity.UserPersonalInfo
+import com.cpirt.app.domain.user.entity.UserRole
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -36,6 +37,8 @@ data class SchoolClassDto(
     val classTotalRating: Int
 ) {
     fun toDomain(): SchoolClass {
+        val sortMembers = members.map { it.toDomain() }.filter { it.role == UserRole.User || it.role == UserRole.Helper }.sortedByDescending { it.rating }
+
         return SchoolClass(
             id = id,
             name = name,
@@ -47,7 +50,7 @@ data class SchoolClassDto(
             quarterComplete = quarterComplete,
             teacherLogin = teacherLogin,
             teacher = teacher?.toDomain(),
-            members = members.map { it.toDomain() },
+            members = sortMembers,
             userTotalRating = userTotalRating,
             classTotalRating = classTotalRating
         )

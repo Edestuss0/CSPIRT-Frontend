@@ -16,28 +16,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,7 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.cpirt.app.core.utils.toImageBitmap
 import com.cpirt.app.domain.user.entity.UserInfo
 import com.cpirt.app.domain.user.entity.UserPersonalInfo
@@ -60,9 +54,16 @@ import com.cpirt.app.domain.user.entity.toDisplayName
 import com.cpirt.app.features.user.viewmodel.UserState
 import com.cpirt.app.features.user.viewmodel.UserUIEventState
 import com.cpirt.app.features.user.viewmodel.UserViewModel
-import com.cpirt.app.ui.components.AppSnackbarHost
-import com.cpirt.app.ui.components.AppSnackbarVisuals
-import com.cpirt.app.ui.components.SnackbarMessageType
+import com.cpirt.app.ui.components.screens.LoadingScreen
+import com.cpirt.app.ui.theme.AppBadge
+import com.cpirt.app.ui.theme.AppCard
+import com.cpirt.app.ui.theme.AppScaffold
+import com.cpirt.app.ui.theme.AppTextField
+import com.cpirt.app.ui.theme.EmptyState
+import com.cpirt.app.ui.theme.PrimaryButton
+import com.cpirt.app.ui.components.snackbar.AppSnackbarHost
+import com.cpirt.app.ui.components.snackbar.AppSnackbarVisuals
+import com.cpirt.app.ui.components.snackbar.SnackbarMessageType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,10 +108,9 @@ fun UserScreen(
             onDismissRequest = {viewModel.onChangeRatingChangeModalVisibility()},
             sheetState = ratingSheetState
         ) {
-            OutlinedTextField(
+            AppTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                label = { Text("Дельта изменения рейтинга") },
-                shape = RoundedCornerShape(16.dp),
+                label = "Дельта изменения рейтинга",
                 value = state.changeRatingState.rating,
                 onValueChange = { newValue: String ->
                     val isValidInteger = newValue.isEmpty() ||
@@ -122,24 +122,20 @@ fun UserScreen(
                 },
             )
             Spacer(Modifier.height(16.dp))
-            OutlinedTextField(
+            AppTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                label = { Text("Причина изменения рейтинга") },
-                shape = RoundedCornerShape(16.dp),
+                label = "Причина изменения рейтинга",
                 value = state.changeRatingState.reason,
                 onValueChange = { newValue: String ->
                     viewModel.onChangeRatingReasonInput(newValue)
                 },
             )
             Spacer(Modifier.height(16.dp))
-            Button(
+            PrimaryButton(
+                text = "Изменить рейтинг",
                 onClick = { viewModel.changeRating() },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text(text = "Изменить рейтинг", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
+            )
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -149,10 +145,9 @@ fun UserScreen(
             onDismissRequest = {viewModel.onChangeAddNoteModalVisibility()},
             sheetState = addNoteSheetState
         ) {
-            OutlinedTextField(
+            AppTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                label = { Text("Текст заметки") },
-                shape = RoundedCornerShape(16.dp),
+                label = "Текст заметки",
                 value = state.addNoteState.content,
                 onValueChange = { newValue: String ->
                     viewModel.onAddNoteContentInput(newValue)
@@ -161,14 +156,11 @@ fun UserScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            Button(
+            PrimaryButton(
+                text = "Добавить заметку",
                 onClick = { viewModel.addNote() },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text(text = "Добавить заметку", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
+            )
 
             Spacer(Modifier.height(16.dp))
         }
@@ -179,10 +171,9 @@ fun UserScreen(
             onDismissRequest = {viewModel.onChangeAddComplaintModalVisibility()},
             sheetState = addComplaintSheetState
         ) {
-            OutlinedTextField(
+            AppTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                label = { Text("Текст жалобы") },
-                shape = RoundedCornerShape(16.dp),
+                label = "Текст жалобы",
                 value = state.addComplaintState.content,
                 onValueChange = { newValue: String ->
                     viewModel.onAddComplaintContentInput(newValue)
@@ -191,14 +182,11 @@ fun UserScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            Button(
+            PrimaryButton(
+                text = "Добавить жалобу",
                 onClick = { viewModel.addComplaint() },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text(text = "Добавить жалобу", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
+            )
 
             Spacer(Modifier.height(16.dp))
         }
@@ -225,7 +213,7 @@ fun UserScreen(
         }
     }
 
-    Scaffold(
+    AppScaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState ) },
         topBar = {
             TopAppBar(
@@ -243,16 +231,27 @@ fun UserScreen(
         },
         modifier = Modifier.fillMaxSize()
     ) {innerPadding ->
-        UserContent(
-            innerPadding = innerPadding,
-            userInfo = state.userInfo,
-            profileInfo = state.profileInfo,
-            onNotesClick = onNotesClick,
-            onComplaintsClick = onComplaintsClick,
-            onChangeRatingClick = {viewModel.onChangeRatingChangeModalVisibility()},
-            onAddNoteClick = {viewModel.onChangeAddNoteModalVisibility()},
-            onAddComplaint = {viewModel.onChangeAddComplaintModalVisibility()}
-        )
+        when {
+            state.isLoading && state.userInfo == null && state.profileInfo == null -> LoadingScreen()
+            !state.isLoading && (state.userInfo == null || state.profileInfo == null) -> EmptyState("Не удалось получить информацию")
+            else -> {
+                PullToRefreshBox(
+                    isRefreshing = state.isLoading,
+                    onRefresh = {viewModel.loadData(true)}
+                ) {
+                    UserContent(
+                        innerPadding = innerPadding,
+                        userInfo = state.userInfo,
+                        profileInfo = state.profileInfo,
+                        onNotesClick = onNotesClick,
+                        onComplaintsClick = onComplaintsClick,
+                        onChangeRatingClick = {viewModel.onChangeRatingChangeModalVisibility()},
+                        onAddNoteClick = {viewModel.onChangeAddNoteModalVisibility()},
+                        onAddComplaint = {viewModel.onChangeAddComplaintModalVisibility()}
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -273,17 +272,7 @@ private fun UserContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Не удалось получить информацию о пользователе",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center
-                )
-            }
+            EmptyState(text = "Не удалось получить информацию о пользователе")
         }
         return
     }
@@ -292,8 +281,8 @@ private fun UserContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
         item {
@@ -350,8 +339,7 @@ private fun UserHeader(
                     .clip(CircleShape)
             )
         } else {
-            Card(
-                shape = CircleShape,
+            AppCard(
                 modifier = Modifier.size(96.dp)
             ) {
                 Box(
@@ -381,9 +369,8 @@ private fun UserHeader(
 private fun RatingCard(
     rating: Int
 ) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp)
     ) {
         Column(
             modifier = Modifier.padding(24.dp)
@@ -461,9 +448,8 @@ private fun UserInfoRow(
 private fun UserInfoCard(
     user: UserPersonalInfo
 ) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp)
     ) {
 
         UserInfoRow(
@@ -498,9 +484,8 @@ private fun UserTransitions(
 ) {
     if (role == UserRole.User) return
 
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp)
     ) {
         if (role == UserRole.Helper || role == UserRole.Admin || role == UserRole.Owner) {
             UserTransiteButton(
@@ -526,9 +511,8 @@ private fun UserActions(
     onAddNoteClick: () -> Unit,
     onAddComplaint: () -> Unit
 ) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp)
     ) {
         UserActionButton(
             title = "Написать жалобу",
@@ -556,15 +540,11 @@ private fun UserActionButton(
     title: String,
     onClick: () -> Unit
 ) {
-    TextButton(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-        )
-    }
+    PrimaryButton(
+        text = title,
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
@@ -645,7 +625,7 @@ private fun ProfileContentPreview() {
         classTeacher = null
     )
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+    AppScaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         UserContent(
             innerPadding = innerPadding,
             userInfo = userInfo,

@@ -15,17 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,10 +37,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.cpirt.app.core.utils.toImageBitmap
 import com.cpirt.app.domain.user.entity.UserInfo
@@ -52,8 +46,11 @@ import com.cpirt.app.domain.user.entity.UserPersonalInfo
 import com.cpirt.app.domain.user.entity.UserRole
 import com.cpirt.app.domain.user.entity.toDisplayName
 import com.cpirt.app.features.profile.viewmodel.ProfileViewModel
-import com.cpirt.app.ui.components.AppSnackbarHost
-import com.cpirt.app.ui.components.LoadingScreen
+import com.cpirt.app.ui.components.snackbar.AppSnackbarHost
+import com.cpirt.app.ui.components.screens.LoadingScreen
+import com.cpirt.app.ui.theme.AppCard
+import com.cpirt.app.ui.theme.AppScaffold
+import com.cpirt.app.ui.theme.EmptyState
 
 @Composable
 fun ProfileScreen(
@@ -70,7 +67,7 @@ fun ProfileScreen(
         }
     }
 
-    Scaffold(
+    AppScaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState) },
             modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -84,7 +81,6 @@ fun ProfileScreen(
                     ProfileContent(
                         innerPadding = innerPadding,
                         userInfo = state.userInfo,
-                        onLogout = {viewModel.logout()}
                     )
                 }
             }
@@ -96,7 +92,6 @@ fun ProfileScreen(
 private fun ProfileContent(
     innerPadding: PaddingValues,
     userInfo: UserInfo?,
-    onLogout: () -> Unit
 ) {
     if (userInfo == null) {
         Column(
@@ -104,27 +99,15 @@ private fun ProfileContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Не удалось получить информацию об аккаунте",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center
-                )
-            }
+            EmptyState(text = "Не удалось получить информацию об аккаунте")
         }
         return
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        modifier = Modifier.fillMaxSize().padding(innerPadding),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
         item {
@@ -137,18 +120,6 @@ private fun ProfileContent(
 
         item {
             ProfileInfoCard(userInfo.user)
-        }
-        item {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                onClick = { onLogout() },
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text(text = "Выйти", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
         }
     }
 }
@@ -176,10 +147,7 @@ private fun ProfileHeader(
                     .clip(CircleShape)
             )
         } else {
-            Card(
-                shape = CircleShape,
-                modifier = Modifier.size(96.dp)
-            ) {
+            AppCard(modifier = Modifier.size(96.dp)) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -196,9 +164,10 @@ private fun ProfileHeader(
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text = "${user.name} ${user.lastName}",
+            text = user.fullname,
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -207,9 +176,8 @@ private fun ProfileHeader(
 private fun RatingCard(
     rating: Int
 ) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp)
     ) {
         Column(
             modifier = Modifier.padding(24.dp)
@@ -289,9 +257,8 @@ private fun ProfileInfoRow(
 private fun ProfileInfoCard(
     user: UserPersonalInfo
 ) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp)
     ) {
 
         ProfileInfoRow(
@@ -342,11 +309,10 @@ private fun ProfileContentPreview() {
     )
 
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+    AppScaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         ProfileContent(
             innerPadding = innerPadding,
             userInfo = userInfo,
-            onLogout = {}
         )
     }
 }

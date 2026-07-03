@@ -1,7 +1,6 @@
 package com.cpirt.app.features.user.viewmodel
 
 import com.cpirt.app.domain.user.entity.UserInfo
-import com.cpirt.app.ui.components.AppSnackbarVisuals
 
 data class UserState(
     val isError: Boolean = false,
