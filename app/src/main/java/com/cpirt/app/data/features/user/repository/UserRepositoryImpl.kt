@@ -1,14 +1,14 @@
 package com.cpirt.app.data.features.user.repository
 
-import com.cpirt.app.domain.user.entity.AddComplaintForm
-import com.cpirt.app.domain.user.entity.AddNoteForm
-import com.cpirt.app.domain.user.entity.ChangeRatingForm
 import com.cpirt.app.core.entity.AppResult
 import com.cpirt.app.core.exception.ServerException
 import com.cpirt.app.data.features.classes.local.source.ClassLocalSource
 import com.cpirt.app.data.features.classes.local.source.ParallelsLocalSource
 import com.cpirt.app.data.features.user.local.source.UserLocalSource
 import com.cpirt.app.data.features.user.remote.source.UserRemoteSource
+import com.cpirt.app.domain.user.entity.AddComplaintForm
+import com.cpirt.app.domain.user.entity.AddNoteForm
+import com.cpirt.app.domain.user.entity.ChangeRatingForm
 import com.cpirt.app.domain.user.entity.LoginForm
 import com.cpirt.app.domain.user.entity.UserInfo
 import com.cpirt.app.domain.user.repository.IUserRepository
@@ -96,9 +96,10 @@ class UserRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun changeUserRating(form: ChangeRatingForm): String {
+    override suspend fun changeUserRating(form: ChangeRatingForm, userId: Int): String {
         try {
             remoteClient.changeRating(form)
+            userCache.invalidateUser(userId)
             return "Рейтинг успешно изменён"
         } catch (e: Exception) {
             if (e is IOException) {
@@ -123,6 +124,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteNote(id: Int, userId: Int) {
+        remoteClient.deleteNote(id)
+        userCache.invalidateUser(userId)
+    }
+
     override suspend fun addComplaint(form: AddComplaintForm): String {
         try {
             remoteClient.addComplaint(form)
@@ -135,6 +141,11 @@ class UserRepositoryImpl @Inject constructor(
                 throw IOException("Ошибка при попытке добавления жалобы")
             }
         }
+    }
+
+    override suspend fun deleteComplaint(id: Int, userId: Int) {
+        remoteClient.deleteComplaint(id)
+        userCache.invalidateUser(userId)
     }
 
     override suspend fun login(form: LoginForm): String {

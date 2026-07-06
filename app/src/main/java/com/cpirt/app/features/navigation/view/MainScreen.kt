@@ -1,6 +1,7 @@
 package com.cpirt.app.features.navigation.view
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Leaderboard
@@ -19,7 +20,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cpirt.app.features.home.view.HomeHost
-import com.cpirt.app.features.home.view.HomeScreen
 import com.cpirt.app.features.parallels.view.ParallelsHost
 import com.cpirt.app.features.profile.view.ProfileScreen
 import com.cpirt.app.ui.theme.AppScaffold
@@ -63,10 +63,9 @@ fun MainScreen(
                 }
             }
         }
-    ) {
+    ) { paddingValues ->
         NavHost(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(bottom = paddingValues.calculateBottomPadding()),
             navController = tabNavController,
             startDestination = Screens.Profile.route
         ) {

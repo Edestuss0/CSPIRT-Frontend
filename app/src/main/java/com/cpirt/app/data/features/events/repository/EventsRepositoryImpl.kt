@@ -3,6 +3,7 @@ package com.cpirt.app.data.features.events.repository
 import com.cpirt.app.core.entity.AppResult
 import com.cpirt.app.data.features.events.local.source.EventsLocalSource
 import com.cpirt.app.data.features.events.remote.source.EventsRemoteSource
+import com.cpirt.app.domain.events.entity.AddEventForm
 import com.cpirt.app.domain.events.entity.Event
 import com.cpirt.app.domain.events.repository.IEventsRepository
 import io.ktor.utils.io.CancellationException
@@ -48,6 +49,24 @@ class EventsRepositoryImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    override suspend fun addEvent(form: AddEventForm) {
+        remote.addEvent(form)
+    }
+
+    override suspend fun addEventPlayers(
+        id: Int,
+        players: List<Int>
+    ) {
+        remote.addEventPlayers(id, players)
+    }
+
+    override suspend fun removeEventPlayers(
+        id: Int,
+        players: List<Int>
+    ) {
+        remote.removeEventPlayers(id, players)
     }
 
 }

@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cpirt.app.features.user.viewmodel.UserViewModel
-import com.cpirt.app.ui.components.screens.LoadingScreen
 
 @Composable
 fun UserHost(
@@ -18,37 +17,47 @@ fun UserHost(
     val state by viewModel.state.collectAsState()
     val navController = rememberNavController()
 
-    if (state.isLoading) {
-        LoadingScreen()
-        return
+    when {
+//        state.isLoading -> {
+//            LoadingScreen()
+//        }
+//        state.userInfo == null || state.profileInfo == null -> {
+//            EmptyState("Не удалось получить информацию о пользователе")
+//        }
+        else -> {
+            NavHost(
+                navController = navController,
+                startDestination = "main"
+            ) {
+                composable("main") {
+                    UserScreen(
+                        viewModel = viewModel,
+                        state = state,
+                        onNotesClick = {navController.navigate("notes")},
+                        onComplaintsClick = {navController.navigate("complaints")},
+                        onBackClick = onBackClick,
+                    )
+                }
+
+                composable("notes") {
+                    UserNotesScreen(
+                        notes = state.userInfo?.notes ?: emptyList(),
+                        onBackClick = {navController.popBackStack()},
+                        onDelete = {id -> viewModel.deleteNote(id)},
+                        role = state.profileInfo!!.user.role
+                    )
+                }
+
+                composable("complaints") {
+                    UserComplaintsScreen(
+                        complaints = state.userInfo?.complaints ?: emptyList(),
+                        onBackClick = {navController.popBackStack()},
+                        onDelete = {id -> viewModel.deleteComplaint(id)},
+                        role = state.profileInfo!!.user.role
+                    )
+                }
+            }
+        }
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = "main"
-    ) {
-        composable("main") {
-            UserScreen(
-                viewModel = viewModel,
-                state = state,
-                onNotesClick = {navController.navigate("notes")},
-                onComplaintsClick = {navController.navigate("complaints")},
-                onBackClick = onBackClick,
-            )
-        }
-
-        composable("notes") {
-            UserNotesScreen(
-                notes = state.userInfo?.notes ?: emptyList(),
-                onBackClick = {navController.popBackStack()}
-            )
-        }
-
-        composable("complaints") {
-            UserComplaintsScreen(
-                complaints = state.userInfo?.complaints ?: emptyList(),
-                onBackClick = {navController.popBackStack()}
-            )
-        }
-    }
 }

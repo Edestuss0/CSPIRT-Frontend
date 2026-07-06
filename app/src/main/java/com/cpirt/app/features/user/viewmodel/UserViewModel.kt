@@ -1,25 +1,31 @@
 package com.cpirt.app.features.user.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cpirt.app.core.entity.AppResult
+import com.cpirt.app.core.exception.ServerException
+import com.cpirt.app.core.utils.getCurrentIsoTime
 import com.cpirt.app.domain.user.entity.AddComplaintForm
 import com.cpirt.app.domain.user.entity.AddNoteForm
 import com.cpirt.app.domain.user.entity.ChangeRatingForm
-import com.cpirt.app.core.utils.getCurrentIsoTime
 import com.cpirt.app.domain.user.usecases.AddComplaintUseCase
 import com.cpirt.app.domain.user.usecases.AddNoteUseCase
 import com.cpirt.app.domain.user.usecases.ChangeRatingUseCase
+import com.cpirt.app.domain.user.usecases.DeleteComplaintUseCase
+import com.cpirt.app.domain.user.usecases.DeleteNoteUseCase
 import com.cpirt.app.domain.user.usecases.GetMeUseCase
 import com.cpirt.app.domain.user.usecases.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +35,9 @@ class UserViewModel @Inject constructor(
     private val getMe: GetMeUseCase,
     private val changeRating: ChangeRatingUseCase,
     private val addNote: AddNoteUseCase,
-    private val addComplaint: AddComplaintUseCase
+    private val addComplaint: AddComplaintUseCase,
+    private val deleteComplaintUseCase: DeleteComplaintUseCase,
+    private val deleteNoteUseCase: DeleteNoteUseCase
 ) : ViewModel() {
     val userId = savedStateHandle.get<Int>("id") ?: 1
     private val _state = MutableStateFlow(UserState())
@@ -45,48 +53,39 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
             try {
-                getUser(userId, force).collect { result ->
-                    when (result) {
-                        is AppResult.Loading -> {
-                            _state.update { it.copy(
-                                isLoading = true
-                            ) }
-                        }
+                getUser(userId, force).combine(getMe(force)) { userRes, meRes ->
+                    userRes to meRes
+                }.collect { (userRes, meRes) ->
+                    val currentState = state.value
+                    val userInfo = when (userRes) {
                         is AppResult.Success -> {
-                            _state.update { it.copy(
-                                isLoading = false,
-                                userInfo = result.data,
-                            ) }
+                            Log.d("USER", userRes.data.toString())
+                            userRes.data
                         }
-                        is AppResult.Error -> {
-                            _state.update { it.copy(
-                                isLoading = false,
-                                userInfo = result.data ?: it.userInfo,
-                            )}
-                            _events.send(UserUIEventState.ShowError(result.message))
-                        }
+                        is AppResult.Error -> userRes.data ?: currentState.userInfo
+                        AppResult.Loading -> currentState.userInfo
                     }
-                }
-                getMe(force).collect { result ->
-                    when (result) {
-                        is AppResult.Loading -> {
-                            _state.update { it.copy(
-                                isLoading = true
-                            ) }
-                        }
+                    val profileInfo = when (meRes) {
                         is AppResult.Success -> {
-                            _state.update { it.copy(
-                                isLoading = false,
-                                profileInfo = result.data,
-                            ) }
+                            Log.d("ME", meRes.data.toString())
+                            meRes.data
                         }
-                        is AppResult.Error -> {
-                            _state.update { it.copy(
-                                isLoading = false,
-                                profileInfo = result.data ?: it.profileInfo,
-                            )}
-                            _events.send(UserUIEventState.ShowError(result.message))
-                        }
+                        is AppResult.Error -> meRes.data ?: currentState.profileInfo
+                        AppResult.Loading -> currentState.profileInfo
+                    }
+
+                    _state.update { it.copy(
+                        isLoading = userRes is AppResult.Loading || meRes is AppResult.Loading,
+                        isError = userRes is AppResult.Error || meRes is AppResult.Error,
+                        userInfo = userInfo,
+                        profileInfo = profileInfo
+                    ) }
+
+                    if (userRes is AppResult.Error) {
+                        _events.send(UserUIEventState.ShowError(userRes.message))
+                    }
+                    if (meRes is AppResult.Error) {
+                        _events.send(UserUIEventState.ShowError(meRes.message))
                     }
                 }
             } catch (e: Exception) {
@@ -112,7 +111,7 @@ class UserViewModel @Inject constructor(
         )
         viewModelScope.launch {
             try {
-                changeRating(form, state.value.profileInfo?.user)
+                changeRating(form, state.value.profileInfo?.user, userId)
                 loadData(true)
             } catch (e: Exception) {
                 _state.update { it.copy(
@@ -242,5 +241,75 @@ class UserViewModel @Inject constructor(
         _state.update { it.copy(
             changeRatingState = changeRatingState.copy(rating = input)
         ) }
+    }
+
+    fun deleteNote(id: Int) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoading = true, isError = false) }
+                deleteNoteUseCase(id, userId)
+                _state.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        isError = false,
+                        userInfo = currentState.userInfo?.copy(
+                            notes = currentState.userInfo.notes.filterNot { note -> note.id == id }
+                        )
+                    )
+                }
+                loadData(true)
+            } catch (e: Exception) {
+                _state.update { it.copy(
+                    isLoading = false,
+                    isError = true
+                ) }
+                when {
+                    e is ServerException -> {
+                        _events.send(UserUIEventState.ShowError("Ошибка при поытке удаления заметки"))
+                    }
+                    e is IOException -> {
+                        _events.send(UserUIEventState.ShowError("Нет подключения к интернету"))
+                    }
+                    else -> {
+                        _events.send(UserUIEventState.ShowError("Ошибка при поытке удаления заметки"))
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteComplaint(id: Int) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoading = true, isError = false) }
+                deleteComplaintUseCase(id, userId)
+                _state.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        isError = false,
+                        userInfo = currentState.userInfo?.copy(
+                            complaints = currentState.userInfo.complaints.filterNot { complaint -> complaint.id == id }
+                        )
+                    )
+                }
+                loadData(true)
+            } catch (e: Exception) {
+                _state.update { it.copy(
+                    isLoading = false,
+                    isError = true
+                ) }
+                when {
+                    e is ServerException -> {
+                        _events.send(UserUIEventState.ShowError("Ошибка при поытке удаления жалобы"))
+                    }
+                    e is IOException -> {
+                        _events.send(UserUIEventState.ShowError("Нет подключения к интернету"))
+                    }
+                    else -> {
+                        _events.send(UserUIEventState.ShowError("Ошибка при поытке удаления жалобы"))
+                    }
+                }
+            }
+        }
     }
 }

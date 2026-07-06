@@ -24,6 +24,18 @@ class ClassLocalSource @Inject constructor(
         }
     }
 
+    suspend fun getAll(): List<SchoolClass> {
+        dao.clearExpired(System.currentTimeMillis() - CACHE_TTL_MS)
+        val cached = dao.getAllClasses()
+        return cached.mapNotNull {
+            runCatching {
+                Json.decodeFromString<SchoolClass>(it.json)
+            }.onFailure { exception ->
+                Log.e("CACHE_SERIALIZATION", "Не удалось распарсить класс с id=${it.id}", exception)
+            }.getOrNull()
+        }
+    }
+
     suspend fun insert(classToAdd: SchoolClass) {
         dao.insertClass(
             ClassCacheEntity(

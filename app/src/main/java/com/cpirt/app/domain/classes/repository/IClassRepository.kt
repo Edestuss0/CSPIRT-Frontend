@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IClassRepository {
     suspend fun getClass(id: Int, force: Boolean = false): Flow<AppResult<SchoolClass>>
+    suspend fun getAllClasses(force: Boolean = false): Flow<AppResult<List<SchoolClass>>>
     suspend fun getParallels(force: Boolean = false): Flow<AppResult<List<Parallel>>>
     suspend fun getParallelClasses(id: Int, force: Boolean = false): Flow<AppResult<List<SchoolClass>>>
 }

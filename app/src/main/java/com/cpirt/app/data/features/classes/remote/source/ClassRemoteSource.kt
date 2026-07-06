@@ -24,6 +24,14 @@ class ClassRemoteSource @Inject constructor(
             ?: throw IllegalArgumentException("Ошибка валидации")
     }
 
+    suspend fun getAllClasses(): List<SchoolClass> {
+        val response = client.get("${API_URL}/api/classes")
+        if (!response.status.isSuccess()) {
+            throw ServerException(response.status.value)
+        }
+        return response.body<ClassesResponseDto>().schoolClasses.map { it.toDomain() }
+    }
+
     suspend fun getParallelClasses(id: Int): List<SchoolClass> {
         val response = client.get("${API_URL}/api/classes/parallel/$id/classes")
         if (!response.status.isSuccess()) {

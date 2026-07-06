@@ -8,13 +8,13 @@ import javax.inject.Inject
 class ChangeRatingUseCase @Inject constructor(
     private val userRepository: IUserRepository
 ) {
-    suspend operator fun invoke(form: ChangeRatingForm, user: UserPersonalInfo?): String {
+    suspend operator fun invoke(form: ChangeRatingForm, user: UserPersonalInfo?, userId: Int): String {
         user?.canChangeRating(form.targetLogin)?.let {
             if (!it) {
                 throw IllegalArgumentException("Вы не имеете права менять рейтинг")
             }
         }
         if (form.rating < -5000 || form.rating > 5000) throw IllegalArgumentException("Рейтинг должен быть в допустимом диапазоне")
-        return userRepository.changeUserRating(form)
+        return userRepository.changeUserRating(form, userId)
     }
 }

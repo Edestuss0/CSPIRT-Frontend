@@ -1,6 +1,7 @@
 package com.cpirt.app.data.features.classes.repository
 
 import com.cpirt.app.core.entity.AppResult
+import com.cpirt.app.core.exception.ServerException
 import com.cpirt.app.data.features.classes.local.source.ClassLocalSource
 import com.cpirt.app.data.features.classes.local.source.ParallelsLocalSource
 import com.cpirt.app.data.features.classes.remote.source.ClassRemoteSource
@@ -66,6 +67,37 @@ class ClassRepositoryImpl @Inject constructor(
 
         }
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun getAllClasses(force: Boolean): Flow<AppResult<List<SchoolClass>>> = flow {
+        val cached = classCacheRepository.getAll()
+        if (cached!!.isNotEmpty() && !force && cached != null) {
+            emit(AppResult.Success(data = cached))
+        } else {
+            emit(AppResult.Loading)
+        }
+
+        try {
+            val response = remoteClass.getAllClasses()
+            classCacheRepository.insertСlasses(response)
+            emit(AppResult.Success(response))
+        } catch (e: Exception) {
+            when {
+                e is CancellationException -> throw e
+                e is ServerException -> {
+                    emit(AppResult.Error(
+                        message = "Ошибка при попытке получения классов",
+                        data = if (cached.isNotEmpty()) cached else null
+                    ))
+                }
+                e is IOException -> {
+                    emit(AppResult.Error(
+                        message = "Нет соединения с сервером",
+                        data = if (cached.isNotEmpty()) cached else null
+                    ))
+                }
+            }
+        }
+    }
 
     override suspend fun getParallelClasses(id: Int, force: Boolean): Flow<AppResult<List<SchoolClass>>> = flow {
         val ids = parallelCacheRepository.get(id)?.classes

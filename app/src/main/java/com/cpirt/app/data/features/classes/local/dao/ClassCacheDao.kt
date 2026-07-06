@@ -16,6 +16,9 @@ interface ClassCacheDao {
     @Query("SELECT * FROM class_cache WHERE id IN (:ids)")
     suspend fun getClasses(ids: List<Int>): List<ClassCacheEntity>
 
+    @Query("SELECT * FROM class_cache")
+    suspend fun getAllClasses(): List<ClassCacheEntity>
+
     @Query("SELECT * FROM class_cache WHERE id = :id")
     fun observeClass(id: Int): Flow<ClassCacheEntity?>
 

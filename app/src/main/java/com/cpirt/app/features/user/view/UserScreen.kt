@@ -16,22 +16,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
-import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -40,10 +40,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cpirt.app.core.utils.toImageBitmap
@@ -55,15 +55,15 @@ import com.cpirt.app.features.user.viewmodel.UserState
 import com.cpirt.app.features.user.viewmodel.UserUIEventState
 import com.cpirt.app.features.user.viewmodel.UserViewModel
 import com.cpirt.app.ui.components.screens.LoadingScreen
-import com.cpirt.app.ui.theme.AppBadge
-import com.cpirt.app.ui.theme.AppCard
-import com.cpirt.app.ui.theme.AppScaffold
-import com.cpirt.app.ui.theme.AppTextField
-import com.cpirt.app.ui.theme.EmptyState
-import com.cpirt.app.ui.theme.PrimaryButton
 import com.cpirt.app.ui.components.snackbar.AppSnackbarHost
 import com.cpirt.app.ui.components.snackbar.AppSnackbarVisuals
 import com.cpirt.app.ui.components.snackbar.SnackbarMessageType
+import com.cpirt.app.ui.theme.AppCard
+import com.cpirt.app.ui.theme.AppScaffold
+import com.cpirt.app.ui.theme.AppTextField
+import com.cpirt.app.ui.theme.ButtonLabel
+import com.cpirt.app.ui.theme.EmptyState
+import com.cpirt.app.ui.theme.PrimaryButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -215,20 +215,8 @@ fun UserScreen(
 
     AppScaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState ) },
-        topBar = {
-            TopAppBar(
-                title = {
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Default.ChevronLeft,
-                            contentDescription = "Назад"
-                        )
-                    }
-                }
-            )
-        },
+        hasBackButton = true,
+        onBackClick = onBackClick,
         modifier = Modifier.fillMaxSize()
     ) {innerPadding ->
         when {
@@ -516,20 +504,49 @@ private fun UserActions(
     ) {
         UserActionButton(
             title = "Написать жалобу",
-            onClick = {onAddComplaint()}
+            onClick = {onAddComplaint()},
+            shape = if (role != UserRole.User) {
+                    RoundedCornerShape(
+                        topStart = MaterialTheme.shapes.medium.topStart,
+                        topEnd = MaterialTheme.shapes.medium.topEnd,
+                        bottomStart = CornerSize(0.dp),
+                        bottomEnd = CornerSize(0.dp)
+                    )
+                } else {
+                MaterialTheme.shapes.medium
+            }
         )
         if (role != UserRole.User) {
-            HorizontalDivider()
             UserActionButton(
                 title = "Написать заметку",
-                onClick = {onAddNoteClick()}
+                onClick = {onAddNoteClick()},
+                shape = if (role != UserRole.User && role != UserRole.Helper) {
+                    RoundedCornerShape(
+                        topStart = CornerSize(0.dp),
+                        topEnd = CornerSize(0.dp),
+                        bottomStart = CornerSize(0.dp),
+                        bottomEnd = CornerSize(0.dp)
+                    )
+                } else {
+                    RoundedCornerShape(
+                        topStart = CornerSize(0.dp),
+                        topEnd = CornerSize(0.dp),
+                        bottomStart = MaterialTheme.shapes.medium.bottomStart,
+                        bottomEnd = MaterialTheme.shapes.medium.bottomEnd
+                    )
+                }
             )
         }
         if (role != UserRole.User && role != UserRole.Helper) {
-            HorizontalDivider()
             UserActionButton(
                 title = "Изменить рейтинг",
-                onClick = {onChangeRatingClick()}
+                onClick = {onChangeRatingClick()},
+                shape = RoundedCornerShape(
+                    topStart = CornerSize(0.dp),
+                    topEnd = CornerSize(0.dp),
+                    bottomStart = MaterialTheme.shapes.medium.bottomStart,
+                    bottomEnd = MaterialTheme.shapes.medium.bottomEnd
+                )
             )
         }
     }
@@ -538,13 +555,17 @@ private fun UserActions(
 @Composable
 private fun UserActionButton(
     title: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    shape: Shape
 ) {
-    PrimaryButton(
-        text = title,
+    Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    )
+        modifier = Modifier.fillMaxWidth(),
+        shape = shape,
+        contentPadding = PaddingValues(vertical = 16.dp)
+    ) {
+        ButtonLabel(title)
+    }
 }
 
 @Composable

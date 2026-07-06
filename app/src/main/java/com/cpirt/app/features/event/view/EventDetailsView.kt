@@ -17,15 +17,17 @@ import androidx.compose.ui.unit.dp
 import com.cpirt.app.domain.events.entity.Event
 import com.cpirt.app.domain.events.entity.toLabel
 import com.cpirt.app.ui.theme.AppCard
+import com.cpirt.app.ui.theme.PrimaryButton
 
 @Composable
 fun EventDetailsView(
-    event: Event
+    event: Event,
+    onClassesClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(16.dp)
     ) {
-        AppCard() {
+        AppCard {
             Column(
                 modifier = Modifier.padding(16.dp),
             ) {
@@ -46,6 +48,11 @@ fun EventDetailsView(
                 InfoRow(label = "Участников:", value = event.players.size.toString())
             }
         }
+        Spacer(Modifier.height(16.dp))
+        PrimaryButton(
+            text = "Список учавствующих классов",
+            onClick = onClassesClick
+        )
     }
 }
 
