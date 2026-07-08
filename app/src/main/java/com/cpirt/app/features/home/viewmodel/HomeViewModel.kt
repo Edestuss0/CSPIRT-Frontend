@@ -9,9 +9,12 @@ import com.cpirt.app.domain.classes.entity.SchoolClass
 import com.cpirt.app.domain.classes.usecases.GetAllClassesUseCase
 import com.cpirt.app.domain.classes.usecases.GetMyClassUseCase
 import com.cpirt.app.domain.events.entity.AddEventForm
+import com.cpirt.app.domain.events.entity.Event
 import com.cpirt.app.domain.events.entity.EventsView
 import com.cpirt.app.domain.events.entity.toEventsView
 import com.cpirt.app.domain.events.usecases.AddEventUseCase
+import com.cpirt.app.domain.events.usecases.CompleteEventUseCase
+import com.cpirt.app.domain.events.usecases.DeleteEventUseCase
 import com.cpirt.app.domain.events.usecases.GetEventsUseCase
 import com.cpirt.app.domain.user.entity.UserInfo
 import com.cpirt.app.domain.user.usecases.GetMeUseCase
@@ -34,7 +37,9 @@ class HomeViewModel @Inject constructor(
     private val getEvents: GetEventsUseCase,
     private val getClasses: GetAllClassesUseCase,
     private val getMe: GetMeUseCase,
-    private val addEvent: AddEventUseCase
+    private val addEvent: AddEventUseCase,
+    private val completeEventCase: CompleteEventUseCase,
+    private val deleteEventCase: DeleteEventUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
@@ -160,6 +165,86 @@ class HomeViewModel @Inject constructor(
                             AppSnackbarVisuals(
                                 type = SnackbarMessageType.ERROR,
                                 message = e.message ?: "Произошла непредвиденная ошибка"
+                            )
+                        )
+                    }
+                    else -> {
+                        _events.send(
+                            AppSnackbarVisuals(
+                                type = SnackbarMessageType.ERROR,
+                                message = "Произошла непредвиденная ошибка"
+                            )
+                        )
+                    }
+                }
+                _state.update { it.copy(
+                    isLoading = false,
+                    isError = true
+                ) }
+            }
+        }
+    }
+
+    fun deleteEvent(id: Int) {
+        viewModelScope.launch {
+            try {
+                deleteEventCase(id)
+                loadData(true)
+            } catch (e: Exception) {
+                when {
+                    e is ServerException -> {
+                        _events.send(
+                            AppSnackbarVisuals(
+                                type = SnackbarMessageType.ERROR,
+                                message = "Ошибка при попытке удаления мероприятия"
+                            )
+                        )
+                    }
+                    e is IOException -> {
+                        _events.send(
+                            AppSnackbarVisuals(
+                                type = SnackbarMessageType.ERROR,
+                                message = "Нет подключения к интернету"
+                            )
+                        )
+                    }
+                    else -> {
+                        _events.send(
+                            AppSnackbarVisuals(
+                                type = SnackbarMessageType.ERROR,
+                                message = "Произошла непредвиденная ошибка"
+                            )
+                        )
+                    }
+                }
+                _state.update { it.copy(
+                    isLoading = false,
+                    isError = true
+                ) }
+            }
+        }
+    }
+
+    fun completeEvent(event: Event) {
+        viewModelScope.launch {
+            try {
+                completeEventCase(event)
+                loadData(true)
+            } catch (e: Exception) {
+                when {
+                    e is ServerException -> {
+                        _events.send(
+                            AppSnackbarVisuals(
+                                type = SnackbarMessageType.ERROR,
+                                message = "Ошибка при попытке завершения мероприятия"
+                            )
+                        )
+                    }
+                    e is IOException -> {
+                        _events.send(
+                            AppSnackbarVisuals(
+                                type = SnackbarMessageType.ERROR,
+                                message = "Нет подключения к интернету"
                             )
                         )
                     }

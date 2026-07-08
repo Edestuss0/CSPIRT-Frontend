@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cpirt.app.features.home.viewmodel.HomeViewModel
+import com.cpirt.app.ui.theme.EmptyState
 
 @Composable
 fun HomeHost(
@@ -31,10 +32,16 @@ fun HomeHost(
         }
 
         composable("events") {
-            EventsScreen(
-                events = state.events?.completed.orEmpty() + state.events?.scheduled.orEmpty(),
-                onBackClick = {navController.popBackStack()}
-            )
+            if (state.userInfo?.user?.role == null) {
+                EmptyState("Не удалось получить необходимую информацию")
+            } else {
+                EventsScreen(
+                    events = state.events?.completed.orEmpty() + state.events?.scheduled.orEmpty(),
+                    onBackClick = {navController.popBackStack()},
+                    viewmodel = viewModel,
+                    role = state.userInfo!!.user.role
+                )
+            }
         }
     }
 }

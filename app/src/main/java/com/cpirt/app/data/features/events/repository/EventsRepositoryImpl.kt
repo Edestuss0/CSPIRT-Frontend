@@ -60,6 +60,17 @@ class EventsRepositoryImpl @Inject constructor(
         players: List<Int>
     ) {
         remote.addEventPlayers(id, players)
+        local.invalidate(id)
+    }
+
+    override suspend fun completeEvent(event: Event) {
+        remote.completeEvent(event)
+        local.invalidate(event.id)
+    }
+
+    override suspend fun deleteEvent(id: Int) {
+        remote.deleteEvent(id)
+        local.invalidate(id)
     }
 
     override suspend fun removeEventPlayers(
@@ -67,6 +78,7 @@ class EventsRepositoryImpl @Inject constructor(
         players: List<Int>
     ) {
         remote.removeEventPlayers(id, players)
+        local.invalidate(id)
     }
 
 }

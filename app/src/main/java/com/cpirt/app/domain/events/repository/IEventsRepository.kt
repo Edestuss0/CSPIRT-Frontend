@@ -10,4 +10,6 @@ interface IEventsRepository {
     suspend fun addEvent(form: AddEventForm)
     suspend fun addEventPlayers(id: Int, players: List<Int>)
     suspend fun removeEventPlayers(id: Int, players: List<Int>)
+    suspend fun deleteEvent(id: Int)
+    suspend fun completeEvent(event: Event)
 }

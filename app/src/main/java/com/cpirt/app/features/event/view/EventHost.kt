@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import com.cpirt.app.domain.classes.entity.SchoolClass
 import com.cpirt.app.domain.events.entity.Event
 import com.cpirt.app.domain.user.entity.UserRole
 import com.cpirt.app.features.event.viewmodel.EventViewModel
+import com.cpirt.app.ui.components.snackbar.AppSnackbarHost
 import com.cpirt.app.ui.theme.EmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,11 +137,14 @@ fun EventHost(
                     }
                 }
             }
-
-            SnackbarHost(
-                hostState = snackbarHostState,
+            Box(
                 modifier = Modifier.align(Alignment.BottomCenter)
-            )
+            ) {
+                AppSnackbarHost(
+                    host = snackbarHostState,
+                )
+            }
+
         }
     }
 }

@@ -4,6 +4,7 @@ import com.cpirt.app.core.app.API_URL
 import com.cpirt.app.core.exception.ServerException
 import com.cpirt.app.data.api.ApiClient
 import com.cpirt.app.data.features.events.remote.dto.AddEventPlayersDto
+import com.cpirt.app.data.features.events.remote.dto.CompleteEventDto
 import com.cpirt.app.data.features.events.remote.dto.EventDto
 import com.cpirt.app.data.features.events.remote.dto.toDomain
 import com.cpirt.app.data.features.events.remote.dto.toDto
@@ -57,6 +58,23 @@ class EventsRemoteSource @Inject constructor(
             contentType(ContentType.Application.Json)
             setBody(AddEventPlayersDto(players))
         }
+        if (!(response.status.isSuccess())) {
+            throw ServerException(response.status.value)
+        }
+    }
+
+    suspend fun completeEvent(event: Event) {
+        val response = client.patch("$API_URL/api/event/${event.id}/complete") {
+            contentType(ContentType.Application.Json)
+            setBody(CompleteEventDto(event.ratingReward))
+        }
+        if (!(response.status.isSuccess())) {
+            throw ServerException(response.status.value)
+        }
+    }
+
+    suspend fun deleteEvent(id: Int) {
+        val response = client.delete("$API_URL/api/event/delete/$id")
         if (!(response.status.isSuccess())) {
             throw ServerException(response.status.value)
         }

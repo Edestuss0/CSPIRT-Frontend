@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cpirt.app.domain.classes.entity.SchoolClass
 import com.cpirt.app.domain.events.entity.Event
@@ -79,6 +81,9 @@ fun HomeScreen(
     var selectedClass by remember { mutableStateOf<Int?>(null) }
     var selectedEvent by remember { mutableStateOf<Event?>(null) }
     val addEventSheetState = rememberModalBottomSheetState()
+    var isCompleteEventModalOpen by remember { mutableStateOf(false) }
+    var isDeleteEventModalOpen by remember { mutableStateOf(false) }
+    var event by remember { mutableStateOf<Event?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -92,6 +97,78 @@ fun HomeScreen(
         } else {
             addEventSheetState.hide()
         }
+    }
+
+    if (isCompleteEventModalOpen && event != null) {
+        AlertDialog(
+            onDismissRequest = {
+                isCompleteEventModalOpen = false
+                event = null
+                               },
+            title = {Text(
+                text = "Завершение мероприятия",
+                style = MaterialTheme.typography.titleLarge
+            )},
+            text = {Text(
+                text = "Вы уверены, что хотите завершить мероприятие? Это действие нельзя отменить",
+                style = MaterialTheme.typography.bodyLarge
+            )},
+            confirmButton = {
+                PrimaryButton(
+                    text = "Завершить",
+                    onClick = {
+                        viewModel.completeEvent(event!!)
+                        isCompleteEventModalOpen = false
+                        event = null
+                    }
+                )
+            },
+            dismissButton = {
+                PrimaryButton(
+                    text = "Отмена",
+                    onClick = {
+                        isCompleteEventModalOpen = false
+                        event = null
+                    }
+                )
+            }
+        )
+    }
+
+    if (isDeleteEventModalOpen && event != null) {
+        AlertDialog(
+            onDismissRequest = {
+                isDeleteEventModalOpen = false
+                event = null
+                               },
+            title = {Text(
+                text = "Удаление мероприятия",
+                style = MaterialTheme.typography.titleLarge
+            )},
+            text = {Text(
+                text = "Вы уверены, что хотите удалить мероприятие? Это действие нельзя отменить",
+                style = MaterialTheme.typography.bodyLarge
+            )},
+            confirmButton = {
+                PrimaryButton(
+                    text = "Удалить",
+                    onClick = {
+                        viewModel.deleteEvent(event!!.id)
+                        isDeleteEventModalOpen = false
+                        event = null
+                    }
+                )
+            },
+            dismissButton = {
+                PrimaryButton(
+                    text = "Отмена",
+                    onClick = {
+                        isDeleteEventModalOpen = false
+                        event = null
+                    }
+                )
+            }
+        )
     }
 
     if (state.addEventState.show || addEventSheetState.isVisible) {
@@ -135,7 +212,15 @@ fun HomeScreen(
                         onEventsCLick = onEventsCLick,
                         onEventCLick = {event -> selectedEvent = event},
                         profileInfo = state.userInfo,
-                        onAddEventClick = { viewModel.onChangeAddEventModalVisibility() }
+                        onAddEventClick = { viewModel.onChangeAddEventModalVisibility() },
+                        onDelete = { item ->
+                            event = item
+                            isDeleteEventModalOpen = true
+                        },
+                        onComplete = { item ->
+                            event = item
+                            isCompleteEventModalOpen = true
+                        }
                     )
                 }
             }
@@ -164,7 +249,9 @@ private fun HomeContent(
     events: EventsView?,
     onEventsCLick: () -> Unit,
     onEventCLick: (Event) -> Unit,
-    onAddEventClick: () -> Unit
+    onAddEventClick: () -> Unit,
+    onComplete: (event: Event) -> Unit,
+    onDelete: (event: Event) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -191,13 +278,14 @@ private fun HomeContent(
                     }
                 }
             }
-            if (events.active.isNotEmpty()) {
-                item {
-                    ActiveEvents(
-                        events.active,
-                        onEventCLick
-                    )
-                }
+            item {
+                ActiveEvents(
+                    events.active,
+                    onEventCLick,
+                    onDelete,
+                    onComplete,
+                    role = profileInfo?.user?.role ?: UserRole.User
+                )
             }
             item {
                 PrimaryButton(
@@ -455,7 +543,10 @@ private val EVENT_DATE_TIME_REGEX = Regex("""^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\
 @Composable
 private fun ActiveEvents(
     events: List<Event>,
-    onEventCLick: (Event) -> Unit
+    onEventCLick: (Event) -> Unit,
+    onDelete: (event: Event) -> Unit,
+    onComplete: (event: Event) -> Unit,
+    role: UserRole
 ) {
     AppCard(
         modifier = Modifier
@@ -474,18 +565,36 @@ private fun ActiveEvents(
             )
             Spacer(Modifier.height(16.dp))
 
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(items = events) { event ->
-                    EventCard(
-                        event = event,
-                        onEventClick = { onEventCLick(event) },
-                        modifier = Modifier.width(260.dp)
+            if (events.isEmpty()){
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Активные мероприятия не найдены",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
                     )
                 }
+            } else {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(items = events) { event ->
+                        EventCard(
+                            event = event,
+                            onEventClick = { onEventCLick(event) },
+                            modifier = Modifier.width(260.dp),
+                            role = role,
+                            onComplete = {onComplete(event)},
+                            onDelete = {onDelete(event)}
+                        )
+                    }
+                }
             }
+
         }
     }
 }
