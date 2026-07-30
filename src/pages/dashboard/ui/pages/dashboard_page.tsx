@@ -1,18 +1,18 @@
 import { useState } from "react";
 import {Navigate, useNavigate, useSearchParams} from "react-router-dom";
 import { useAuthStore } from "../../../../features/auth/store/auth_store.ts";
-import { AddUserModal } from "../../../../features/users/ui/components/add_user_modal.tsx";
-import {AddClassModal} from "../../../../features/class/ui/components/add_class_modal.tsx";
-import {AddEventModal} from "../../../../features/events/ui/components/add_event_modal.tsx";
-import {ClassesWidget} from "../../../../features/class/ui/components/classes_widget.tsx";
-import {EventsWidget} from "../../../../features/events/ui/components/events_widget.tsx";
-import {StaffWidget} from "../../../../features/users/ui/components/staff_widget.tsx";
+import { AddUserModal } from "../../../../widgets/users/add_user_modal.tsx";
+import {AddClassModal} from "../../../../widgets/class/add_class_modal.tsx";
+import {AddEventModal} from "../../../../widgets/events/add_event_modal.tsx";
+import {ClassesWidget} from "../../../../widgets/class/classes_widget.tsx";
+import {EventsWidget} from "../../../../widgets/events/events_widget.tsx";
+import {StaffWidget} from "../../../../widgets/users/staff_widget.tsx";
 import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {TabsSwitcher, type TabsSwitcherItem} from "../../../../shared/ui/other/tabs_switcher.tsx";
 import {UserRound} from "lucide-react";
 import {useLogout} from "../../../../features/auth/hooks/use_logout.ts";
-import {ParallelsWidget} from "../../../../features/class/ui/components/parallels_widget.tsx";
+import {ParallelsWidget} from "../../../../widgets/class/parallels_widget.tsx";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 import {useCompleteYear} from "../../../../features/class/hooks/use_complete_year.ts";
 

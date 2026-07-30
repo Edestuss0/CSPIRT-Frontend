@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {type AddEventPlayersType, EventsApi} from "../../../shared/entities/events/api/events_api.ts";
+import {type AddEventPlayersType, EventsApi} from "../../../entities/events/api/events_api.ts";
 
 export const useAddEventPlayers = () => {
     const queryclient= useQueryClient();

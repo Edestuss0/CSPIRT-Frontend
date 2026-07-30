@@ -1,4 +1,4 @@
-import {UserRoles, type UserType} from "../../entities/user/types/user_types.ts";
+import {UserRoles, type UserType} from "../../../entities/user/types/user_types.ts";
 import {useNavigate} from "react-router-dom";
 
 interface Props {

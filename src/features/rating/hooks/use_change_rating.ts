@@ -1,6 +1,6 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {RatingApi} from "../../../shared/entities/rating/api/rating_api.ts";
-import type {RatingChangeFormType} from "../../../shared/entities/rating/types/rating_types.ts";
+import {RatingApi} from "../../../entities/rating/api/rating_api.ts";
+import type {RatingChangeFormType} from "../../../entities/rating/types/rating_types.ts";
 
 export const UseChangeRating = () => {
     const queryclient = useQueryClient();

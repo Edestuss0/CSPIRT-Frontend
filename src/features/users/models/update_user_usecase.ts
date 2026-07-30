@@ -1,5 +1,5 @@
-import type {UserRole} from "../../../shared/entities/user/types/user_types.ts";
-import {UserApi} from "../../../shared/entities/user/api/user_api.ts";
+import type {UserRole} from "../../../entities/user/types/user_types.ts";
+import {UserApi} from "../../../entities/user/api/user_api.ts";
 import {updateUserFormSchema} from "./update_user_schena.ts";
 
 export type updateUserValues = {

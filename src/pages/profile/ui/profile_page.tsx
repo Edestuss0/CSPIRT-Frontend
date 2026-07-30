@@ -1,13 +1,13 @@
 import {type ReactNode} from "react";
 
 import { useAuthStore } from "../../../features/auth/store/auth_store.ts";
-import { UserRoles } from "../../../shared/entities/user/types/user_types.ts";
-import {TeacherScheduleWidget} from "../../../features/schedule/ui/components/teacher_schedule_widget.tsx";
+import { UserRoles } from "../../../entities/user/types/user_types.ts";
+import {TeacherScheduleWidget} from "../../../widgets/schedule/teacher_schedule_widget.tsx";
 import {type BurgerDrawerMenuItem} from "../../../shared/ui/other/burger_menu.tsx";
 import {PageHeader} from "../../../shared/ui/other/page_header.tsx";
-import {ComplaintsSection} from "../../../features/complaints/ui/components/complaints_section.tsx";
-import {NotesSection} from "../../../features/notes/ui/components/notes_section.tsx";
-import {RatingSection} from "../../../features/rating/ui/components/rating_section.tsx";
+import {ComplaintsSection} from "../../../widgets/complaints/complaints_section.tsx";
+import {NotesSection} from "../../../widgets/notes/notes_section.tsx";
+import {RatingSection} from "../../../widgets/rating/rating_section.tsx";
 import {useLogout} from "../../../features/auth/hooks/use_logout.ts";
 
 export function ProfilePage() {

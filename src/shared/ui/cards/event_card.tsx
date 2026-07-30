@@ -1,4 +1,4 @@
-import type {EventType} from "../../entities/events/types/events_types.ts";
+import type {EventType} from "../../../entities/events/types/events_types.ts";
 import {format} from "date-fns";
 import {ru} from "date-fns/locale";
 

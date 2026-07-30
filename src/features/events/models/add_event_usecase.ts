@@ -1,5 +1,5 @@
 import {addEventFormSchema} from "./add_event_schema.ts";
-import type {AddEventFormType} from "../../../shared/entities/events/types/events_types.ts";
+import type {AddEventFormType} from "../../../entities/events/types/events_types.ts";
 
 export type addEventFormValues = {
     title: string;

@@ -1,4 +1,4 @@
-import type { ParallelType } from "../../entities/class/types/class_types.ts";
+import type { ParallelType } from "../../../entities/class/types/class_types.ts";
 import { useParallelClasses } from "../../../features/class/hooks/use_parallel_classes.ts";
 
 interface Props {

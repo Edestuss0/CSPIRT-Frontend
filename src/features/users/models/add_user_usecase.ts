@@ -1,6 +1,6 @@
-import type {UserRole} from "../../../shared/entities/user/types/user_types.ts";
+import type {UserRole} from "../../../entities/user/types/user_types.ts";
 import {addUserFormSchema} from "./add_user_chema.ts";
-import {UserApi} from "../../../shared/entities/user/api/user_api.ts";
+import {UserApi} from "../../../entities/user/api/user_api.ts";
 
 export type addUserValues = {
     avatar: string;

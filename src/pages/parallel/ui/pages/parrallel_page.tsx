@@ -1,10 +1,10 @@
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
-import {ParallelClassesWidget} from "../../../../features/class/ui/components/parallel_classes_widget.tsx";
+import {ParallelClassesWidget} from "../../../../widgets/class/parallel_classes_widget.tsx";
 import {useParams, useSearchParams} from "react-router-dom";
 import type {BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 import {useAuthStore} from "../../../../features/auth/store/auth_store.ts";
 import {useState} from "react";
-import {CompleteQuarterModal} from "../../../../features/class/ui/components/complete_quarter_modal.tsx";
+import {CompleteQuarterModal} from "../../../../widgets/class/complete_quarter_modal.tsx";
 
 export function ParallelPage() {
     const [searchParams] = useSearchParams();

@@ -1,5 +1,5 @@
 import {AddRewardParamsFormSchema} from "./add_param_schema.ts";
-import {EventsApi} from "../../../shared/entities/events/api/events_api.ts";
+import {EventsApi} from "../../../entities/events/api/events_api.ts";
 
 export type AddParamFormValues = {
     class_id: number;

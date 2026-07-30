@@ -1,4 +1,4 @@
-import {fullNameSchema} from "../../../shared/entities/user/types/user_types.ts";
+import {fullNameSchema} from "../../../entities/user/types/user_types.ts";
 import {z} from "zod";
 
 export const addUserFormSchema = z.object({

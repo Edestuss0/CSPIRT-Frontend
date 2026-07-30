@@ -1,6 +1,6 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {NotesApi} from "../../../shared/entities/notes/api/notes_api.ts";
-import type {NoteFormType} from "../../../shared/entities/notes/types/notes_types.ts";
+import {NotesApi} from "../../../entities/notes/api/notes_api.ts";
+import type {NoteFormType} from "../../../entities/notes/types/notes_types.ts";
 
 export const useAddNote = () => {
     const queryclient = useQueryClient();

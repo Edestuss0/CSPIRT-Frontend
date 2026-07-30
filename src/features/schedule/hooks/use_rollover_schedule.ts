@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {ScheduleApi} from "../../../shared/entities/schedule/api/schedule_api.ts";
+import {ScheduleApi} from "../../../entities/schedule/api/schedule_api.ts";
 
 export const UseRolloverSchedule = () => {
     const queryclient = useQueryClient();

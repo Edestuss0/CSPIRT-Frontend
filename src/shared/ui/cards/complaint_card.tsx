@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type {ComplaintType} from "../../entities/complaints/types/complaints_types.ts";
-import type {UserRole} from "../../entities/user/types/user_types.ts";
+import type {ComplaintType} from "../../../entities/complaints/types/complaints_types.ts";
+import type {UserRole} from "../../../entities/user/types/user_types.ts";
 import {useState} from "react";
 import {ConfirmModal} from "../modals/confirm_modal.tsx";
 

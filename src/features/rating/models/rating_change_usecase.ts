@@ -1,5 +1,5 @@
 import {RatingChangeFormSchema} from "./rating_change_schema.ts";
-import type {RatingChangeFormType} from "../../../shared/entities/rating/types/rating_types.ts";
+import type {RatingChangeFormType} from "../../../entities/rating/types/rating_types.ts";
 
 export interface RatingChangeFormValues {
     target: string;

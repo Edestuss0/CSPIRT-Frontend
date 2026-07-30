@@ -1,6 +1,6 @@
-import type {addClassFormType} from "../../../shared/entities/class/types/class_types.ts";
+import type {addClassFormType} from "../../../entities/class/types/class_types.ts";
 import {addClassFormSchema} from "./add_class_chema.ts";
-import {classApi} from "../../../shared/entities/class/api/class_api.ts";
+import {classApi} from "../../../entities/class/api/class_api.ts";
 
 export type addClassFormValues = {
     name: string;

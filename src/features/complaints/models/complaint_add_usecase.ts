@@ -1,6 +1,6 @@
 import {complaintAddFormSchema} from "./complaint_add_schema.ts";
-import type {UserType} from "../../../shared/entities/user/types/user_types.ts";
-import type {complaintAddFormType} from "../../../shared/entities/complaints/api/complaints_api.ts";
+import type {UserType} from "../../../entities/user/types/user_types.ts";
+import type {complaintAddFormType} from "../../../entities/complaints/api/complaints_api.ts";
 
 export interface ComplaintAddFormValues {
     user: UserType,

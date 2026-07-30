@@ -1,17 +1,17 @@
 import { type ReactNode, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {UserRoles, type UserType} from "../../../../shared/entities/user/types/user_types.ts";
+import {UserRoles, type UserType} from "../../../../entities/user/types/user_types.ts";
 import { useAuthStore } from "../../../../features/auth/store/auth_store.ts";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
-import {TeacherScheduleWidget} from "../../../../features/schedule/ui/components/teacher_schedule_widget.tsx";
+import {TeacherScheduleWidget} from "../../../../widgets/schedule/teacher_schedule_widget.tsx";
 import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {useUser} from "../../../../features/users/hooks/use_user.ts";
-import {NotesSection} from "../../../../features/notes/ui/components/notes_section.tsx";
-import {ComplaintsSection} from "../../../../features/complaints/ui/components/complaints_section.tsx";
-import {RatingSection} from "../../../../features/rating/ui/components/rating_section.tsx";
+import {NotesSection} from "../../../../widgets/notes/notes_section.tsx";
+import {ComplaintsSection} from "../../../../widgets/complaints/complaints_section.tsx";
+import {RatingSection} from "../../../../widgets/rating/rating_section.tsx";
 import {useDeleteUser} from "../../../../features/users/hooks/use_delete_user.ts";
-import {UpdateUserModal} from "../../../../features/users/ui/components/update_user_modal.tsx";
+import {UpdateUserModal} from "../../../../widgets/users/update_user_modal.tsx";
 
 export function UserPage() {
     const navigate = useNavigate();

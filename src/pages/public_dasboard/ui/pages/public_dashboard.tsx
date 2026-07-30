@@ -1,10 +1,10 @@
 import {useEffect, useState} from "react";
 import {useClasses} from "../../../../features/class/hooks/use_classes.ts";
-import {ScheduleWidget} from "../../../../features/schedule/ui/components/schedule_widget.tsx";
+import {ScheduleWidget} from "../../../../widgets/schedule/schedule_widget.tsx";
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
 import {useLogout} from "../../../../features/auth/hooks/use_logout.ts";
 import {CurrentPublicList} from "../../context/public_context.ts";
-import {ParallelsWidget} from "../../../../features/class/ui/components/parallels_widget.tsx";
+import {ParallelsWidget} from "../../../../widgets/class/parallels_widget.tsx";
 import {Settings} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 

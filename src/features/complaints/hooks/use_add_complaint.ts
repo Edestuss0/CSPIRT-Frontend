@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {type complaintAddFormType, ComplaintsApi} from "../../../shared/entities/complaints/api/complaints_api.ts";
+import {type complaintAddFormType, ComplaintsApi} from "../../../entities/complaints/api/complaints_api.ts";
 
 export const useAddComplaint = () => {
     const queryclient = useQueryClient();

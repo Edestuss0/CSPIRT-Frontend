@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {EventsApi} from "../../../shared/entities/events/api/events_api.ts";
+import {EventsApi} from "../../../entities/events/api/events_api.ts";
 
 export const useDeleteEvent = () => {
     const queryclient= useQueryClient();

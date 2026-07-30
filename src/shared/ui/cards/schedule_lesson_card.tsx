@@ -1,8 +1,8 @@
-import type {ScheduleLessonType} from "../../entities/schedule/types/schedule_types";
+import type {ScheduleLessonType} from "../../../entities/schedule/types/schedule_types";
 import {useState} from "react";
 import {
     ChangeScheduleLessonModal
-} from "../../../features/schedule/ui/components/change_schedule_modal.tsx";
+} from "../../../widgets/schedule/change_schedule_modal.tsx";
 import {useAuthStore} from "../../../features/auth/store/auth_store.ts";
 
 interface Props {

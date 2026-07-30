@@ -1,6 +1,6 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import type {EventType} from "../../../shared/entities/events/types/events_types.ts";
-import {EventsApi} from "../../../shared/entities/events/api/events_api.ts";
+import type {EventType} from "../../../entities/events/types/events_types.ts";
+import {EventsApi} from "../../../entities/events/api/events_api.ts";
 
 export const useCompleteEvent = () => {
     const queryclient= useQueryClient();

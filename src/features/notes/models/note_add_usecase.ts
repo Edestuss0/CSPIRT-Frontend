@@ -1,6 +1,6 @@
-import type {UserType} from "../../../shared/entities/user/types/user_types.ts";
+import type {UserType} from "../../../entities/user/types/user_types.ts";
 import {noteAddFormSchema} from "./note_add_schema.ts";
-import type {NoteFormType} from "../../../shared/entities/notes/types/notes_types.ts";
+import type {NoteFormType} from "../../../entities/notes/types/notes_types.ts";
 
 interface NoteAddFormValues {
     current_user: UserType,

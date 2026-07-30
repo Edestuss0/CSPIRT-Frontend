@@ -1,5 +1,5 @@
 import {ScheduleChangeFormSchema} from "./schedule_change_schema.ts";
-import type {ScheduleChangeLessonFormType} from "../../../shared/entities/schedule/types/schedule_types.ts";
+import type {ScheduleChangeLessonFormType} from "../../../entities/schedule/types/schedule_types.ts";
 
 export type ScheduleChangeFormValues = {
     subject?: string,

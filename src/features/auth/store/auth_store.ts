@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import {authApi, type AuthDto, type meType} from "../api/auth_api";
+import {UserApi} from "../../../entities/user/api/user_api.ts";
+import type {AuthDto, meType} from "../../../entities/user/types/user_types.ts";
 
 type AuthStatus =
     | "idle"
@@ -44,10 +45,10 @@ export const useAuthStore = create<AuthState>()((set) => ({
         });
 
         try {
-            await authApi.login(dto);
+            await UserApi.login(dto);
             
             
-            const user = await authApi.checkAuth();
+            const user = await UserApi.checkAuth();
 
             set({
                 status: "authenticated",
@@ -74,7 +75,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
         });
 
         try {
-            const userData = await authApi.checkAuth();
+            const userData = await UserApi.checkAuth();
 
             set({
                 status: "authenticated",
@@ -94,9 +95,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
       set({status: "loading", error: null});
       
       try {
-          await authApi.refresh();
+          await UserApi.refresh();
           
-          const user = await authApi.checkAuth();
+          const user = await UserApi.checkAuth();
           
           set({
              status: "authenticated",
