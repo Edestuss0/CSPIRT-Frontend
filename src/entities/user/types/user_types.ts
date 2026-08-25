@@ -1,5 +1,5 @@
 import { z } from "zod";
-import {LOGIN_REGEX, SECURITY_LIMITS} from "../../../core/security/security_limits.ts";
+import {LOGIN_REGEX, SECURITY_LIMITS} from "../../../shared/lib/security/security_limits.ts";
 import {noteSchema} from "../../notes/types/notes_types.ts";
 import {complaintSchema} from "../../complaints/types/complaints_types.ts";
 import {EventSchema} from "../../events/types/events_types.ts";

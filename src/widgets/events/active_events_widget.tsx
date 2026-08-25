@@ -2,14 +2,14 @@ import {useNavigate} from "react-router-dom";
 import {EventCard} from "../../shared/ui/cards/event_card.tsx";
 import {UseEvents} from "../../features/events/hooks/use_events.ts";
 
-export function EventsWidget() {
+export function ActiveEventsWidget() {
     const navigate = useNavigate();
     const {error: error, data: events, isLoading: isLoading} = UseEvents();
-    
+
     return (
         <>
             <h2 className="page-title">
-                Мероприятия
+                Активные мероприятия
             </h2>
             
             {isLoading && (
@@ -26,7 +26,7 @@ export function EventsWidget() {
 
             {events && !isLoading && !error && events.length > 0 ? (
                 <div className="class-list">
-                    {events.map((item) => (
+                    {events.filter((item) => item.Status === "active").map((item) => (
                         <EventCard key={item.ID} item={item} onClick={() => navigate(`/event/${item.ID}`)} />
                     ))}
                 </div>

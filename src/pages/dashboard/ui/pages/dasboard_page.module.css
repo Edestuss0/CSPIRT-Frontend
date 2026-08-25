@@ -1,0 +1,28 @@
+.homeWidgets {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+    width: 100%;
+}
+
+.homeWidgetsCol {
+    flex: 1;
+    min-width: 0; /* Не даёт сеткам внутри распирать колонку */
+}
+
+.homeWidgetsDivider {
+    width: 1px;
+    background-color: #e5e7eb;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .homeWidgets {
+        flex-direction: column;
+    }
+
+    .homeWidgetsDivider {
+        width: 100%;
+        height: 1px;
+    }
+}

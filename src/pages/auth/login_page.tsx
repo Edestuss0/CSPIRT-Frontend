@@ -4,7 +4,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import {
     LOGIN_REGEX,
     SECURITY_LIMITS,
-} from "../../core/security/security_limits.ts";
+} from "../../shared/lib/security/security_limits.ts";
 
 import { useAuthStore } from "../../features/auth/store/auth_store.ts";
 

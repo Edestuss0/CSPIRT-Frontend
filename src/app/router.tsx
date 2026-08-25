@@ -1,17 +1,18 @@
 import { createBrowserRouter } from "react-router-dom";
-import {ProfilePage} from "../../pages/profile/ui/profile_page.tsx";
-import {LoginPage} from "../../pages/auth/login_page.tsx";
-import {ProtectedRoute} from "../../features/auth/ui/protected_route.tsx";
-import {DashboardPage} from "../../pages/dashboard/ui/pages/dashboard_page.tsx";
-import {ClassDashboard} from "../../pages/class/ui/pages/class_dashboard.tsx";
-import {UserPage} from "../../pages/user/ui/pages/user_page.tsx";
-import { ErrorBoundary } from "../error/error_boundary";
+import {ProfilePage} from "../pages/profile/ui/profile_page.tsx";
+import {LoginPage} from "../pages/auth/login_page.tsx";
+import {ProtectedRoute} from "../features/auth/ui/protected_route.tsx";
+import {DashboardPage} from "../pages/dashboard/ui/pages/dashboard_page.tsx";
+import {ClassDashboard} from "../pages/class/ui/pages/class_dashboard.tsx";
+import {UserPage} from "../pages/user/ui/pages/user_page.tsx";
+import { ErrorBoundary } from "../shared/lib/error/error_boundary.tsx";
 import type {ReactNode} from "react";
-import {EventPage} from "../../pages/events/event_page.tsx";
-import {EventClassPlayersPage} from "../../pages/events/event_class_players_page.tsx";
-import {ParallelPage} from "../../pages/parallel/ui/pages/parrallel_page.tsx";
-import {PublicDashboard} from "../../pages/public_dasboard/ui/pages/public_dashboard.tsx";
-import {PublicSettings} from "../../pages/public_dasboard/ui/pages/public_settings.tsx";
+import {EventPage} from "../pages/events/event_page.tsx";
+import {EventClassPlayersPage} from "../pages/events/event_class_players_page.tsx";
+import {ParallelPage} from "../pages/parallel/ui/pages/parrallel_page.tsx";
+import {PublicDashboard} from "../pages/public_dasboard/ui/pages/public_dashboard.tsx";
+import {PublicSettings} from "../pages/public_dasboard/ui/pages/public_settings.tsx";
+import {ActivePage} from "../pages/active/active_page.tsx";
 
 const withBoundary = (element: ReactNode, name: string) => (
     <ErrorBoundary
@@ -62,6 +63,10 @@ export const router = createBrowserRouter([
       {
         path: "/event/:id",
         element: withBoundary(<EventPage />, "мероприятия"),
+      },
+      {
+        path: "/activities",
+        element: withBoundary(<ActivePage />, "активностей"),
       },
       {
         path: "/events/:eventId/classes/:classId/players/add",

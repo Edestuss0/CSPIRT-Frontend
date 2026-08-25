@@ -5,7 +5,6 @@ import { AddUserModal } from "../../../../widgets/users/add_user_modal.tsx";
 import {AddClassModal} from "../../../../widgets/class/add_class_modal.tsx";
 import {AddEventModal} from "../../../../widgets/events/add_event_modal.tsx";
 import {ClassesWidget} from "../../../../widgets/class/classes_widget.tsx";
-import {EventsWidget} from "../../../../widgets/events/events_widget.tsx";
 import {StaffWidget} from "../../../../widgets/users/staff_widget.tsx";
 import {type BurgerDrawerMenuItem} from "../../../../shared/ui/other/burger_menu.tsx";
 import {PageHeader} from "../../../../shared/ui/other/page_header.tsx";
@@ -15,8 +14,13 @@ import {useLogout} from "../../../../features/auth/hooks/use_logout.ts";
 import {ParallelsWidget} from "../../../../widgets/class/parallels_widget.tsx";
 import {ConfirmModal} from "../../../../shared/ui/modals/confirm_modal.tsx";
 import {useCompleteYear} from "../../../../features/class/hooks/use_complete_year.ts";
+import {GlobalEventsWidget} from "../../../../widgets/globalEvents/global_events_widget.tsx";
+import styles from './dasboard_page.module.css';
+import {MyClassWidget} from "../../../../widgets/class/my_class_widget.tsx";
+import {ActiveEventsWidget} from "../../../../widgets/events/active_events_widget.tsx";
 
-type Lists = "classes" | "events" | "staff" | "parallels";
+
+type Lists = "classes" | "staff" | "parallels" | "home";
 
 export function DashboardPage() {
     const navigate = useNavigate();
@@ -27,8 +31,7 @@ export function DashboardPage() {
 
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const selectedList =
-        (searchParams.get("tab") as Lists) || "classes";
+    const selectedList = (searchParams.get("tab") as Lists) || "global_events";
 
     const setSelectedList = (tab: Lists) => {
         setSearchParams({ tab }, {replace: true});
@@ -55,7 +58,7 @@ export function DashboardPage() {
         {
             label: "Добавить мероприятие",
             onClick: () => setIsAddEventModalOpen(true),
-            hidden: (normalizedRole !== "owner" || selectedList !== "events"),
+            hidden: (normalizedRole !== "owner")
         },
         {
             label: "Завершить учебный год",
@@ -66,6 +69,10 @@ export function DashboardPage() {
     
     const tabs: TabsSwitcherItem<Lists>[] = [
         {
+            label: "Главная",
+            value: "home"
+        },
+        {
             label: "Классы",
             value: "classes",
         },
@@ -74,14 +81,10 @@ export function DashboardPage() {
             value: "parallels",
         },
         {
-            value: "events",
-            label: "Мероприятия",
-        },
-        {
             label: "Персонал",
             value: "staff",
             hidden: normalizedRole !== "owner"
-        }
+        },
     ]
 
     if (!role) {
@@ -134,14 +137,27 @@ export function DashboardPage() {
                 />
                 
                 <div className="page-spacer" />
-                
 
+                {selectedList === "home" && (
+                    <div className={styles.homeWidgets}>
+                        <div className={styles.homeWidgetsCol}>
+                            <MyClassWidget/>
+                        </div>
+
+                        <div className={styles.homeWidgetsDivider} />
+                        
+
+                        <div className={styles.homeWidgetsCol}>
+                            <GlobalEventsWidget />
+                            <ActiveEventsWidget/>
+                            <div className="page-spacer"></div>
+                            <button className={"btn btn--primary"} onClick={() => navigate("/activities")}>Перейти к активностям</button>
+                        </div>
+                    </div>
+                )}
+                
                 {selectedList === "classes" && (
                     <ClassesWidget key={key}/>
-                )}
-
-                {selectedList === "events" && (
-                    <EventsWidget key={key}/>
                 )}
 
                 {selectedList === "staff" && (

@@ -3,7 +3,7 @@ import {type UserRole, UserRoles} from "../../entities/user/types/user_types.ts"
 import type {addUserValues} from "../../features/users/models/add_user_usecase.ts";
 import {useClasses} from "../../features/class/hooks/use_classes.ts";
 import {useAddUser} from "../../features/users/hooks/use_add_user.ts";
-import {compressImage} from "../../core/image/image_compress.ts";
+import {compressImage} from "../../shared/lib/image/image_compress.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;

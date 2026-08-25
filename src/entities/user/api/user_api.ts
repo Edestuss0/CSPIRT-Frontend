@@ -9,7 +9,7 @@ import {
 import {noteSchema} from "../../notes/types/notes_types.ts";
 import {complaintSchema} from "../../complaints/types/complaints_types.ts";
 import {EventSchema} from "../../events/types/events_types.ts";
-import {apiClient} from "../../../core/api/client.ts";
+import {apiClient} from "../../../shared/api/client.ts";
 
 const getUserResponseSchema = z.object({
     User: userSchema,

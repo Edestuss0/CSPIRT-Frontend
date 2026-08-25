@@ -1,6 +1,6 @@
 import {z} from "zod";
 import {complaintSchema, type ComplaintType} from "../types/complaints_types.ts";
-import {apiClient} from "../../../core/api/client.ts";
+import {apiClient} from "../../../shared/api/client.ts";
 
 
 export type complaintAddFormType = { 

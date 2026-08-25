@@ -7,7 +7,7 @@ import {
     type ParallelType, quarterCompleteSchema, type QuarterCompleteType
 } from "../types/class_types.ts";
 import {userSchema, type UserType} from "../../user/types/user_types.ts";
-import {apiClient} from "../../../core/api/client.ts";
+import {apiClient} from "../../../shared/api/client.ts";
 
 const classesResponseSchema = z.object({
     Classes: z.array(classSchema)

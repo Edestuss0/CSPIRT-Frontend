@@ -9,7 +9,7 @@ export const useChangeTeacher = () => {
         onSuccess: (_data, variables) => {
             const { id } = variables;
             
-            queryClient.invalidateQueries({queryKey: ["classes", id]});
+            queryClient.invalidateQueries({queryKey: ["classes"]});
             queryClient.invalidateQueries({queryKey: ["class_by_id", id]});
         }
     })

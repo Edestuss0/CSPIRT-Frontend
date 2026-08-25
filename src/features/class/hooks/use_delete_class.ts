@@ -9,7 +9,7 @@ export const useDeleteClass = () => {
         onSuccess: (_data, variables) => {
             const { id } = variables;
             
-            queryclient.invalidateQueries({queryKey: ["classes", id]});
+            queryclient.invalidateQueries({queryKey: ["classes"]});
             queryclient.invalidateQueries({queryKey: ["class_by_id", id]});
         }
     })

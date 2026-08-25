@@ -5,7 +5,7 @@ import {
     type EventType, RewardParamsSchema, type RewardParamsType
 } from "../types/events_types.ts";
 import {z} from "zod";
-import {apiClient} from "../../../core/api/client.ts";
+import {apiClient} from "../../../shared/api/client.ts";
 
 export const addEventPlayersSchema = z.object({
    playerIds: z.array(z.number().int().positive()).min(1), 

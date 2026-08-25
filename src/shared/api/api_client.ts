@@ -1,4 +1,4 @@
-import { AppConfig } from "../app/app_config.ts";
+import { AppConfig } from "../../app/app_config.ts";
 import { ApiResponse } from "./api_response.ts";
 export type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 

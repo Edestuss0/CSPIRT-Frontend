@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {apiClient} from "../../../core/api/client.ts";
+import {apiClient} from "../../../shared/api/client.ts";
 import type {RatingChangeFormType} from "../types/rating_types.ts";
 
 const ratingChangeResponse = z.object({

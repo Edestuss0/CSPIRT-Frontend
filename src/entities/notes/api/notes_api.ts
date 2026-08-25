@@ -1,6 +1,6 @@
 import {z} from "zod";
 import {type NoteFormType, noteSchema, type NoteType} from "../types/notes_types.ts";
-import {apiClient} from "../../../core/api/client.ts";
+import {apiClient} from "../../../shared/api/client.ts";
 const notesResponseShema = z.object({
     Notes: z.array(noteSchema),
 });

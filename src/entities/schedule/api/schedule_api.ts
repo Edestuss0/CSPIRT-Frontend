@@ -4,7 +4,7 @@ import {
     type ScheduleLessonType,
     SchedulesResponseSchema, TeacherScheduleResponseSchema
 } from "../types/schedule_types.ts";
-import {apiClient} from "../../../core/api/client.ts";
+import {apiClient} from "../../../shared/api/client.ts";
 
 export const ScheduleApi = {
     async getCurrentScheduleByClass(id: number, type: "base" | "current" | "planned"): Promise<ScheduleLessonType[]> {
