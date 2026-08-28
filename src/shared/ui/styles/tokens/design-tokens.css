@@ -1,0 +1,191 @@
+/* =========================
+   DESIGN TOKENS
+   Единственный источник истины для всех дизайн-переменных
+   ========================= */
+
+:root {
+    color-scheme: light;
+
+    /* ─────────────────────────────────────────────
+       COLOR PALETTE - Light Theme
+       ───────────────────────────────────────────── */
+
+    /* Background & Surface */
+    --color-bg: #f6f8fb;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f9fafb;
+    --color-surface-subtle: #f3f4f6;
+    --color-elevated: #ffffff;
+
+    /* Border */
+    --color-border: #e5e7eb;
+    --color-border-strong: #d1d5db;
+      --color-overlay: rgba(15, 23, 42, 0.48);
+
+    /* Text */
+    --color-text: #111827;
+    --color-text-muted: #6b7280;
+    --color-text-soft: #9ca3af;
+    --color-on-primary: #ffffff;
+
+    /* Primary */
+    --color-primary: #2563eb;
+    --color-primary-hover: #1d4ed8;
+    --color-primary-soft: #eff6ff;
+    --color-primary-border: #bfdbfe;
+
+    /* Success */
+    --color-success: #16a34a;
+    --color-success-soft: #ecfdf5;
+    --color-success-border: #bbf7d0;
+
+    /* Warning */
+    --color-warning: #d97706;
+    --color-warning-soft: #fffbeb;
+    --color-warning-border: #fde68a;
+
+    /* Danger */
+    --color-danger: #dc2626;
+    --color-danger-hover: #b91c1c;
+    --color-danger-soft: #fef2f2;
+    --color-danger-border: #fecaca;
+
+    /* Info */
+    --color-info: #0284c7;
+    --color-info-soft: #f0f9ff;
+    --color-info-border: #bae6fd;
+
+    /* Rating semantic */
+    --rating-low: var(--color-danger);
+    --rating-medium: var(--color-warning);
+    --rating-high: var(--color-success);
+
+    /* ─────────────────────────────────────────────
+       TYPOGRAPHY
+       ───────────────────────────────────────────── */
+
+    --font-main: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-md: 16px;
+    --text-lg: 20px;
+    --text-xl: 24px;
+    --text-2xl: 32px;
+
+    /* ─────────────────────────────────────────────
+       SPACING SCALE
+       ───────────────────────────────────────────── */
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+
+    /* ─────────────────────────────────────────────
+       BORDER RADIUS
+       ───────────────────────────────────────────── */
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --radius-pill: 999px;
+
+    /* ─────────────────────────────────────────────
+       SHADOWS
+       ───────────────────────────────────────────── */
+
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 8px 22px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.14);
+    --shadow-xl: 0 24px 80px rgba(15, 23, 42, 0.22);
+
+    /* ─────────────────────────────────────────────
+       FOCUS & VALIDATION RINGS
+       ───────────────────────────────────────────── */
+
+    --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    --danger-ring: 0 0 0 3px rgba(220, 38, 38, 0.16);
+
+      /* Semantic component tokens */
+      --control-height: 42px;
+      --control-radius: var(--radius-md);
+      --control-padding-inline: var(--space-3);
+      --card-padding: var(--space-6);
+
+    /* ─────────────────────────────────────────────
+       LAYOUT DIMENSIONS
+       ───────────────────────────────────────────── */
+
+    --sidebar-width: 260px;
+    --header-height: 72px;
+}
+
+/* =========================
+   DARK THEME
+   enable with: <html data-theme="dark">
+   ========================= */
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Background & Surface */
+    --color-bg: #0f172a;
+    --color-surface: #111827;
+    --color-surface-muted: #1f2937;
+    --color-surface-subtle: #273449;
+    --color-elevated: #182235;
+
+    /* Border */
+    --color-border: #334155;
+    --color-border-strong: #475569;
+      --color-overlay: rgba(0, 0, 0, 0.58);
+
+    /* Text */
+    --color-text: #f8fafc;
+    --color-text-muted: #cbd5e1;
+    --color-text-soft: #94a3b8;
+    --color-on-primary: #ffffff;
+
+    /* Primary */
+    --color-primary: #3b82f6;
+    --color-primary-hover: #60a5fa;
+    --color-primary-soft: rgba(59, 130, 246, 0.14);
+    --color-primary-border: rgba(96, 165, 250, 0.36);
+
+    /* Success */
+    --color-success: #22c55e;
+    --color-success-soft: rgba(34, 197, 94, 0.14);
+    --color-success-border: rgba(34, 197, 94, 0.32);
+
+    /* Warning */
+    --color-warning: #f59e0b;
+    --color-warning-soft: rgba(245, 158, 11, 0.14);
+    --color-warning-border: rgba(245, 158, 11, 0.32);
+
+    /* Danger */
+    --color-danger: #ef4444;
+    --color-danger-hover: #f87171;
+    --color-danger-soft: rgba(239, 68, 68, 0.14);
+    --color-danger-border: rgba(239, 68, 68, 0.32);
+
+    /* Info */
+    --color-info: #38bdf8;
+    --color-info-soft: rgba(56, 189, 248, 0.14);
+    --color-info-border: rgba(56, 189, 248, 0.32);
+
+    /* Shadows - adjusted for dark theme */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+    --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.28);
+    --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.34);
+    --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.42);
+
+    /* Focus ring - adjusted for dark theme */
+    --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.28);
+    --danger-ring: 0 0 0 3px rgba(239, 68, 68, 0.28);
+}

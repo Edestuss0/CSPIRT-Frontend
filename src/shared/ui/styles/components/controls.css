@@ -1,0 +1,95 @@
+.app-profile-button {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.app-profile-button:hover {
+    background: var(--color-surface-muted);
+}
+
+.app-profile-button:active {
+    transform: scale(0.96);
+}
+
+.app-profile-button svg {
+    flex-shrink: 0;
+}
+
+.field__top,
+.field__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
+.reward-mode,
+.reward-switch {
+    display: flex;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--control-radius);
+}
+
+.reward-mode__button,
+.reward-switch button {
+    padding: 6px var(--space-3);
+    color: var(--color-text-muted);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--text-xs);
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reward-mode__button.active,
+.reward-switch button.active {
+    color: var(--color-text);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    font-weight: 700;
+}
+
+.avatar-picker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.avatar-picker__label {
+    cursor: pointer;
+}
+
+.avatar-picker__preview,
+.avatar-picker__placeholder {
+    width: 96px;
+    height: 96px;
+    border-radius: var(--radius-pill);
+}
+
+.avatar-picker__preview {
+    display: block;
+    object-fit: cover;
+}
+
+.avatar-picker__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--color-border-strong);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+}

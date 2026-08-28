@@ -31,7 +31,7 @@ export function DashboardPage() {
 
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const selectedList = (searchParams.get("tab") as Lists) || "global_events";
+    const selectedList = (searchParams.get("tab") as Lists) || "home";
 
     const setSelectedList = (tab: Lists) => {
         setSearchParams({ tab }, {replace: true});

@@ -12,7 +12,7 @@
 
 .homeWidgetsDivider {
     width: 1px;
-    background-color: #e5e7eb;
+    background-color: var(--color-border);
     flex-shrink: 0;
 }
 

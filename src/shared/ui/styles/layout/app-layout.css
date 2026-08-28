@@ -1,0 +1,184 @@
+/* =========================
+   APP LAYOUT
+   Основная структура приложения: боковая панель, заголовок, содержимое
+   ========================= */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    background: var(--color-bg);
+}
+
+/* ─────────────────────────────────────────────
+   SIDEBAR
+   ───────────────────────────────────────────── */
+
+.sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+}
+
+.sidebar__logo {
+    margin-bottom: var(--space-8);
+    color: var(--color-text);
+    font-size: var(--text-lg);
+    font-weight: 900;
+}
+
+.sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+
+    min-height: 40px;
+    padding: 0 var(--space-3);
+
+    color: var(--color-text-muted);
+    border-radius: var(--radius-md);
+
+    font-size: var(--text-sm);
+    font-weight: 700;
+
+    transition:
+            background 0.15s ease,
+            color 0.15s ease;
+}
+
+.sidebar__link:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+}
+
+.sidebar__link--active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+/* ─────────────────────────────────────────────
+   MAIN CONTAINER
+   ───────────────────────────────────────────── */
+
+.main {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ─────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────── */
+
+.header {
+    min-height: var(--header-height);
+    padding: 0 var(--space-8);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.header__title {
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--text-xl);
+    font-weight: 900;
+}
+
+.header__subtitle {
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+/* ─────────────────────────────────────────────
+   PAGE
+   ───────────────────────────────────────────── */
+
+.page {
+    width: 100%;
+    padding: var(--space-8);
+}
+
+.page__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.page__title {
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--text-2xl);
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.page__description {
+    max-width: 720px;
+    margin: var(--space-2) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+}
+
+.page-spacer {
+    height: var(--space-4);
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE - SIDEBAR
+   ───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .app-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .sidebar__nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .header {
+        min-height: auto;
+        padding: var(--space-5);
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page {
+        padding: var(--space-5);
+    }
+
+    .page__head {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+    }
+}
